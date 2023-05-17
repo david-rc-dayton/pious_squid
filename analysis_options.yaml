@@ -1,0 +1,49 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    - always_declare_return_types
+    - always_put_control_body_on_new_line
+    - always_put_required_named_parameters_first
+    - always_use_package_imports
+    - avoid_annotating_with_dynamic
+    - avoid_dynamic_calls
+    - avoid_returning_this
+    - avoid_unused_constructor_parameters
+    - directives_ordering
+    - eol_at_end_of_file
+    - library_private_types_in_public_api
+    - no_adjacent_strings_in_list
+    - noop_primitive_operations
+    - omit_local_variable_types
+    - package_api_docs
+    - parameter_assignments
+    - prefer_constructors_over_static_methods
+    - prefer_expression_function_bodies
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_final_parameters
+    - prefer_foreach
+    - prefer_if_elements_to_conditional_expressions
+    - prefer_interpolation_to_compose_strings
+    - prefer_null_aware_method_calls
+    - prefer_single_quotes
+    - public_member_api_docs
+    - sort_child_properties_last
+    - sort_constructors_first
+    - sort_pub_dependencies
+    - sort_unnamed_constructors_first
+    - tighten_type_of_initializing_formals
+    - type_annotate_public_apis
+    - unawaited_futures
+    - unnecessary_lambdas
+    - unnecessary_late
+    - unnecessary_null_aware_assignments
+    - unnecessary_parenthesis
+    - unnecessary_raw_strings
+    - unnecessary_statements
+    - unsafe_html
+    - use_full_hex_values_for_flutter_colors
+    - use_is_even_rather_than_modulo
+    - use_named_constants
+    - use_string_buffers
