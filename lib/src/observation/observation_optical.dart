@@ -19,8 +19,8 @@ class ObservationOptical extends Observation {
   /// Topocentric radec observation.
   final RadecTopocentric observation;
 
-  /// Site location.
-  final Geodetic _site;
+  /// Inertial site location.
+  final J2000 _site;
 
   /// Noise matrix.
   late final Matrix _noise;
@@ -35,7 +35,7 @@ class ObservationOptical extends Observation {
   EpochUTC get epoch => observation.epoch;
 
   @override
-  Geodetic get site => _site;
+  J2000 get site => _site;
 
   @override
   Matrix get noise => _noise;
@@ -47,7 +47,7 @@ class ObservationOptical extends Observation {
   @override
   double clos(final Propagator propagator) {
     final position = propagator.propagate(epoch).position;
-    final offset = position.subtract(site.toITRF(epoch).toJ2000().position);
+    final offset = position.subtract(site.position);
     final actual = observation.lineOfSight().normalize();
     final expected = offset.normalize();
     final slantRange = offset.magnitude();
@@ -60,7 +60,7 @@ class ObservationOptical extends Observation {
 
   @override
   Vector ricDiff(final Propagator propagator) {
-    final r0 = site.toITRF(epoch).toJ2000();
+    final r0 = site;
     final r1 = propagator.propagate(epoch);
     final r2 = observation.position(site, r1.position.distance(r0.position));
     return RIC.fromJ2000(J2000(epoch, r2, Vector.origin3), r1).position;
@@ -77,14 +77,13 @@ class ObservationOptical extends Observation {
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
     final result = array2d(2, 6);
-    final siteEci = site.toITRF(epoch).toJ2000();
     for (var i = 0; i < 6; i++) {
       final step = propPairs.step(i);
       final (high, low) = propPairs.get(i);
       final sl = low.propagate(epoch);
       final sh = high.propagate(epoch);
-      final ol = RadecTopocentric.fromStateVectors(sl, siteEci);
-      final oh = RadecTopocentric.fromStateVectors(sh, siteEci);
+      final ol = RadecTopocentric.fromStateVectors(sl, site);
+      final oh = RadecTopocentric.fromStateVectors(sh, site);
       result[0][i] = observationDerivative(
           oh.rightAscension, ol.rightAscension, step,
           isAngle: true);
@@ -97,9 +96,8 @@ class ObservationOptical extends Observation {
   @override
   Matrix residual(final Propagator propagator) {
     final result = array2d(2, 1);
-    final siteEci = site.toITRF(epoch).toJ2000();
-    final stateEci = propagator.propagate(epoch);
-    final radec = RadecTopocentric.fromStateVectors(stateEci, siteEci);
+    final state = propagator.propagate(epoch);
+    final radec = RadecTopocentric.fromStateVectors(state, site);
     result[0][0] =
         normalizeAngle(observation.rightAscension, radec.rightAscension);
     result[1][0] = normalizeAngle(observation.declination, radec.declination);

@@ -29,11 +29,13 @@ class Razel {
 
   /// Create a [Razel] object from an inertial [state] and
   /// [site] vector.
-  factory Razel.fromStateVectors(final ITRF state, final ITRF site) {
+  factory Razel.fromStateVectors(final J2000 state, final J2000 site) {
+    final stateEcef = state.toITRF();
+    final siteEcef = site.toITRF();
     final po2 = halfPi;
-    final r = state.position.add(site.position.negate());
-    final rDot = state.velocity;
-    final geo = site.toGeodetic();
+    final r = stateEcef.position.add(siteEcef.position.negate());
+    final rDot = stateEcef.velocity;
+    final geo = siteEcef.toGeodetic();
     final p = r.rotZ(geo.longitude).rotY(po2 - geo.latitude);
     final pDot = rDot.rotZ(geo.longitude).rotY(po2 - geo.latitude);
     final pS = p.x;
@@ -97,7 +99,9 @@ class Razel {
   ///
   /// An optional azimuth [az] _(rad)_ and elevation [el] _(rad)_ value can be
   /// passed to override the values contained in this observation.
-  Vector position(final Geodetic site, [final double? az, final double? el]) {
+  Vector position(final J2000 site, [final double? az, final double? el]) {
+    final ecef = site.toITRF();
+    final geo = ecef.toGeodetic();
     final po2 = halfPi;
     final newAz = az ?? azimuth;
     final newEl = el ?? elevation;
@@ -111,9 +115,9 @@ class Razel {
     p[2] = range * sEl;
     final pSez = Vector(p);
     final rEcef = pSez
-        .rotY(-(po2 - site.latitude))
-        .rotZ(-site.longitude)
-        .add(site.toITRF(epoch).position);
+        .rotY(-(po2 - geo.latitude))
+        .rotZ(-geo.longitude)
+        .add(ecef.position);
     return ITRF(epoch, rEcef, Vector.origin3).toJ2000().position;
   }
 
@@ -121,12 +125,13 @@ class Razel {
   ///
   /// This will throw an error if the [rangeRate], [elevationRate], or
   /// [azimuthRate] are not defined.
-  J2000 toStateVector(final ITRF site) {
+  J2000 toStateVector(final J2000 site) {
     if (rangeRate == null || elevationRate == null || azimuthRate == null) {
       throw 'Cannot create state, required values are undefined.';
     }
+    final ecef = site.toITRF();
+    final geo = ecef.toGeodetic();
     final po2 = halfPi;
-    final geo = site.toGeodetic();
     final sAz = sin(azimuth);
     final cAz = cos(azimuth);
     final sEl = sin(elevation);
@@ -147,7 +152,7 @@ class Razel {
     final pDotSez = Vector(pDot);
     final pEcef = pSez.rotY(-(po2 - geo.latitude)).rotZ(-geo.longitude);
     final pDotEcef = pDotSez.rotY(-(po2 - geo.latitude)).rotZ(-geo.longitude);
-    final rEcef = pEcef.add(site.position);
+    final rEcef = pEcef.add(ecef.position);
     return ITRF(epoch, rEcef, pDotEcef).toJ2000();
   }
 

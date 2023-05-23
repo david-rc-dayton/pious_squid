@@ -18,7 +18,7 @@ class ObservationRadar extends Observation {
   final Razel observation;
 
   /// Site location.
-  final Geodetic _site;
+  final J2000 _site;
 
   /// Noise matrix.
   late final Matrix _noise;
@@ -31,7 +31,7 @@ class ObservationRadar extends Observation {
   EpochUTC get epoch => observation.epoch;
 
   @override
-  Geodetic get site => _site;
+  J2000 get site => _site;
 
   @override
   Matrix get noise => _noise;
@@ -42,15 +42,14 @@ class ObservationRadar extends Observation {
 
   @override
   double clos(final Propagator propagator) {
-    final siteEci = site.toITRF(epoch).toJ2000().position;
-    final ri = propagator.propagate(epoch).position.subtract(siteEci);
+    final ri = propagator.propagate(epoch).position.subtract(site.position);
     return (observation.range - ri.magnitude()).abs();
   }
 
   @override
   Vector ricDiff(final Propagator propagator) {
     final r0 = propagator.propagate(epoch);
-    final r1 = Razel.fromStateVectors(r0.toITRF(), site.toITRF(epoch));
+    final r1 = Razel.fromStateVectors(r0, site);
     final r2 = observation.position(site, r1.azimuth, r1.elevation);
     return RIC.fromJ2000(J2000(epoch, r2, Vector.origin3), r0).position;
   }
@@ -66,14 +65,13 @@ class ObservationRadar extends Observation {
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
     final result = array2d(3, 6);
-    final siteEcef = site.toITRF(epoch);
     for (var i = 0; i < 6; i++) {
       final step = propPairs.step(i);
       final (high, low) = propPairs.get(i);
-      final sl = low.propagate(epoch).toITRF();
-      final sh = high.propagate(epoch).toITRF();
-      final ol = Razel.fromStateVectors(sl, siteEcef);
-      final oh = Razel.fromStateVectors(sh, siteEcef);
+      final sl = low.propagate(epoch);
+      final sh = high.propagate(epoch);
+      final ol = Razel.fromStateVectors(sl, site);
+      final oh = Razel.fromStateVectors(sh, site);
       result[0][i] = observationDerivative(oh.range, ol.range, step);
       result[1][i] =
           observationDerivative(oh.azimuth, ol.azimuth, step, isAngle: true);
@@ -86,9 +84,8 @@ class ObservationRadar extends Observation {
   @override
   Matrix residual(final Propagator propagator) {
     final result = array2d(3, 1);
-    final siteEcef = site.toITRF(epoch);
-    final stateEcef = propagator.propagate(epoch).toITRF();
-    final razel = Razel.fromStateVectors(stateEcef, siteEcef);
+    final state = propagator.propagate(epoch);
+    final razel = Razel.fromStateVectors(state, site);
     result[0][0] = observation.range - razel.range;
     result[1][0] = normalizeAngle(observation.azimuth, razel.azimuth);
     result[2][0] = normalizeAngle(observation.elevation, razel.elevation);

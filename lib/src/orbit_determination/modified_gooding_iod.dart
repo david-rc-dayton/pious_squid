@@ -39,7 +39,7 @@ class ModifiedGoodingIOD {
       for (var i = 0; i < _observations.length; i++) {
         final oC = _observations[i];
         final sC = propagator.propagate(oC.epoch);
-        final pC = oC.site.toITRF(oC.epoch).toJ2000();
+        final pC = oC.site;
         final expected = oC.observation.lineOfSight();
         final actual = RadecTopocentric.fromStateVectors(sC, pC).lineOfSight();
         final error = expected.angle(actual);

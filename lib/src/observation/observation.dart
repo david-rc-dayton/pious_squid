@@ -9,8 +9,8 @@ abstract class Observation {
   /// Observation epoch.
   EpochUTC get epoch;
 
-  /// Observer location.
-  Geodetic get site;
+  /// Inertial observer location.
+  J2000 get site;
 
   /// Observation noise matrix.
   Matrix get noise;

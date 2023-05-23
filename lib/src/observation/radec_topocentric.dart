@@ -110,27 +110,25 @@ class RadecTopocentric {
   ///
   /// An optional [range] _(km)_ value can be passed to override the value
   /// contained in this observation.
-  Vector position(final Geodetic site, [final double? range]) {
+  Vector position(final J2000 site, [final double? range]) {
     final r = range ?? this.range ?? 1.0;
-    final s0 = site.toITRF(epoch).toJ2000();
-    return radecToPosition(rightAscension, declination, r).add(s0.position);
+    return radecToPosition(rightAscension, declination, r).add(site.position);
   }
 
   /// Return the velocity relative to the observer [site].
   ///
   /// An optional [range] _(km)_ and [rangeRate] _(km/s)_ value can be passed
   /// to override the values contained in this observation.
-  Vector velocity(final Geodetic site,
+  Vector velocity(final J2000 site,
       [final double? range, final double? rangeRate]) {
     if (rightAscensionRate == null || declinationRate == null) {
       throw 'Velocity unsolvable, missing ra/dec rates.';
     }
     final r = range ?? this.range ?? 1.0;
     final rd = rangeRate ?? this.rangeRate ?? 0.0;
-    final s0 = site.toITRF(epoch).toJ2000();
     return radecToVelocity(rightAscension, declination, r, rightAscensionRate!,
             declinationRate!, rd)
-        .add(s0.velocity);
+        .add(site.velocity);
   }
 
   /// Convert this observation into a line-of-sight vector.

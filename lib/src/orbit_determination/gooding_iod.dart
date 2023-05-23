@@ -167,12 +167,9 @@ class GoodingIOD {
     _v = sqrt(_mu / _r);
     _t = _r / _v;
 
-    _vObserverPosition1 =
-        _o1.site.toITRF(_o1.epoch).toJ2000().position.scale(1.0 / _r);
-    _vObserverPosition2 =
-        _o2.site.toITRF(_o2.epoch).toJ2000().position.scale(1.0 / _r);
-    _vObserverPosition3 =
-        _o3.site.toITRF(_o3.epoch).toJ2000().position.scale(1.0 / _r);
+    _vObserverPosition1 = _o1.site.position.scale(1.0 / _r);
+    _vObserverPosition2 = _o2.site.position.scale(1.0 / _r);
+    _vObserverPosition3 = _o3.site.position.scale(1.0 / _r);
 
     final maxiter = 100;
     _solveRangeProblem(
