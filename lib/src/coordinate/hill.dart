@@ -293,7 +293,7 @@ class Hill extends RelativeState {
       [sysMat[1][0], sysMat[1][1], sysMat[1][2]],
       [sysMat[2][0], sysMat[2][1], sysMat[2][2]],
     ]);
-    final solnVector = w.add(posEquationMat.multiplyVector(position).negate());
+    final solnVector = w.subtract(posEquationMat.multiplyVector(position));
     // isolate velocity portions of the computed CW matrix
     final velEquationMat = Matrix([
       [sysMat[0][3], sysMat[0][4], sysMat[0][5]],
@@ -302,10 +302,8 @@ class Hill extends RelativeState {
     ]);
     // save difference of desired velocity and current velocity to represent
     // the required burn magnitude
-    var result = velEquationMat
-        .inverse()
-        .multiplyVector(solnVector)
-        .add(velocity.negate());
+    var result =
+        velEquationMat.inverse().multiplyVector(solnVector).subtract(velocity);
     if (ignoreCrosstrack) {
       result =
           Vector(Float64List.fromList([result.x * 1000, result.y * 1000, 0.0]));
@@ -347,6 +345,6 @@ class Hill extends RelativeState {
     final vFinal = vInit - (maneuver.intrack * 1e-3);
     final aFinal = Earth.mu / (vFinal * vFinal);
     return Hill(state.epoch, state.position,
-        state.velocity.add(maneuver.deltaV.negate()), aFinal);
+        state.velocity.subtract(maneuver.deltaV), aFinal);
   }
 }

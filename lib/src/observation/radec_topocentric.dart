@@ -46,13 +46,13 @@ class RadecTopocentric {
   /// [site] vector.
   factory RadecTopocentric.fromStateVectors(
       final J2000 state, final J2000 site) {
-    final p = state.position.add(site.position.negate());
+    final p = state.position.subtract(site.position);
     final pI = p.x;
     final pJ = p.y;
     final pK = p.z;
     final pMag = p.magnitude();
     final declination = asin(pK / pMag);
-    final pDot = state.velocity.add(site.velocity.negate());
+    final pDot = state.velocity.subtract(site.velocity);
     final pIDot = pDot.x;
     final pJDot = pDot.y;
     final pKDot = pDot.z;

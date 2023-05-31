@@ -33,7 +33,7 @@ class Razel {
     final stateEcef = state.toITRF();
     final siteEcef = site.toITRF();
     final po2 = halfPi;
-    final r = stateEcef.position.add(siteEcef.position.negate());
+    final r = stateEcef.position.subtract(siteEcef.position);
     final rDot = stateEcef.velocity;
     final geo = siteEcef.toGeodetic();
     final p = r.rotZ(geo.longitude).rotY(po2 - geo.latitude);

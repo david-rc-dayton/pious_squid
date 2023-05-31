@@ -1,4 +1,17 @@
 import 'package:pious_squid/src/operations/constants.dart';
+import 'package:pious_squid/src/time/time_base.dart';
+
+/// Time stamped value container.
+class TimeStamped<T> {
+  /// Create a new time stamped [value] container at the provided [epoch].
+  TimeStamped(this.epoch, this.value);
+
+  /// Timestamp epoch.
+  final EpochUTC epoch;
+
+  /// Timestamped value.
+  final T value;
+}
 
 /// Base class for [Epoch] data.
 class Epoch implements Comparable {

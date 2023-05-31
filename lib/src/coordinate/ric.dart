@@ -10,8 +10,8 @@ class RIC extends RelativeState {
   /// relative motion origin.
   factory RIC.fromJ2000(final J2000 state, final J2000 origin) {
     final q = RelativeState.createMatrix(origin.position, origin.velocity);
-    final dr = state.position.add(origin.position.negate());
-    final dv = state.velocity.add(origin.velocity.negate());
+    final dr = state.position.subtract(origin.position);
+    final dv = state.velocity.subtract(origin.velocity);
     return RIC(q.multiplyVector(dr), q.multiplyVector(dv));
   }
 

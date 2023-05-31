@@ -84,7 +84,7 @@ class GoodingIOD {
   }
 
   void _modifyIterate(final Vector lineOfSight1, final Vector lineOfSight3) {
-    final r13 = _vObserverPosition3.add(_vObserverPosition1.negate());
+    final r13 = _vObserverPosition3.subtract(_vObserverPosition1);
     _d1 = r13.dot(lineOfSight1);
     _d3 = r13.dot(lineOfSight3);
     final d2 = lineOfSight1.dot(lineOfSight3);

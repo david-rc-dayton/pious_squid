@@ -24,7 +24,7 @@ class Quaternion {
   /// a target position given a forward unit vector.
   factory Quaternion.lookAt(
       final Vector observer, final Vector target, final Vector forward) {
-    final forwardVector = target.add(observer.negate()).normalize();
+    final forwardVector = target.subtract(observer).normalize();
     final rotAxis = forward.cross(forwardVector);
     final dot = forward.dot(forwardVector);
     return Quaternion(rotAxis.x, rotAxis.y, rotAxis.z, dot + 1.0).normalize();
@@ -178,7 +178,7 @@ class Quaternion {
 
   /// Calculate the distance between this and another [Quaternion].
   double distance(final Quaternion q) {
-    final m01 = add(q.negate()).magnitude();
+    final m01 = subtract(q).magnitude();
     final p01 = add(q).magnitude();
     return m01 < p01 ? m01 : p01;
   }
@@ -204,7 +204,7 @@ class Quaternion {
   /// the [observer] and [target] positions, given the [forward] vector.
   double vectorAngle(
       final Vector observer, final Vector target, final Vector forward) {
-    final delta = target.add(observer.negate());
+    final delta = target.subtract(observer);
     final transform = toDirectionCosineMatrix().multiplyVector(delta);
     return forward.angle(transform);
   }
