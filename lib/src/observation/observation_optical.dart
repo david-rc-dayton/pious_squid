@@ -29,7 +29,7 @@ class ObservationOptical extends Observation {
   ///
   /// Based on the Maui Optical Site noise model.
   static final Matrix defaultNoise =
-      noiseFromSigmas([0.0037 * deg2rad, 0.0030 * deg2rad]);
+      noiseFromSigmas(0.0037 * deg2rad, 0.0030 * deg2rad);
 
   @override
   EpochUTC get epoch => observation.epoch;
@@ -103,4 +103,9 @@ class ObservationOptical extends Observation {
     result[1][0] = normalizeAngle(observation.declination, radec.declination);
     return Matrix(result);
   }
+
+  /// Create a noise matrix from right ascension and declination standard
+  /// deviantions _(radians)_.
+  static Matrix noiseFromSigmas(final double raSigma, final double decSigma) =>
+      observationNoiseFromSigmas([raSigma, decSigma]);
 }

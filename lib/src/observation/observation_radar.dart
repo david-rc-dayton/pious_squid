@@ -25,7 +25,7 @@ class ObservationRadar extends Observation {
 
   /// Default noise matrix.
   static final Matrix defaultNoise =
-      noiseFromSigmas([0.32, 0.015 * deg2rad, 0.015 * deg2rad]);
+      noiseFromSigmas(0.32, 0.015 * deg2rad, 0.015 * deg2rad);
 
   @override
   EpochUTC get epoch => observation.epoch;
@@ -91,4 +91,10 @@ class ObservationRadar extends Observation {
     result[2][0] = normalizeAngle(observation.elevation, razel.elevation);
     return Matrix(result);
   }
+
+  /// Create a noise matrix from the range, azimuth, and elevation standard
+  /// deviantions _(kilometers/radians)_.
+  static Matrix noiseFromSigmas(
+          final double rngSigma, final double azSigma, final double elSigma) =>
+      observationNoiseFromSigmas([rngSigma, azSigma, elSigma]);
 }

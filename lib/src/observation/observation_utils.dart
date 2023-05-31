@@ -77,7 +77,7 @@ double observationDerivative(
 
 /// Create a noise matrix from the provided list of standard deviation
 /// values [sigmas].
-Matrix noiseFromSigmas(final List<double> sigmas) {
+Matrix observationNoiseFromSigmas(final List<double> sigmas) {
   final n = sigmas.length;
   final result = array2d(n, n);
   for (var i = 0; i < n; i++) {
