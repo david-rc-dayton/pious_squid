@@ -65,6 +65,15 @@ class Matrix {
     return Matrix(output);
   }
 
+  /// Create a new square [Matrix] using vector [v] for the diagonal components.
+  factory Matrix.diagonal(final Vector v) {
+    final output = array2d(v.length, v.length);
+    for (var i = 0; i < v.length; i++) {
+      output[i][i] = v[i];
+    }
+    return Matrix(output);
+  }
+
   /// Matrix elements.
   final List<List<double>> _elements;
 
@@ -76,6 +85,9 @@ class Matrix {
 
   /// Return the matrix row at the provided [index].
   List<double> operator [](final int index) => _elements[index];
+
+  @override
+  String toString() => _elements.toString();
 
   /// Return the result of adding this and another [Matrix].
   Matrix add(final Matrix m) {

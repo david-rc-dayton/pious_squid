@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/constants.dart';
+import 'package:pious_squid/src/operations/matrix.dart';
 
 /// Vector operations.
 class Vector {
@@ -226,4 +227,7 @@ class Vector {
   /// from index [start] to [end] _(exclusive)_.
   Vector slice(final int start, final int end) =>
       Vector(_elements.sublist(start, end));
+
+  /// Convert this [Vector] into a column [Matrix].
+  Matrix column() => Matrix(_elements.map((final e) => [e]).toList());
 }
