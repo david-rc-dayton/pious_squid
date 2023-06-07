@@ -137,10 +137,11 @@ class Vector {
 
   /// Calculate the cross product of this and another [Vector];
   Vector cross(final Vector v) {
-    final output = Float64List(3);
-    output[0] = _elements[1] * v._elements[2] - _elements[2] * v._elements[1];
-    output[1] = _elements[2] * v._elements[0] - _elements[0] * v._elements[2];
-    output[2] = _elements[0] * v._elements[1] - _elements[1] * v._elements[0];
+    final output = Float64List(length);
+    for (var i = 0; i < length; i++) {
+      output[i] = _elements[(i + 1) % length] * v._elements[(i + 2) % length] -
+          _elements[(i + 2) % length] * v._elements[(i + 1) % length];
+    }
     return Vector(output);
   }
 
