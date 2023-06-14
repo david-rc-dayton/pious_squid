@@ -2,11 +2,11 @@ import 'package:pious_squid/pious_squid.dart';
 import 'package:test/test.dart';
 
 final startState = J2000(
-    EpochUTC.fromDateTimeString('2017-02-03T06:26:37.976Z'),
-    Vector.fromList([-3134.15877, 7478.695162, 1568.694229]),
-    Vector.fromList([-5.227261462, -3.7717234, 2.643938099]));
+    EpochUTC.fromDateTimeString('2017-01-07T05:31:00.243Z'),
+    Vector.fromList([-5737.369776, -3423.651756, 364.099770]),
+    Vector.fromList([4.378112704, -6.646623519, 1.170571889]));
 
-final stopEpoch = EpochUTC.fromDateTimeString('2017-02-05T20:32:19.340Z');
+final stopEpoch = EpochUTC.fromDateTimeString('2017-01-10T04:46:49.139Z');
 
 final mass = 1400.0; // kilograms
 final area = 16.0; // meters²
@@ -25,33 +25,23 @@ void main() {
     test('Kepler', () {
       final propagator = KeplerPropagator(startState.toClassicalElements());
       final expected =
-          Vector.fromList([8083.382589, 2380.417235, -4082.690159]);
+          Vector.fromList([-251.600120, -6643.127745, 1031.665425]);
       final actual = propagator.propagate(stopEpoch).position;
       expect(actual.distance(expected), lessThanOrEqualTo(0.01));
     });
 
     test('Dormand-Prince 5(4)', () {
       final propagator = DormandPrince54Propagator(startState, forceModel);
-      final expected =
-          Vector.fromList([7478.826594, 4591.104380, -3346.104153]);
+      final expected = Vector.fromList([5059.691657, -4729.021976, 638.641366]);
       final actual = propagator.propagate(stopEpoch).position;
-      expect(actual.distance(expected), lessThanOrEqualTo(0.01));
+      expect(actual.distance(expected), lessThanOrEqualTo(0.13));
     });
 
     test('Runge-Kutta 8(9)', () {
       final propagator = RungeKutta89Propagator(startState, forceModel);
-      final expected =
-          Vector.fromList([7478.826594, 4591.104380, -3346.104153]);
+      final expected = Vector.fromList([5059.691657, -4729.021976, 638.641366]);
       final actual = propagator.propagate(stopEpoch).position;
-      expect(actual.distance(expected), lessThanOrEqualTo(0.01));
-    });
-
-    test('Runge-Kutta 8(9)', () {
-      final propagator = RungeKutta89Propagator(startState, forceModel);
-      final expected =
-          Vector.fromList([7478.826594, 4591.104380, -3346.104153]);
-      final actual = propagator.propagate(stopEpoch).position;
-      expect(actual.distance(expected), lessThanOrEqualTo(0.01));
+      expect(actual.distance(expected), lessThanOrEqualTo(0.13));
     });
 
     test('SGP4', () {

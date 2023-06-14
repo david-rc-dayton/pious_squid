@@ -146,6 +146,20 @@ class Vector {
     return Vector(output);
   }
 
+  /// Calculate the skew-symmetric matrix for this [Vector].
+  ///
+  /// An error will be thrown if the vector is not length 3.
+  Matrix skewSymmetric() {
+    if (length != 3) {
+      throw 'Skew-symmetric matrix requires a vector of length 3.';
+    }
+    return Matrix([
+      [0, -_elements[2], _elements[1]],
+      [_elements[2], 0, -_elements[0]],
+      [-_elements[1], _elements[0], 0]
+    ]);
+  }
+
   /// Create a copy of this [Vector] rotated in the x-axis by angle
   /// [theta] _(rad)_.
   Vector rotX(final double theta) {

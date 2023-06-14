@@ -20,6 +20,49 @@ class Quaternion {
     return Quaternion(x, y, z, w);
   }
 
+  /// Create a new [Quaternion] object from the provided direction cosine
+  /// matrix [c].
+  factory Quaternion.fromDirectionCosineMatrix(final Matrix c) {
+    final q2 = Float64List(4);
+    q2[0] = 0.25 * (1 + c[0][0] - c[1][1] - c[2][2]); // qx
+    q2[1] = 0.25 * (1 - c[0][0] + c[1][1] - c[2][2]); // qy
+    q2[2] = 0.25 * (1 - c[0][0] - c[1][1] + c[2][2]); // qz
+    q2[3] = 0.25 * (1 + c[0][0] + c[1][1] + c[2][2]); // qw
+    var n = 0;
+    var qn2 = q2[0];
+    for (var i = 1; i < 4; i++) {
+      if (q2[i] > qn2) {
+        n = i;
+        qn2 = q2[i];
+      }
+    }
+    final s = 1.0 / (4.0 * sqrt(qn2));
+    var output = Quaternion.one;
+    switch (n) {
+      case 0: // qx
+        output = Quaternion(
+            4.0 * qn2, c[0][1] + c[1][0], c[2][0] + c[0][2], c[1][2] - c[2][1]);
+        break;
+      case 1: // qy
+        output = Quaternion(
+            c[0][1] + c[1][0], 4.0 * qn2, c[1][2] + c[2][1], c[2][0] - c[0][2]);
+        break;
+      case 2: // qz
+        output = Quaternion(
+            c[2][0] + c[0][2], c[1][2] + c[2][1], 4.0 * qn2, c[0][1] - c[1][0]);
+        break;
+      case 3: // qw
+        output = Quaternion(
+            c[1][2] - c[2][1], c[2][0] - c[0][2], c[0][1] - c[1][0], 4.0 * qn2);
+        break;
+    }
+    return output.scale(s).positivePolar();
+  }
+
+  /// Create a new [Quaternion] object from a 3-2-1 ordered [EulerAngles].
+  factory Quaternion.fromEulerAngles321(final EulerAngles ea) =>
+      Quaternion.fromDirectionCosineMatrix(ea.dcm321());
+
   /// Create a new [Quaternion] that will point from an observer position to
   /// a target position given a forward unit vector.
   factory Quaternion.lookAt(
@@ -57,6 +100,15 @@ class Quaternion {
   /// Z-axis unit quaternion.
   static final Quaternion zAxis = Quaternion(0, 0, 1, 0);
 
+  @override
+  String toString({final int precision = 8}) {
+    final xStr = x.toStringAsFixed(precision);
+    final yStr = y.toStringAsFixed(precision);
+    final zStr = z.toStringAsFixed(precision);
+    final wStr = w.toStringAsFixed(precision);
+    return 'Q(x: $xStr, y: $yStr, z: $zStr, w: $wStr)';
+  }
+
   /// Convert this [Quaternion] to its positive polar form.
   Quaternion positivePolar() => (w >= 0) ? normalize() : negate().normalize();
 
@@ -85,7 +137,7 @@ class Quaternion {
   Quaternion conjugate() => Quaternion(-x, -y, -z, w);
 
   /// Return the inverse of this [Quaternion].
-  Quaternion reciprocal() => conjugate().scale(1 / magnitudeSquared());
+  Quaternion inverse() => conjugate().scale(1 / magnitudeSquared());
 
   /// Add this and another [Quaternion].
   Quaternion add(final Quaternion q) =>
@@ -184,7 +236,7 @@ class Quaternion {
   }
 
   /// Return a delta between this and another [Quaternion].
-  Quaternion delta(final Quaternion qTo) => reciprocal().multiply(qTo);
+  Quaternion delta(final Quaternion qTo) => inverse().multiply(qTo);
 
   /// Convert this [Quaternion] to a direction cosine [Matrix].
   Matrix toDirectionCosineMatrix() {
@@ -193,12 +245,15 @@ class Quaternion {
     final y2 = y * y;
     final z2 = z * z;
     final m = [
-      [w2 + x2 - y2 - z2, 2 * (x * y + w * z), 2.0 * (x * z - w * y)],
-      [2.0 * (x * y - w * z), w2 - x2 + y2 - z2, 2.0 * (y * z + w * x)],
-      [2.0 * (x * z + w * y), 2 * (y * z - w * x), w2 - x2 - y2 + z2],
+      [w2 + x2 - y2 - z2, 2.0 * (x * y + z * w), 2.0 * (x * z - y * w)],
+      [2.0 * (x * y - z * w), w2 - x2 + y2 - z2, 2.0 * (y * z + x * w)],
+      [2.0 * (x * z + y * w), 2.0 * (y * z - x * w), w2 - x2 - y2 + z2],
     ];
     return Matrix(m);
   }
+
+  /// Convert this [Quaternion] to a rotation [Matrix].
+  Matrix toRotationMatrix() => toDirectionCosineMatrix().transpose();
 
   /// Calculate the angle between this and the [Quaternion] pointing between
   /// the [observer] and [target] positions, given the [forward] vector.
@@ -207,5 +262,23 @@ class Quaternion {
     final delta = target.subtract(observer);
     final transform = toDirectionCosineMatrix().multiplyVector(delta);
     return forward.angle(transform);
+  }
+
+  /// Calculate the rate of change for this [Quaternion] given an
+  /// [angularVelocity] vector _(rad/s)_.
+  Quaternion kinematics(final Vector angularVelocity) {
+    if (angularVelocity.length != 3) {
+      throw 'Kinematics require an angular velocity vector of length 3.';
+    }
+    final wPrime = Vector.fromList(
+        [0, angularVelocity[0], angularVelocity[1], angularVelocity[2]]);
+    final qMat = Matrix([
+      [x, w, -z, y],
+      [y, z, w, -x],
+      [z, -y, x, w],
+      [w, -x, -y, -z]
+    ]);
+    final result = qMat.multiplyVector(wPrime).scale(0.5);
+    return Quaternion(result[0], result[1], result[2], result[3]);
   }
 }

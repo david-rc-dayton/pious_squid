@@ -18,7 +18,7 @@ class Sun {
   static const double solarFlux = 1367.0;
 
   /// Mean solar pressure _(N/m²)_.
-  static const double solarPressure = solarFlux / speedOfLight;
+  static const double solarPressure = solarFlux / (speedOfLight * 1000);
 
   /// Sun umbra angle _(rad)_.
   static const double umbraAngle = 0.26411888 * deg2rad;
@@ -52,10 +52,18 @@ class Sun {
     return rMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);
   }
 
+  /// Calculate the Sun's apparent ECI position _(km)_ from Earth for a given
+  /// UTC [epoch].
+  static Vector positionApparent(final EpochUTC epoch) {
+    final distance = position(epoch).magnitude();
+    final dSec = distance / speedOfLight;
+    return position(epoch.roll(-dSec));
+  }
+
   /// Return `true` if the ECI satellite position [posSat] is in eclipse at the
   /// given UTC [epoch].
   static bool shadow(final EpochUTC epoch, final Vector posSat) {
-    final posSun = position(epoch);
+    final posSun = positionApparent(epoch);
     var shadow = false;
     if (posSun.dot(posSat) < 0) {
       final angle = posSun.angle(posSat);

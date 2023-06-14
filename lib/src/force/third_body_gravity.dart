@@ -27,7 +27,7 @@ class ThirdBodyGravity implements Force {
   }
 
   static Vector _sunGravity(final J2000 state) {
-    final rSun = Sun.position(state.epoch);
+    final rSun = Sun.positionApparent(state.epoch);
     final aNum = rSun.subtract(state.position);
     final aDen = pow(aNum.magnitude(), 3);
     final bNum = rSun;

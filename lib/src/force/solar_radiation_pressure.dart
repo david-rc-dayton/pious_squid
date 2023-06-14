@@ -25,7 +25,7 @@ class SolarRadiationPressure extends Force {
 
   @override
   Vector acceleration(final J2000 state) {
-    final rSun = Sun.position(state.epoch);
+    final rSun = Sun.positionApparent(state.epoch);
     final r = state.position.subtract(rSun);
     final rMag = r.magnitude();
     final r2 = rMag * rMag;

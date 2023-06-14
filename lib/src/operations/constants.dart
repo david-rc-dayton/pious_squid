@@ -34,7 +34,7 @@ const double astronomicalUnit = 149597870.0;
 const double msec2sec = 1e-3;
 
 /// Speed of light _(km/s)_.
-const double speedOfLight = 299792458.0;
+const double speedOfLight = 299792.458;
 
 /// Seconds per day.
 const double secondsPerDay = 86400.0;

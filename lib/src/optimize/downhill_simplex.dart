@@ -34,7 +34,7 @@ class SimplexEntry {
   /// Modify the simplex entry in accordance with the Nelder-Mead algorithm.
   SimplexEntry modify(
           final double n, final SimplexEntry xa, final SimplexEntry xb) =>
-      SimplexEntry(_f, _x.add(xa._x.add(xb._x.scale(-1.0)).scale(n)).toArray());
+      SimplexEntry(_f, _x.add(xa._x.subtract(xb._x).scale(n)).toArray());
 
   /// Calculate the Euclidean distance between this and another [SimplexEntry];
   double distance(final SimplexEntry se) => _x.distance(se._x);
@@ -46,7 +46,7 @@ class DownhillSimplex {
 
   /// Compute the centroid from a list of [SimplexEntry] objects, using cost
   /// function [f].
-  static SimplexEntry centroid(
+  static SimplexEntry _centroid(
       final CostFunction f, final List<SimplexEntry> xss) {
     final n = xss[0].points.length;
     final m = xss.length - 1;
@@ -123,7 +123,7 @@ class DownhillSimplex {
     }
     while (true) {
       ordered.sort((final x, final y) => x.score.compareTo(y.score));
-      final x0 = centroid(f, ordered);
+      final x0 = _centroid(f, ordered);
       // update exit criterea
       var xd = 0.0;
       var fd = 0.0;

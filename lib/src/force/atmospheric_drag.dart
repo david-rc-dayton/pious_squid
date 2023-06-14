@@ -36,7 +36,7 @@ class AtmosphericDrag implements Force {
     if (hpa == null) {
       return 0.0;
     }
-    final sunPos = Sun.position(state.epoch);
+    final sunPos = Sun.positionApparent(state.epoch);
     final sunVec = J2000(state.epoch, sunPos, Vector.origin3)
         .toITRF()
         .position
