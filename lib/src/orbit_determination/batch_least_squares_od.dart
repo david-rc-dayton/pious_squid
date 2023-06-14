@@ -33,8 +33,8 @@ class BatchLeastSquaresOD {
   /// spacecraft [forceModel].
   BatchLeastSquaresOD(this._observations, final J2000 apriori,
       {final ForceModel? forceModel,
-      final double posStep = 1e-3,
-      final double velStep = 1e-6,
+      final double posStep = 1e-5,
+      final double velStep = 1e-5,
       final bool fastDerivatives = false}) {
     _propPairs = PropagatorPairs(posStep, velStep);
     _fastDerivatives = fastDerivatives;

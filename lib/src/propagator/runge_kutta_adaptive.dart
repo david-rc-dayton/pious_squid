@@ -114,7 +114,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
     var hNew = (0.9 * step * pow(_tolerance / teVal, 1.0 / order)).abs();
     final hOld = step.abs();
     hNew = hNew.clamp(0.2 * hOld, 5.0 * hOld);
-    hNew = hNew.clamp(1e-4, 1000.0);
+    hNew = hNew.clamp(1e-5, 1000.0);
     return RkResult(
         J2000(state.epoch.roll(step), y1.slice(0, 3), y1.slice(3, 6)),
         teVal,

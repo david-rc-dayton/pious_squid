@@ -303,7 +303,7 @@ List<List<double>> array2d(final int rows, final int columns,
 /// Use central finite differencing to generate a Jacobian matrix for
 /// function [f], output length [m], and input value [x0].
 Matrix jacobian(final JacobianFunction f, final int m, final Float64List x0,
-    {final double step = 1e-6}) {
+    {final double step = 1e-5}) {
   final n = x0.length;
   final j = array2d(m, n);
   final h = 0.5 * step;
