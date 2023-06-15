@@ -218,7 +218,7 @@ class Quaternion {
   /// Calculate the angle _(rad)_ between this and another [Quaternion].
   double angle(final Quaternion q) {
     final c = multiply(q.conjugate()).normalize();
-    return wrapAngle(2 * atan2(c.toVector().magnitude(), c.w));
+    return 2 * atan2(c.toVector().magnitude(), c.w);
   }
 
   /// Calculate the geodesic angle _(rad)_ between this and
