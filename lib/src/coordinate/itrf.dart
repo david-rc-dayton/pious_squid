@@ -8,7 +8,7 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// International Terrestrial Reference Frame _(ITRF)_
 class ITRF extends StateVector {
   /// Create a new [ITRF] state vector object.
-  ITRF(final EpochUTC epoch, final Vector position, final Vector velocity)
+  ITRF(final EpochUTC epoch, final Vector3D position, final Vector3D velocity)
       : super(epoch, position, velocity);
 
   @override

@@ -172,8 +172,8 @@ class LambertIOD {
 
   /// Estimate a state vector for inertial position [p1] _(km)_ given the
   /// two epoch and positions.
-  J2000? estimate(
-      final Vector p1, final Vector p2, final EpochUTC t1, final EpochUTC t2,
+  J2000? estimate(final Vector3D p1, final Vector3D p2, final EpochUTC t1,
+      final EpochUTC t2,
       {final bool posigrade = true, final int nRev = 0}) {
     final r1 = p1.magnitude();
     final r2 = p2.magnitude();

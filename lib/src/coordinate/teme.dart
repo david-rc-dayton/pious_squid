@@ -8,7 +8,7 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// True Equator Mean Equinox _(TEME)_ state vector
 class TEME extends StateVector {
   /// Create a new [TEME] object given inertial [position] and [velocity].
-  TEME(final EpochUTC epoch, final Vector position, final Vector velocity)
+  TEME(final EpochUTC epoch, final Vector3D position, final Vector3D velocity)
       : super(epoch, position, velocity);
 
   /// Create a new [TEME] object from a [ClassicalElements] object.

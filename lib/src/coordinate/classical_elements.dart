@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
@@ -51,7 +50,7 @@ class ClassicalElements {
     final e = eVec.magnitude();
     final h = pos.cross(vel);
     final i = acos((h.z / h.magnitude()).clamp(-1.0, 1.0));
-    final n = Vector.zAxis.cross(h);
+    final n = Vector3D.zAxis.cross(h);
     var o = acos((n.x / n.magnitude()).clamp(-1.0, 1.0));
     if (n.y < 0) {
       o = twoPi - o;
@@ -155,20 +154,14 @@ class ClassicalElements {
   }
 
   /// Convert this to inertial position and velocity vectors.
-  ({Vector position, Vector velocity}) toPositionVelocity() {
-    final rVec = Float64List(3);
-    rVec[0] = cos(trueAnomaly);
-    rVec[1] = sin(trueAnomaly);
-    rVec[2] = 0.0;
-    final rPQW = Vector(rVec).scale(
-        (semimajorAxis * (1.0 - pow(eccentricity, 2))) /
-            (1.0 + eccentricity * cos(trueAnomaly)));
-    final vVec = Float64List(3);
-    vVec[0] = -sin(trueAnomaly);
-    vVec[1] = eccentricity + cos(trueAnomaly);
-    vVec[2] = 0.0;
-    final vPQW = Vector(vVec)
-        .scale(sqrt(mu / (semimajorAxis * (1 - pow(eccentricity, 2)))));
+  ({Vector3D position, Vector3D velocity}) toPositionVelocity() {
+    final rVec = Vector3D(cos(trueAnomaly), sin(trueAnomaly), 0.0);
+    final rPQW = rVec.scale((semimajorAxis * (1.0 - pow(eccentricity, 2))) /
+        (1.0 + eccentricity * cos(trueAnomaly)));
+    final vVec =
+        Vector3D(-sin(trueAnomaly), eccentricity + cos(trueAnomaly), 0.0);
+    final vPQW =
+        vVec.scale(sqrt(mu / (semimajorAxis * (1 - pow(eccentricity, 2)))));
     final position =
         rPQW.rotZ(-argPerigee).rotX(-inclination).rotZ(-rightAscension);
     final velocity =

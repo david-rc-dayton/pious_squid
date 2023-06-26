@@ -8,7 +8,7 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// J2000 state vector.
 class J2000 extends StateVector {
   /// Create a new [J2000] state vector object.
-  J2000(final EpochUTC epoch, final Vector position, final Vector velocity)
+  J2000(final EpochUTC epoch, final Vector3D position, final Vector3D velocity)
       : super(epoch, position, velocity);
 
   /// Create a new [J2000] object from a [ClassicalElements] object.

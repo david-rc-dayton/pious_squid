@@ -19,9 +19,9 @@ class GoodingIOD {
   final ObservationOptical _o1;
   final ObservationOptical _o2;
   final ObservationOptical _o3;
-  Vector _vObserverPosition1 = Vector.origin3;
-  Vector _vObserverPosition2 = Vector.origin3;
-  Vector _vObserverPosition3 = Vector.origin3;
+  Vector3D _vObserverPosition1 = Vector3D.origin;
+  Vector3D _vObserverPosition2 = Vector3D.origin;
+  Vector3D _vObserverPosition3 = Vector3D.origin;
   double _r = 0.0;
   double _v = 0.0;
   double _t = 0.0;
@@ -36,10 +36,10 @@ class GoodingIOD {
   double _facFiniteDiff = 0.0;
   final ForceModel _forceModel = ForceModel()..setGravity(1.0);
 
-  Vector? _getPositionOnLoS2(
-      final Vector e1,
+  Vector3D? _getPositionOnLoS2(
+      final Vector3D e1,
       final double r01,
-      final Vector e3,
+      final Vector3D e3,
       final double r03,
       final double t13,
       final double t12,
@@ -83,7 +83,8 @@ class GoodingIOD {
     return null;
   }
 
-  void _modifyIterate(final Vector lineOfSight1, final Vector lineOfSight3) {
+  void _modifyIterate(
+      final Vector3D lineOfSight1, final Vector3D lineOfSight3) {
     final r13 = _vObserverPosition3.subtract(_vObserverPosition1);
     _d1 = r13.dot(lineOfSight1);
     _d3 = r13.dot(lineOfSight3);
@@ -96,10 +97,10 @@ class GoodingIOD {
   void _computeDerivatives(
       final double x,
       final double y,
-      final Vector lineOfSight1,
-      final Vector lineOfSight3,
-      final Vector pin,
-      final Vector ein,
+      final Vector3D lineOfSight1,
+      final Vector3D lineOfSight3,
+      final Vector3D pin,
+      final Vector3D ein,
       final double t13,
       final double t12,
       final int nrev,
@@ -197,9 +198,9 @@ class GoodingIOD {
       final double t12,
       final int nrev,
       final bool direction,
-      final Vector lineOfSight1,
-      final Vector lineOfSight2,
-      final Vector lineOfSight3,
+      final Vector3D lineOfSight1,
+      final Vector3D lineOfSight2,
+      final Vector3D lineOfSight3,
       final int maxIterations) {
     final arbf = 1e-6;
     final cvtol = 1e-14;

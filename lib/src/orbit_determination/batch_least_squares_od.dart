@@ -68,8 +68,8 @@ class BatchLeastSquaresOD {
   late final bool _fastDerivatives;
 
   Propagator _buildPropagator(final Float64List x0, final bool simple) {
-    final state = J2000(
-        _nominal.epoch, Vector(x0.sublist(0, 3)), Vector(x0.sublist(3, 6)));
+    final state = J2000(_nominal.epoch, Vector3D(x0[0], x0[1], x0[2]),
+        Vector3D(x0[3], x0[4], x0[5]));
     if (simple) {
       return KeplerPropagator(state.toClassicalElements());
     }

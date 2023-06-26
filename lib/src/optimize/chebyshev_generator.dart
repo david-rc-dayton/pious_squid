@@ -16,7 +16,7 @@ class ChebyshevCompressor {
   /// Return the cosine of π times [x].
   static double _cosPi(final double x) => cos(pi * x);
 
-  Vector _fitCoefficient(
+  Vector3D _fitCoefficient(
       final int j, final int n, final double a, final double b) {
     var sumX = 0.0;
     var sumY = 0.0;
@@ -34,11 +34,7 @@ class ChebyshevCompressor {
       sumY += fy * nFac;
       sumZ += fz * nFac;
     }
-    final v = Float64List(3);
-    v[0] = sumX * (2 / n);
-    v[1] = sumY * (2 / n);
-    v[2] = sumZ * (2 / n);
-    return Vector(v);
+    return Vector3D(sumX * (2 / n), sumY * (2 / n), sumZ * (2 / n));
   }
 
   ChebyshevCoefficients _fitWindow(

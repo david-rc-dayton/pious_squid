@@ -12,22 +12,22 @@ class CubicSpline {
   final double t0;
 
   /// Sample start position vector _(km)_.
-  final Vector p0;
+  final Vector3D p0;
 
   /// Sample start velocity vector _(km)_.
-  final Vector m0;
+  final Vector3D m0;
 
   /// Sample end time _(POSIX seconds)_.
   final double t1;
 
   /// Sample end position vector _(km)_.
-  final Vector p1;
+  final Vector3D p1;
 
   /// Sample end velocity vector _(km)_.
-  final Vector m1;
+  final Vector3D m1;
 
   /// Interpolate position at the provided time [t] _(POSIX seconds)_.
-  Vector _position(final double t) {
+  Vector3D _position(final double t) {
     final t2 = t * t;
     final t3 = t2 * t;
     final r0 = p0.scale(2 * t3 - 3 * t2 + 1);
@@ -38,7 +38,7 @@ class CubicSpline {
   }
 
   /// Interpolate velocity at the provided time [t] _(POSIX seconds)_.
-  Vector _velocity(final double t) {
+  Vector3D _velocity(final double t) {
     final t2 = t * t;
     final r0 = p0.scale(6 * t2 - 6 * t);
     final v0 = m0.scale((3 * t2 - 4 * t + 1) * (t1 - t0));
@@ -49,7 +49,7 @@ class CubicSpline {
 
   /// Interpolate position _(km)_ and velocity _(km/s)_ vectors at the
   /// provided time [t] _(POSIX seconds)_.
-  List<Vector> interpolate(final double t) {
+  List<Vector3D> interpolate(final double t) {
     final n = (t - t0) / (t1 - t0);
     return [_position(n), _velocity(n)];
   }

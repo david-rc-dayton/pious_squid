@@ -104,7 +104,7 @@ class RadecGeocentric {
   ///
   /// An optional [range] _(km)_ value can be passed to override the value
   /// contained in this observation.
-  Vector position([final double? range]) {
+  Vector3D position([final double? range]) {
     final r = range ?? this.range ?? 1.0;
     return radecToPosition(rightAscension, declination, r);
   }
@@ -113,7 +113,7 @@ class RadecGeocentric {
   ///
   /// An optional [range] _(km)_ and [rangeRate] _(km/s)_ value can be passed
   /// to override the value contained in this observation.
-  Vector velocity([final double? range, final double? rangeRate]) {
+  Vector3D velocity([final double? range, final double? rangeRate]) {
     if (rightAscensionRate == null || declinationRate == null) {
       throw 'Velocity unsolvable, missing ra/dec rates.';
     }

@@ -4,8 +4,8 @@ void main() {
   // Create a new J2000 inertial satellite state.
   final startState = J2000(
       EpochUTC.fromDateTimeString('2017-02-03T06:26:37.976Z'),
-      Vector.fromList([-3134.15877, 7478.695162, 1568.694229]),
-      Vector.fromList([-5.227261462, -3.7717234, 2.643938099]));
+      Vector3D(-3134.15877, 7478.695162, 1568.694229),
+      Vector3D(-5.227261462, -3.7717234, 2.643938099));
 
   // Define some spacecraft properties.
   final mass = 1400.0; // kilograms

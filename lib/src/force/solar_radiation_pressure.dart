@@ -24,7 +24,7 @@ class SolarRadiationPressure extends Force {
   static final double _kRef = 4.56e-6 * pow(astronomicalUnit, 2);
 
   @override
-  Vector acceleration(final J2000 state) {
+  Vector3D acceleration(final J2000 state) {
     final rSun = Sun.positionApparent(state.epoch);
     final r = state.position.subtract(rSun);
     final rMag = r.magnitude();

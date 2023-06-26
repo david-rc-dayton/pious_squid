@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
@@ -18,7 +17,7 @@ class Moon {
   static double radiusEquator = 1738.0;
 
   /// Calculate the Moon's ECI position _(km)_ for a given UTC [epoch].
-  static Vector position(final EpochUTC epoch) {
+  static Vector3D position(final EpochUTC epoch) {
     final jc = epoch.toTT().toJulianCenturies();
     final dtr = deg2rad;
     final lamEcl = 218.32 +
@@ -40,15 +39,15 @@ class Moon {
         0.0028 * cos((269.9 + 954397.7 * jc) * dtr);
     final obq = 23.439291 - 0.0130042 * jc;
     final rMag = 1 / sin(pllx * dtr);
-    final r = Float64List(3);
-    r[0] = rMag * (cos(phiEcl * dtr) * cos(lamEcl * dtr));
-    r[1] = rMag *
-        (cos(obq * dtr) * cos(phiEcl * dtr) * sin(lamEcl * dtr) -
-            sin(obq * dtr) * sin(phiEcl * dtr));
-    r[2] = rMag *
-        (sin(obq * dtr) * cos(phiEcl * dtr) * sin(lamEcl * dtr) +
-            cos(obq * dtr) * sin(phiEcl * dtr));
-    final rMOD = Vector(r).scale(Earth.radiusEquator);
+    final r = Vector3D(
+        rMag * (cos(phiEcl * dtr) * cos(lamEcl * dtr)),
+        rMag *
+            (cos(obq * dtr) * cos(phiEcl * dtr) * sin(lamEcl * dtr) -
+                sin(obq * dtr) * sin(phiEcl * dtr)),
+        rMag *
+            (sin(obq * dtr) * cos(phiEcl * dtr) * sin(lamEcl * dtr) +
+                cos(obq * dtr) * sin(phiEcl * dtr)));
+    final rMOD = r.scale(Earth.radiusEquator);
     final p = Earth.precession(epoch);
     return rMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);
   }
@@ -58,8 +57,8 @@ class Moon {
   ///
   /// Result is `1.0` when the Moon fully illuminated and `0.0` is fully
   /// in shadow.
-  static double illumination(final EpochUTC epoch, {final Vector? origin}) {
-    final orig = origin ?? Vector.origin3;
+  static double illumination(final EpochUTC epoch, {final Vector3D? origin}) {
+    final orig = origin ?? Vector3D.origin;
     final sunPos = Sun.position(epoch).subtract(orig);
     final moonPos = position(epoch).subtract(orig);
     final phaseAngle = sunPos.angle(moonPos);
@@ -68,7 +67,7 @@ class Moon {
 
   /// Calculate the Moon's angular diameter _(rad)_ from an ECI satellite
   /// position [satPos] and Moon position [moonPos] _(km)_.
-  static double diameter(final Vector satPos, final Vector moonPos) =>
+  static double diameter(final Vector3D satPos, final Vector3D moonPos) =>
       angularDiameter(radiusEquator * 2, satPos.subtract(moonPos).magnitude(),
           AngularDiameterMethod.sphere);
 }

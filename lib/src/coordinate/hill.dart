@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
@@ -12,7 +11,7 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Modified Hill Equidistant Cyllindrical _(HillEQCM)_ coordinates.
 class Hill extends RelativeState {
   /// Create a new [Hill] object, from relative state.
-  Hill(this.epoch, final Vector position, final Vector velocity,
+  Hill(this.epoch, final Vector3D position, final Vector3D velocity,
       final double semimajorAxis)
       : super(position, velocity) {
     _semimajorAxis = semimajorAxis;
@@ -26,9 +25,9 @@ class Hill extends RelativeState {
     final magrint = state.position.magnitude();
     final rotEciRsw =
         RelativeState.createMatrix(origin.position, origin.velocity);
-    final vtgtrsw = rotEciRsw.multiplyVector(origin.velocity);
-    final rintrsw = rotEciRsw.multiplyVector(state.position);
-    final vintrsw = rotEciRsw.multiplyVector(state.velocity);
+    final vtgtrsw = rotEciRsw.multiplyVector3D(origin.velocity);
+    final rintrsw = rotEciRsw.multiplyVector3D(state.position);
+    final vintrsw = rotEciRsw.multiplyVector3D(state.velocity);
 
     final sinphiint = rintrsw.z / magrint;
     final phiint = asin(sinphiint);
@@ -38,11 +37,8 @@ class Hill extends RelativeState {
     final coslambdaint = cos(lambdaint);
     final lambdadottgt = vtgtrsw.y / magrtgt;
 
-    final r = Float64List(3);
-    r[0] = magrint - magrtgt;
-    r[1] = lambdaint * magrtgt;
-    r[2] = phiint * magrtgt;
-    final rhill = Vector(r);
+    final rhill =
+        Vector3D(magrint - magrtgt, lambdaint * magrtgt, phiint * magrtgt);
 
     final rotRswSez = Matrix([
       [sinphiint * coslambdaint, sinphiint * sinlambdaint, -cosphiint],
@@ -50,15 +46,12 @@ class Hill extends RelativeState {
       [cosphiint * coslambdaint, cosphiint * sinlambdaint, sinphiint]
     ]);
 
-    final vintsez = rotRswSez.multiplyVector(vintrsw);
+    final vintsez = rotRswSez.multiplyVector3D(vintrsw);
     final phidotint = -vintsez.x / magrint;
     final lambdadotint = vintsez.y / (magrint * cosphiint);
 
-    final v = Float64List(3);
-    v[0] = vintsez.z - vtgtrsw.y;
-    v[1] = magrtgt * (lambdadotint - lambdadottgt);
-    v[2] = magrtgt * phidotint;
-    final vhill = Vector(v);
+    final vhill = Vector3D(vintsez.z - vtgtrsw.y,
+        magrtgt * (lambdadotint - lambdadottgt), magrtgt * phidotint);
 
     return Hill(origin.epoch, rhill, vhill, origin.semimajorAxis());
   }
@@ -77,15 +70,9 @@ class Hill extends RelativeState {
     final yDot = (-3.0 * radialPosition * n) * 0.5;
     final z = nodeVelocity / n * sin(n * -nodeOffsetTime);
     final zDot = nodeVelocity * cos(n * -nodeOffsetTime);
-    final r = Float64List(3);
-    r[0] = radialPosition;
-    r[1] = intrackPosition;
-    r[2] = z;
-    final v = Float64List(3);
-    v[0] = 0.0;
-    v[1] = yDot;
-    v[2] = zDot;
-    return Hill(origin.epoch, Vector(r), Vector(v), a);
+    final r = Vector3D(radialPosition, intrackPosition, z);
+    final v = Vector3D(0.0, yDot, zDot);
+    return Hill(origin.epoch, r, v, a);
   }
 
   /// Create a new [Hill] object in a Natural Motion Circumnavigation _(NMC)_
@@ -100,15 +87,9 @@ class Hill extends RelativeState {
     final xDot = (majorAxisRange * n) * 0.5;
     final z = nodeVelocity / n * sin(n * -nodeOffsetTime);
     final zDot = nodeVelocity * cos(n * -nodeOffsetTime);
-    final r = Float64List(3);
-    r[0] = 0.0;
-    r[1] = majorAxisRange + translation;
-    r[2] = z;
-    final v = Float64List(3);
-    v[0] = xDot;
-    v[1] = 0.0;
-    v[2] = zDot;
-    return Hill(origin.epoch, Vector(r), Vector(v), a);
+    final r = Vector3D(0.0, majorAxisRange + translation, z);
+    final v = Vector3D(xDot, 0.0, zDot);
+    return Hill(origin.epoch, r, v, a);
   }
 
   /// Create a new [Hill] object in a V-Bar perch relative to an origin state,
@@ -120,15 +101,9 @@ class Hill extends RelativeState {
     final n = Earth.smaToMeanMotion(a);
     final z = nodeVelocity / n * sin(n * -nodeOffsetTime);
     final zDot = nodeVelocity * cos(n * -nodeOffsetTime);
-    final r = Float64List(3);
-    r[0] = 0.0;
-    r[1] = perchRange;
-    r[2] = z;
-    final v = Float64List(3);
-    v[0] = 0.0;
-    v[1] = 0.0;
-    v[2] = zDot;
-    return Hill(origin.epoch, Vector(r), Vector(v), a);
+    final r = Vector3D(0.0, perchRange, z);
+    final v = Vector3D(0.0, 0.0, zDot);
+    return Hill(origin.epoch, r, v, a);
   }
 
   /// UTC epoch.
@@ -159,7 +134,7 @@ class Hill extends RelativeState {
     final magrint = magrtgt + position.x;
     final rotEciRsw =
         RelativeState.createMatrix(origin.position, origin.velocity);
-    final vtgtrsw = rotEciRsw.multiplyVector(origin.velocity);
+    final vtgtrsw = rotEciRsw.multiplyVector3D(origin.velocity);
 
     final lambdadottgt = vtgtrsw.y / magrtgt;
     final lambdaint = position.y / magrtgt;
@@ -178,21 +153,15 @@ class Hill extends RelativeState {
     final rdotint = velocity.x + vtgtrsw.x;
     final lambdadotint = velocity.y / magrtgt + lambdadottgt;
     final phidotint = velocity.z / magrtgt;
-    final v = Float64List(3);
-    v[0] = -magrint * phidotint;
-    v[1] = magrint * lambdadotint * cosphiint;
-    v[2] = rdotint;
-    final vintsez = Vector(v);
-    final vintrsw = rotRswSez.transpose().multiplyVector(vintsez);
-    final vinteci = rotEciRsw.transpose().multiplyVector(vintrsw);
+    final vintsez = Vector3D(
+        -magrint * phidotint, magrint * lambdadotint * cosphiint, rdotint);
+    final vintrsw = rotRswSez.transpose().multiplyVector3D(vintsez);
+    final vinteci = rotEciRsw.transpose().multiplyVector3D(vintrsw);
 
-    final r = Float64List(3);
-    r[0] = cosphiint * magrint * coslambdaint;
-    r[1] = cosphiint * magrint * sinlambdaint;
-    r[2] = sinphiint * magrint;
-    final rintrsw = Vector(r);
+    final rintrsw = Vector3D(cosphiint * magrint * coslambdaint,
+        cosphiint * magrint * sinlambdaint, sinphiint * magrint);
 
-    final rinteci = rotEciRsw.transpose().multiplyVector(rintrsw);
+    final rinteci = rotEciRsw.transpose().multiplyVector3D(rintrsw);
 
     return J2000(origin.epoch, rinteci, vinteci);
   }
@@ -224,8 +193,8 @@ class Hill extends RelativeState {
   Hill transition(final double t) {
     final sysMat = transitionMatrix(t);
     final output = sysMat.multiplyVector(position.join(velocity));
-    return Hill(
-        epoch.roll(t), output.slice(0, 3), output.slice(3, 6), _semimajorAxis);
+    return Hill(epoch.roll(t), output.toVector3D(0), output.toVector3D(3),
+        _semimajorAxis);
   }
 
   /// Return this state propagated to the [newEpoch].
@@ -293,7 +262,7 @@ class Hill extends RelativeState {
       [sysMat[1][0], sysMat[1][1], sysMat[1][2]],
       [sysMat[2][0], sysMat[2][1], sysMat[2][2]],
     ]);
-    final solnVector = w.subtract(posEquationMat.multiplyVector(position));
+    final solnVector = w.subtract(posEquationMat.multiplyVector3D(position));
     // isolate velocity portions of the computed CW matrix
     final velEquationMat = Matrix([
       [sysMat[0][3], sysMat[0][4], sysMat[0][5]],
@@ -302,11 +271,12 @@ class Hill extends RelativeState {
     ]);
     // save difference of desired velocity and current velocity to represent
     // the required burn magnitude
-    var result =
-        velEquationMat.inverse().multiplyVector(solnVector).subtract(velocity);
+    var result = velEquationMat
+        .inverse()
+        .multiplyVector3D(solnVector)
+        .subtract(velocity);
     if (ignoreCrosstrack) {
-      result =
-          Vector(Float64List.fromList([result.x * 1000, result.y * 1000, 0.0]));
+      result = Vector3D(result.x * 1000, result.y * 1000, 0.0);
     }
     return Thrust(epoch, result.x * 1000, result.y * 1000, result.z * 1000);
   }

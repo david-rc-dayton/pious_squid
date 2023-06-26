@@ -18,7 +18,7 @@ class Waypoint {
   final EpochUTC epoch;
 
   /// Position relative to target _(km)_.
-  final Vector relativePosition;
+  final Vector3D relativePosition;
 
   /// Return the perturbed error in a [maneuver] when compared against the
   /// target [waypoint] given an initial [state], [forceModel],
@@ -100,7 +100,7 @@ class Waypoint {
     final pivotState = state;
     var waypointManeuvers = <Thrust>[];
     for (final wp in waypoints) {
-      final targetWp = RIC(wp.relativePosition, Vector.origin3);
+      final targetWp = RIC(wp.relativePosition, Vector3D.origin);
       final targetState = target.interpolate(wp.epoch);
       if (targetState == null) {
         throw 'Waypoint outside target interpolator window.';

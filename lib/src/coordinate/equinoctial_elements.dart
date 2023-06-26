@@ -82,6 +82,6 @@ class EquinoctialElements {
   }
 
   /// Convert this to inertial position and velocity vectors.
-  ({Vector position, Vector velocity}) toPositionVelocity() =>
+  ({Vector3D position, Vector3D velocity}) toPositionVelocity() =>
       toClassicalElements().toPositionVelocity();
 }

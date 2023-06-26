@@ -87,6 +87,6 @@ class RandomGaussianSource {
 
   /// Generate a uniformly distributed random vector, with points on the
   /// surface of a sphere with the provided [radius].
-  Vector gaussSphere([final double radius = 1.0]) =>
-      gaussVector(3).normalize().scale(radius);
+  Vector3D gaussSphere([final double radius = 1.0]) =>
+      gaussVector(3).toVector3D(0).normalize().scale(radius);
 }

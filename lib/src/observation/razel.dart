@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
@@ -99,7 +98,7 @@ class Razel {
   ///
   /// An optional azimuth [az] _(rad)_ and elevation [el] _(rad)_ value can be
   /// passed to override the values contained in this observation.
-  Vector position(final J2000 site, [final double? az, final double? el]) {
+  Vector3D position(final J2000 site, [final double? az, final double? el]) {
     final ecef = site.toITRF();
     final geo = ecef.toGeodetic();
     final po2 = halfPi;
@@ -109,16 +108,12 @@ class Razel {
     final cAz = cos(newAz);
     final sEl = sin(newEl);
     final cEl = cos(newEl);
-    final p = Float64List(3);
-    p[0] = -range * cEl * cAz;
-    p[1] = range * cEl * sAz;
-    p[2] = range * sEl;
-    final pSez = Vector(p);
+    final pSez = Vector3D(-range * cEl * cAz, range * cEl * sAz, range * sEl);
     final rEcef = pSez
         .rotY(-(po2 - geo.latitude))
         .rotZ(-geo.longitude)
         .add(ecef.position);
-    return ITRF(epoch, rEcef, Vector.origin3).toJ2000().position;
+    return ITRF(epoch, rEcef, Vector3D.origin).toJ2000().position;
   }
 
   /// Convert this observation into a [J2000] state vector.
@@ -136,20 +131,15 @@ class Razel {
     final cAz = cos(azimuth);
     final sEl = sin(elevation);
     final cEl = cos(elevation);
-    final p = Float64List(3);
-    p[0] = -range * cEl * cAz;
-    p[1] = range * cEl * sAz;
-    p[2] = range * sEl;
-    final pSez = Vector(p);
-    final pDot = Float64List(3);
-    pDot[0] = -rangeRate! * cEl * cAz +
-        range * sEl * cAz * elevationRate! +
-        range * cEl * sAz * azimuthRate!;
-    pDot[1] = rangeRate! * cEl * sAz -
-        range * sEl * sAz * elevationRate! +
-        range * cEl * cAz * azimuthRate!;
-    pDot[2] = rangeRate! * sEl + range * cEl * elevationRate!;
-    final pDotSez = Vector(pDot);
+    final pSez = Vector3D(-range * cEl * cAz, range * cEl * sAz, range * sEl);
+    final pDotSez = Vector3D(
+        -rangeRate! * cEl * cAz +
+            range * sEl * cAz * elevationRate! +
+            range * cEl * sAz * azimuthRate!,
+        rangeRate! * cEl * sAz -
+            range * sEl * sAz * elevationRate! +
+            range * cEl * cAz * azimuthRate!,
+        rangeRate! * sEl + range * cEl * elevationRate!);
     final pEcef = pSez.rotY(-(po2 - geo.latitude)).rotZ(-geo.longitude);
     final pDotEcef = pDotSez.rotY(-(po2 - geo.latitude)).rotZ(-geo.longitude);
     final rEcef = pEcef.add(ecef.position);

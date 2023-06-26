@@ -16,8 +16,8 @@ class HerrickGibbsIOD {
   final double mu;
 
   /// Attempt to create a state estimate from three inertial position vectors.
-  J2000 solve(final Vector r1, final EpochUTC t1, final Vector r2,
-      final EpochUTC t2, final Vector r3, final EpochUTC t3) {
+  J2000 solve(final Vector3D r1, final EpochUTC t1, final Vector3D r2,
+      final EpochUTC t2, final Vector3D r3, final EpochUTC t3) {
     final dt31 = t3.difference(t1);
     final dt32 = t3.difference(t2);
     final dt21 = t2.difference(t1);

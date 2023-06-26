@@ -151,6 +151,19 @@ class Matrix {
     return Vector(result);
   }
 
+  /// Return the result of multiplying this with the [Vector3D] argument.
+  Vector3D multiplyVector3D(final Vector3D v) {
+    final result = Float64List(3);
+    for (var i = 0; i < rows; i++) {
+      var total = 0.0;
+      for (var j = 0; j < columns; j++) {
+        total += _elements[i][j] * v[j];
+      }
+      result[i] = total;
+    }
+    return Vector3D(result[0], result[1], result[2]);
+  }
+
   /// Return a copy of this [Matrix] with all elements inverted.
   Matrix reciprocal() {
     final output = array2d(rows, columns);

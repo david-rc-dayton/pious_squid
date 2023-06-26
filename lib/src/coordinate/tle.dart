@@ -101,14 +101,14 @@ class TLE {
     final r = Float64List(3);
     final v = Float64List(3);
     sgp4(_satrec, epoch.difference(this.epoch) / 60.0, r, v);
-    return TEME(epoch, Vector(r), Vector(v));
+    return TEME(epoch, Vector3D(r[0], r[1], r[2]), Vector3D(v[0], v[1], v[2]));
   }
 
   TEME _currentState() {
     final r = Float64List(3);
     final v = Float64List(3);
     sgp4(_satrec, 0.0, r, v);
-    return TEME(epoch, Vector(r), Vector(v));
+    return TEME(epoch, Vector3D(r[0], r[1], r[2]), Vector3D(v[0], v[1], v[2]));
   }
 
   /// Return the state of this [TLE] at [epoch].

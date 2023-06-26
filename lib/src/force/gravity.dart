@@ -14,11 +14,11 @@ class Gravity implements Force {
 
   /// Calculate the inertial acceleration vector _(km/s²)_ due to
   /// a spherical central body for the given [state] vector.
-  Vector _spherical(final J2000 state) {
+  Vector3D _spherical(final J2000 state) {
     final rMag = state.position.magnitude();
     return state.position.scale(-mu / (rMag * rMag * rMag));
   }
 
   @override
-  Vector acceleration(final J2000 state) => _spherical(state);
+  Vector3D acceleration(final J2000 state) => _spherical(state);
 }

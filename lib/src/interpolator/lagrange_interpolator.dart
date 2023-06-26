@@ -74,15 +74,11 @@ class LagrangeInterpolator extends StateInterpolator {
     final xs = _x.sublist(start, stop);
     final ys = _y.sublist(start, stop);
     final zs = _z.sublist(start, stop);
-    final position = Float64List(3);
-    position[0] = _position(ts, xs, posix);
-    position[1] = _position(ts, ys, posix);
-    position[2] = _position(ts, zs, posix);
-    final velocity = Float64List(3);
-    velocity[0] = _velocity(ts, xs, posix);
-    velocity[1] = _velocity(ts, ys, posix);
-    velocity[2] = _velocity(ts, zs, posix);
-    return J2000(epoch, Vector(position), Vector(velocity));
+    final position = Vector3D(_position(ts, xs, posix),
+        _position(ts, ys, posix), _position(ts, zs, posix));
+    final velocity = Vector3D(_velocity(ts, xs, posix),
+        _velocity(ts, ys, posix), _velocity(ts, zs, posix));
+    return J2000(epoch, position, velocity);
   }
 
   static double _position(

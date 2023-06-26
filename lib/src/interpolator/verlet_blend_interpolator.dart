@@ -66,7 +66,7 @@ class VerletBlendInterpolator extends StateInterpolator {
     return ephemeris[mid];
   }
 
-  static Vector _gravity(final Vector position) {
+  static Vector3D _gravity(final Vector3D position) {
     final r = position.magnitude();
     return position.scale(-Earth.mu / (r * r * r));
   }

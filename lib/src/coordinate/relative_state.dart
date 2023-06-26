@@ -8,10 +8,10 @@ abstract class RelativeState {
   RelativeState(this.position, this.velocity);
 
   /// Relative position vector _(km)_.
-  final Vector position;
+  final Vector3D position;
 
   /// Relative velocity vector _(km)_.
-  final Vector velocity;
+  final Vector3D velocity;
 
   /// Return the name of this coordinate frame.
   String get name;
@@ -21,7 +21,7 @@ abstract class RelativeState {
 
   /// Create a relative frame transform matrix from an inertial [position] and
   /// [velocity] vector _(km)_.
-  static Matrix createMatrix(final Vector position, final Vector velocity) {
+  static Matrix createMatrix(final Vector3D position, final Vector3D velocity) {
     final ru = position.normalize();
     final cu = position.cross(velocity).normalize();
     final iu = cu.cross(ru).normalize();

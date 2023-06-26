@@ -47,11 +47,11 @@ class ObservationRadar extends Observation {
   }
 
   @override
-  Vector ricDiff(final Propagator propagator) {
+  Vector3D ricDiff(final Propagator propagator) {
     final r0 = propagator.propagate(epoch);
     final r1 = Razel.fromStateVectors(r0, site);
     final r2 = observation.position(site, r1.azimuth, r1.elevation);
-    return RIC.fromJ2000(J2000(epoch, r2, Vector.origin3), r0).position;
+    return RIC.fromJ2000(J2000(epoch, r2, Vector3D.origin), r0).position;
   }
 
   @override

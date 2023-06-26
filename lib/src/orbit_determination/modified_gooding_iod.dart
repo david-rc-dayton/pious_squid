@@ -31,8 +31,8 @@ class ModifiedGoodingIOD {
   CostFunction _createErrorFunction(final EpochUTC aprioriEpoch) {
     final forceModel = ForceModel()..setGravity(_mu);
     double scoreFn(final Float64List x) {
-      final position = Vector(x.sublist(0, 3));
-      final velocity = Vector(x.sublist(3, 6));
+      final position = Vector3D(x[0], x[1], x[2]);
+      final velocity = Vector3D(x[3], x[4], x[5]);
       final state = J2000(aprioriEpoch, position, velocity);
       final propagator = RungeKutta89Propagator(state, forceModel);
       var total = 0.0;
@@ -122,7 +122,7 @@ class ModifiedGoodingIOD {
         xTolerance: tolerance,
         fTolerance: tolerance,
         printIter: printIter);
-    return J2000(init.epoch, Vector.fromList([result[0], result[1], result[2]]),
-        Vector.fromList([result[3], result[4], result[5]]));
+    return J2000(init.epoch, Vector3D(result[0], result[1], result[2]),
+        Vector3D(result[3], result[4], result[5]));
   }
 }

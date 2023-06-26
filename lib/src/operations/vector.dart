@@ -4,6 +4,196 @@ import 'dart:typed_data';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/matrix.dart';
 
+/// 3-dimensional vector.
+class Vector3D {
+  //// Create a new [Vector3D] object.
+  const Vector3D(this.x, this.y, this.z);
+
+  /// Create a new [Vector3D] object from the first three elements of a
+  /// [Vector] object.
+  factory Vector3D.fromVector(final Vector v) => Vector3D(v[0], v[1], v[2]);
+
+  /// X-axis component.
+  final double x;
+
+  /// Y-axis component.
+  final double y;
+
+  /// Z-axis component.
+  final double z;
+
+  /// Origin vector.
+  static const origin = Vector3D(0, 0, 0);
+
+  /// X-axis unit vector.
+  static const xAxis = Vector3D(1, 0, 0);
+
+  /// Y-axis unit vector.
+  static const yAxis = Vector3D(0, 1, 0);
+
+  /// Z-axis unit vector.
+  static const zAxis = Vector3D(0, 0, 1);
+
+  /// Convert this to a [List] of doubles.
+  List<double> toList() => [x, y, z];
+
+  /// Convert this to a [Float64List] object.
+  Float64List toArray() {
+    final output = Float64List(3);
+    output[0] = x;
+    output[1] = y;
+    output[2] = z;
+    return output;
+  }
+
+  /// Return the [Vector3D] element at the provided [index].
+  double operator [](final int index) {
+    switch (index) {
+      case 0:
+        return x;
+      case 1:
+        return y;
+      case 2:
+        return z;
+      default:
+        throw 'Index $index outside 3D vector bounds.';
+    }
+  }
+
+  /// Convert this to a [Vector] object.
+  Vector toVector() => Vector(toArray());
+
+  @override
+  String toString([final int fixed = -1]) {
+    if (fixed < 0) {
+      return '[${toList().join(', ')}]';
+    }
+    final output = toList().map((final e) => e.toStringAsFixed(fixed));
+    return '[${output.join(", ")}]';
+  }
+
+  /// Return the magnitude of this vector.
+  double magnitude() => sqrt(x * x + y * y + z * z);
+
+  /// Return the result of adding this to another [Vector3D].
+  Vector3D add(final Vector3D v) => Vector3D(x + v.x, y + v.y, z + v.z);
+
+  /// Return the result of subtracting this and another [Vector3D].
+  Vector3D subtract(final Vector3D v) => Vector3D(x - v.x, y - v.y, z - v.z);
+
+  /// Return a copy of this [Vector3D] scaled by [n];
+  Vector3D scale(final double n) => Vector3D(x * n, y * n, z * n);
+
+  /// Return a copy of this [Vector3D] with the elements negated.
+  Vector3D negate() => scale(-1);
+
+  /// Return the Euclidean distance between this and another [Vector3D].
+  double distance(final Vector3D v) {
+    final dx = x - v.x;
+    final dy = y - v.y;
+    final dz = z - v.z;
+    return sqrt(dx * dx + dy * dy + dz * dz);
+  }
+
+  /// Convert this to a unit [Vector3D].
+  Vector3D normalize() {
+    final m = magnitude();
+    if (m == 0) {
+      return Vector3D.origin;
+    }
+    return Vector3D(x / m, y / m, z / m);
+  }
+
+  /// Calculate the dot product of this and another [Vector3D].
+  double dot(final Vector3D v) => x * v.x + y * v.y + z * v.z;
+
+  /// Calculate the cross product of this and another [Vector3D].
+  Vector3D cross(final Vector3D v) =>
+      Vector3D(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
+
+  /// Calculate the skew-symmetric matrix for this [Vector3D].
+  Matrix skewSymmetric() => Matrix([
+        [0, -z, y],
+        [z, 0, -x],
+        [-y, x, 0]
+      ]);
+
+  /// Create a copy of this [Vector3D] rotated in the x-axis by angle
+  /// [theta] _(rad)_.
+  Vector3D rotX(final double theta) {
+    final cosT = cos(theta);
+    final sinT = sin(theta);
+    return Vector3D(x, cosT * y + sinT * z, -sinT * y + cosT * z);
+  }
+
+  /// Create a copy of this [Vector3D] rotated in the y-axis by angle
+  /// [theta] _(rad)_.
+  Vector3D rotY(final double theta) {
+    final cosT = cos(theta);
+    final sinT = sin(theta);
+    return Vector3D(cosT * x + -sinT * z, y, sinT * x + cosT * z);
+  }
+
+  /// Create a copy of this [Vector3D] rotated in the z-axis by angle
+  /// [theta] _(rad)_.
+  Vector3D rotZ(final double theta) {
+    final cosT = cos(theta);
+    final sinT = sin(theta);
+    return Vector3D(cosT * x + sinT * y, -sinT * x + cosT * y, z);
+  }
+
+  /// Calculate the angle _(rad)_ between this and another [Vector3D].
+  double angle(final Vector3D v) {
+    final theta = atan2(cross(v).magnitude(), dot(v));
+    return theta.isNaN ? 0.0 : theta;
+  }
+
+  /// Calculate the angle _(°)_ between this and another [Vector3D].
+  double angleDegrees(final Vector3D v) => angle(v) * rad2deg;
+
+  /// Return `true` if line-of-sight exists between this and another [Vector3D]
+  /// with a central body of the given [radius].
+  bool sight(final Vector3D v, final double radius) {
+    final r1Mag2 = pow(magnitude(), 2);
+    final r2Mag2 = pow(v.magnitude(), 2);
+    final rDot = dot(v);
+    final tMin = (r1Mag2 - rDot) / (r1Mag2 + r2Mag2 - 2.0 * rDot);
+    var los = false;
+    if (tMin < 0 || tMin > 1) {
+      los = true;
+    } else {
+      final c = (1.0 - tMin) * r1Mag2 + rDot * tMin;
+      if (c >= radius * radius) {
+        los = true;
+      }
+    }
+    return los;
+  }
+
+  /// Return the unit vector that bisects this and another [Vector3D].
+  Vector3D bisect(final Vector3D v) =>
+      scale(v.magnitude()).add(v.scale(magnitude())).normalize();
+
+  /// Convert this [Vector3D] into a column [Matrix].
+  Matrix column() => Matrix([
+        [x],
+        [y],
+        [z]
+      ]);
+
+  /// Join this and another [Vector3D] into a new [Vector] object.
+  Vector join(final Vector3D v) {
+    final output = Float64List(6);
+    output[0] = x;
+    output[1] = y;
+    output[2] = z;
+    output[3] = v.x;
+    output[4] = v.y;
+    output[5] = v.z;
+    return Vector(output);
+  }
+}
+
 /// Vector operations.
 class Vector {
   /// Create a new [Vector] object from an array of [_elements].
@@ -244,4 +434,9 @@ class Vector {
 
   /// Convert this [Vector] into a column [Matrix].
   Matrix column() => Matrix(_elements.map((final e) => [e]).toList());
+
+  /// Convert elements from this to a [Vector3D], starting at the
+  /// provided [index].
+  Vector3D toVector3D(final int index) =>
+      Vector3D(_elements[index], _elements[index + 1], _elements[index + 2]);
 }

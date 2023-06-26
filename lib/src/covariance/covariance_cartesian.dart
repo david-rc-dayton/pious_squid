@@ -17,9 +17,7 @@ class CovarianceCartesian extends Covariance {
   Matrix _cartesianToEquinoctialTransform() {
     Float64List f(final Float64List x) {
       final ct = J2000(
-          state.epoch,
-          Vector(Float64List.fromList([x[0], x[1], x[2]])),
-          Vector(Float64List.fromList([x[3], x[4], x[5]])));
+          state.epoch, Vector3D(x[0], x[1], x[2]), Vector3D(x[3], x[4], x[5]));
       final eq = ct.toClassicalElements().toEquinoctialElements();
       return Float64List.fromList([eq.af, eq.ag, eq.l, eq.n, eq.chi, eq.psi]);
     }
@@ -30,9 +28,7 @@ class CovarianceCartesian extends Covariance {
   Matrix _cartesianToClassicalTransform() {
     Float64List f(final Float64List x) {
       final ct = J2000(
-          state.epoch,
-          Vector(Float64List.fromList([x[0], x[1], x[2]])),
-          Vector(Float64List.fromList([x[3], x[4], x[5]])));
+          state.epoch, Vector3D(x[0], x[1], x[2]), Vector3D(x[3], x[4], x[5]));
       final coe = ct.toClassicalElements();
       return Float64List.fromList([
         coe.semimajorAxis,

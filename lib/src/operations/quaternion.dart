@@ -7,11 +7,11 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 /// Attitude Quaternion.
 class Quaternion {
   /// Create a new [Quaternion] object, real component last.
-  Quaternion(this.x, this.y, this.z, this.w);
+  const Quaternion(this.x, this.y, this.z, this.w);
 
   /// Create a new [Quaternion] object from the provided [axis] and angle
   /// [theta] _(deg)_.
-  factory Quaternion.fromAxisAngle(final Vector axis, final double theta) {
+  factory Quaternion.fromAxisAngle(final Vector3D axis, final double theta) {
     final w = cos(theta * 0.5);
     final hSin = sin(theta * 0.5);
     final x = axis.x * hSin;
@@ -66,7 +66,7 @@ class Quaternion {
   /// Create a new [Quaternion] that will point from an observer position to
   /// a target position given a forward unit vector.
   factory Quaternion.lookAt(
-      final Vector observer, final Vector target, final Vector forward) {
+      final Vector3D observer, final Vector3D target, final Vector3D forward) {
     final forwardVector = target.subtract(observer).normalize();
     final rotAxis = forward.cross(forwardVector);
     final dot = forward.dot(forwardVector);
@@ -86,19 +86,19 @@ class Quaternion {
   final double w;
 
   /// Zero quaternion.
-  static final Quaternion zero = Quaternion(0, 0, 0, 0);
+  static const Quaternion zero = Quaternion(0, 0, 0, 0);
 
   /// Identity quaternion.
-  static final Quaternion one = Quaternion(0, 0, 0, 1);
+  static const Quaternion one = Quaternion(0, 0, 0, 1);
 
   /// X-axis unit quaternion.
-  static final Quaternion xAxis = Quaternion(1, 0, 0, 0);
+  static const Quaternion xAxis = Quaternion(1, 0, 0, 0);
 
   /// Y-axis unit quaternion.
-  static final Quaternion yAxis = Quaternion(0, 1, 0, 0);
+  static const Quaternion yAxis = Quaternion(0, 1, 0, 0);
 
   /// Z-axis unit quaternion.
-  static final Quaternion zAxis = Quaternion(0, 0, 1, 0);
+  static const Quaternion zAxis = Quaternion(0, 0, 1, 0);
 
   @override
   String toString({final int precision = 8}) {
@@ -172,6 +172,12 @@ class Quaternion {
     return Vector(result);
   }
 
+  /// Apply this rotation to a [Vector3D].
+  Vector3D rotateVector3D(final Vector3D v) {
+    final q = multiply(Quaternion(v.x, v.y, v.z, 0)).multiply(conjugate());
+    return Vector3D(q.x, q.y, q.z);
+  }
+
   /// Linearly interpolate between this and another quaternion by the given
   /// ratio [t] _(0.0, 1.0)_.
   ///
@@ -206,19 +212,13 @@ class Quaternion {
         .positivePolar();
   }
 
-  /// Return the imaginary components of this [Quaternion] as a [Vector].
-  Vector toVector() {
-    final v = Float64List(3);
-    v[0] = x;
-    v[1] = y;
-    v[2] = z;
-    return Vector(v);
-  }
+  /// Return the imaginary components of this [Quaternion] as a [Vector3D].
+  Vector3D toVector3D() => Vector3D(x, y, z);
 
   /// Calculate the angle _(rad)_ between this and another [Quaternion].
   double angle(final Quaternion q) {
     final c = multiply(q.conjugate()).normalize();
-    return 2 * atan2(c.toVector().magnitude(), c.w);
+    return 2 * atan2(c.toVector3D().magnitude(), c.w);
   }
 
   /// Calculate the geodesic angle _(rad)_ between this and
@@ -258,18 +258,15 @@ class Quaternion {
   /// Calculate the angle between this and the [Quaternion] pointing between
   /// the [observer] and [target] positions, given the [forward] vector.
   double vectorAngle(
-      final Vector observer, final Vector target, final Vector forward) {
+      final Vector3D observer, final Vector3D target, final Vector3D forward) {
     final delta = target.subtract(observer);
-    final transform = toDirectionCosineMatrix().multiplyVector(delta);
+    final transform = toDirectionCosineMatrix().multiplyVector3D(delta);
     return forward.angle(transform);
   }
 
   /// Calculate the rate of change for this [Quaternion] given an
   /// [angularVelocity] vector _(rad/s)_.
-  Quaternion kinematics(final Vector angularVelocity) {
-    if (angularVelocity.length != 3) {
-      throw 'Kinematics require an angular velocity vector of length 3.';
-    }
+  Quaternion kinematics(final Vector3D angularVelocity) {
     final wPrime = Vector.fromList(
         [0, angularVelocity[0], angularVelocity[1], angularVelocity[2]]);
     final qMat = Matrix([

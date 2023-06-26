@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 
 final _state = J2000(
     EpochUTC.fromDateTimeString('1994-05-14T13:11:20.598Z'),
-    Vector.fromList([5036.736529, -10806.660797, -4534.633784]),
-    Vector.fromList([2.6843855, -5.7595920, -2.4168093]));
+    Vector3D(5036.736529, -10806.660797, -4534.633784),
+    Vector3D(2.6843855, -5.7595920, -2.4168093));
 
 final _site = Geodetic.fromDegrees(39.007, -104.883, 2.19456)
     .toITRF(_state.epoch)

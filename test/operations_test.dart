@@ -26,7 +26,7 @@ void main() {
       expect(pRotPc.z, closeTo(-0.999697, 1e-3));
 
       final q = Quaternion(1, 2, 3, 4).normalize();
-      final w = Vector.fromList([deg2rad, deg2rad, deg2rad]);
+      final w = Vector3D(deg2rad, deg2rad, deg2rad);
       final k = q.kinematics(w);
       expect(k.x, closeTo(0.00477978, 1e-7));
       expect(k.y, closeTo(0.00955956, 1e-7));

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/force/force_base.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
@@ -15,18 +13,14 @@ class Thrust implements Force {
   Thrust(this.center, final double radial, final double intrack,
       final double crosstrack,
       {this.durationRate = 0.0}) {
-    final dv = Float64List(3);
-    dv[0] = radial;
-    dv[1] = intrack;
-    dv[2] = crosstrack;
-    deltaV = Vector(dv).scale(1e-3);
+    deltaV = Vector3D(radial * 1e-3, intrack * 1e-3, crosstrack * 1e-3);
   }
 
   /// Maneuver center time.
   final EpochUTC center;
 
   /// Delta-V vector _(km/s)_.
-  late final Vector deltaV;
+  late final Vector3D deltaV;
 
   /// Maneuver duration rate _(s/m/s)_.
   final double durationRate;
@@ -53,14 +47,14 @@ class Thrust implements Force {
   EpochUTC get stop => center.roll(0.5 * duration);
 
   @override
-  Vector acceleration(final J2000 state) {
-    final relative = RIC(Vector.origin3, deltaV.scale(1.0 / duration));
+  Vector3D acceleration(final J2000 state) {
+    final relative = RIC(Vector3D.origin, deltaV.scale(1.0 / duration));
     return relative.toJ2000(state).velocity.subtract(state.velocity);
   }
 
   /// Return a copy of the provided [state] with this maneuver applied.
   J2000 apply(final J2000 state) {
-    final relative = RIC(Vector.origin3, deltaV);
+    final relative = RIC(Vector3D.origin, deltaV);
     return relative.toJ2000(state);
   }
 

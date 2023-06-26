@@ -88,7 +88,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
       final Vector kArg, final double step) {
     final t = epoch.roll(hArg * step);
     final rvNew = rv.add(kArg);
-    final sample = J2000(t, rvNew.slice(0, 3), rvNew.slice(3, 6));
+    final sample = J2000(t, rvNew.toVector3D(0), rvNew.toVector3D(3));
     return _forceModel.derivative(sample).scale(step);
   }
 
@@ -116,7 +116,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
     hNew = hNew.clamp(0.2 * hOld, 5.0 * hOld);
     hNew = hNew.clamp(1e-5, 1000.0);
     return RkResult(
-        J2000(state.epoch.roll(step), y1.slice(0, 3), y1.slice(3, 6)),
+        J2000(state.epoch.roll(step), y1.toVector3D(0), y1.toVector3D(3)),
         teVal,
         hNew);
   }

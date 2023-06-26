@@ -32,14 +32,14 @@ class EarthGravity implements Force {
 
   /// Calculate the inertial acceleration vector _(km/s²)_ due to
   /// a spherical Earth for the given [state] vector.
-  Vector _spherical(final J2000 state) {
+  Vector3D _spherical(final J2000 state) {
     final rMag = state.position.magnitude();
     return state.position.scale(-Earth.mu / (rMag * rMag * rMag));
   }
 
   /// Calculate the inertial acceleration vector delta _(km/s²)_ between a
   /// spherical Earth and aspherical Earth for the given [state] vector.
-  Vector _aspherical(final J2000 state) {
+  Vector3D _aspherical(final J2000 state) {
     final posEcef = state.toITRF().position;
     final ri = 1.0 / posEcef.magnitude();
     final xor = posEcef.x * ri;
@@ -138,15 +138,13 @@ class EarthGravity implements Force {
     }
 
     final lambda = sumGm + ep * sumH;
-    final g = Float64List(3);
-    g[0] = -muor2 * (lambda * xor - sumJ);
-    g[1] = -muor2 * (lambda * yor - sumK);
-    g[2] = -muor2 * (lambda * zor - sumH);
-    return ITRF(state.epoch, Vector(g), Vector.origin3).toJ2000().position;
+    final g = Vector3D(-muor2 * (lambda * xor - sumJ),
+        -muor2 * (lambda * yor - sumK), -muor2 * (lambda * zor - sumH));
+    return ITRF(state.epoch, g, Vector3D.origin).toJ2000().position;
   }
 
   @override
-  Vector acceleration(final J2000 state) {
+  Vector3D acceleration(final J2000 state) {
     var accVec = _spherical(state);
     if (_asphericalFlag) {
       accVec = accVec.add(_aspherical(state));

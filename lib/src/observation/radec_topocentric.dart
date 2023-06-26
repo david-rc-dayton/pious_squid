@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/observation/observation_utils.dart';
@@ -110,7 +109,7 @@ class RadecTopocentric {
   ///
   /// An optional [range] _(km)_ value can be passed to override the value
   /// contained in this observation.
-  Vector position(final J2000 site, [final double? range]) {
+  Vector3D position(final J2000 site, [final double? range]) {
     final r = range ?? this.range ?? 1.0;
     return radecToPosition(rightAscension, declination, r).add(site.position);
   }
@@ -119,7 +118,7 @@ class RadecTopocentric {
   ///
   /// An optional [range] _(km)_ and [rangeRate] _(km/s)_ value can be passed
   /// to override the values contained in this observation.
-  Vector velocity(final J2000 site,
+  Vector3D velocity(final J2000 site,
       [final double? range, final double? rangeRate]) {
     if (rightAscensionRate == null || declinationRate == null) {
       throw 'Velocity unsolvable, missing ra/dec rates.';
@@ -132,16 +131,12 @@ class RadecTopocentric {
   }
 
   /// Convert this observation into a line-of-sight vector.
-  Vector lineOfSight() {
+  Vector3D lineOfSight() {
     final ca = cos(rightAscension);
     final cd = cos(declination);
     final sa = sin(rightAscension);
     final sd = sin(declination);
-    final result = Float64List(3);
-    result[0] = cd * ca;
-    result[1] = cd * sa;
-    result[2] = sd;
-    return Vector(result);
+    return Vector3D(cd * ca, cd * sa, sd);
   }
 
   /// Calculate the angular distance _(rad)_ between this and another

@@ -21,7 +21,7 @@ abstract class Observation {
 
   /// Return relative state residual for the observation when compared against
   /// a nominal state propagator.
-  Vector ricDiff(final Propagator propagator);
+  Vector3D ricDiff(final Propagator propagator);
 
   /// Convert this observation to vector form.
   Vector toVector();

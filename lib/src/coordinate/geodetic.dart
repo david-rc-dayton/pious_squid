@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
@@ -48,11 +47,11 @@ class Geodetic {
     final cLat = cos(latitude);
     final nVal =
         Earth.radiusEquator / sqrt(1 - Earth.eccentricitySquared * sLat * sLat);
-    final r = Float64List(3);
-    r[0] = (nVal + altitude) * cLat * cos(longitude);
-    r[1] = (nVal + altitude) * cLat * sin(longitude);
-    r[2] = (nVal * (1 - Earth.eccentricitySquared) + altitude) * sLat;
-    return ITRF(epoch, Vector(r), Vector.origin3);
+    final r = Vector3D(
+        (nVal + altitude) * cLat * cos(longitude),
+        (nVal + altitude) * cLat * sin(longitude),
+        (nVal * (1 - Earth.eccentricitySquared) + altitude) * sLat);
+    return ITRF(epoch, r, Vector3D.origin);
   }
 
   /// Calculate the angular distance _(rad)_ between this and another

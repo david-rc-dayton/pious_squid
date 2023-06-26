@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 
 final startState = J2000(
     EpochUTC.fromDateTimeString('2017-01-07T05:31:00.243Z'),
-    Vector.fromList([-5737.369776, -3423.651756, 364.099770]),
-    Vector.fromList([4.378112704, -6.646623519, 1.170571889]));
+    Vector3D(-5737.369776, -3423.651756, 364.099770),
+    Vector3D(4.378112704, -6.646623519, 1.170571889));
 
 final stopEpoch = EpochUTC.fromDateTimeString('2017-01-10T04:46:49.139Z');
 
@@ -24,22 +24,21 @@ void main() {
   group('Propagator', () {
     test('Kepler', () {
       final propagator = KeplerPropagator(startState.toClassicalElements());
-      final expected =
-          Vector.fromList([-251.600120, -6643.127745, 1031.665425]);
+      final expected = Vector3D(-251.600120, -6643.127745, 1031.665425);
       final actual = propagator.propagate(stopEpoch).position;
       expect(actual.distance(expected), lessThanOrEqualTo(0.01));
     });
 
     test('Dormand-Prince 5(4)', () {
       final propagator = DormandPrince54Propagator(startState, forceModel);
-      final expected = Vector.fromList([5059.691657, -4729.021976, 638.641366]);
+      final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
       final actual = propagator.propagate(stopEpoch).position;
       expect(actual.distance(expected), lessThanOrEqualTo(0.13));
     });
 
     test('Runge-Kutta 8(9)', () {
       final propagator = RungeKutta89Propagator(startState, forceModel);
-      final expected = Vector.fromList([5059.691657, -4729.021976, 638.641366]);
+      final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
       final actual = propagator.propagate(stopEpoch).position;
       expect(actual.distance(expected), lessThanOrEqualTo(0.13));
     });
@@ -47,9 +46,8 @@ void main() {
     test('SGP4', () {
       final propagator = Sgp4Propagator(tle);
       final expectedPos =
-          Vector.fromList([-7154.03120202, -3783.17682504, -3536.19412294]);
-      final expectedVel =
-          Vector.fromList([4.741887409, -4.151817765, -2.093935425]);
+          Vector3D(-7154.03120202, -3783.17682504, -3536.19412294);
+      final expectedVel = Vector3D(4.741887409, -4.151817765, -2.093935425);
       final actual = propagator.propagate(tle.epoch.roll(21600.0)).toTEME();
       expect(actual.position.distance(expectedPos), lessThanOrEqualTo(0.01));
       expect(actual.velocity.distance(expectedVel), lessThanOrEqualTo(0.01));

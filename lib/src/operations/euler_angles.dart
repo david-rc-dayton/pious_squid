@@ -89,5 +89,5 @@ class EulerAngles {
   }
 
   /// Perform a 3-2-1 ordered rotation on provided vector [v].
-  Vector rotateVector321(final Vector v) => dcm321().multiplyVector(v);
+  Vector3D rotateVector321(final Vector3D v) => dcm321().multiplyVector3D(v);
 }

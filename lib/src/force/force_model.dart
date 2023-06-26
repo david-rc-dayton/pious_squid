@@ -12,7 +12,7 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 abstract class Force {
   /// Calculate the acceleration due to the perturbing force on a given
   /// [state] vector.
-  Vector acceleration(final J2000 state);
+  Vector3D acceleration(final J2000 state);
 }
 
 /// Force model for spacecraft propagation.
@@ -86,8 +86,8 @@ class ForceModel {
 
   /// Calculate inertial acceleration on a [state] using the forces in
   /// this model.
-  Vector acceleration(final J2000 state) {
-    var accVec = Vector.origin3;
+  Vector3D acceleration(final J2000 state) {
+    var accVec = Vector3D.origin;
     if (_centralGravity != null) {
       accVec = accVec.add(_centralGravity!.acceleration(state));
     }

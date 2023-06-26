@@ -37,7 +37,7 @@ class AtmosphericDrag implements Force {
       return 0.0;
     }
     final sunPos = Sun.positionApparent(state.epoch);
-    final sunVec = J2000(state.epoch, sunPos, Vector.origin3)
+    final sunVec = J2000(state.epoch, sunPos, Vector3D.origin)
         .toITRF()
         .position
         .normalize();
@@ -59,14 +59,14 @@ class AtmosphericDrag implements Force {
   }
 
   @override
-  Vector acceleration(final J2000 state) {
+  Vector3D acceleration(final J2000 state) {
     final itrfState = state.toITRF();
     final density = _getHPDensity(itrfState, cosine);
     if (density == 0) {
-      return Vector.origin3;
+      return Vector3D.origin;
     }
     final rotation =
-        ITRF(state.epoch, Earth.rotation, Vector.origin3).toJ2000().position;
+        ITRF(state.epoch, Earth.rotation, Vector3D.origin).toJ2000().position;
     final vRel =
         state.velocity.subtract(rotation.cross(state.position)).scale(1000.0);
     final vm = vRel.magnitude();

@@ -15,10 +15,10 @@ abstract class StateVector {
   final EpochUTC epoch;
 
   /// Position vector _(km)_.
-  final Vector position;
+  final Vector3D position;
 
   /// Velocity vector _(km)_.
-  final Vector velocity;
+  final Vector3D velocity;
 
   /// Return the name of this coordinate frame.
   String get name;

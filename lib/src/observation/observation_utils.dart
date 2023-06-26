@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
@@ -31,33 +30,28 @@ class PropagatorPairs {
 
 /// Convert right-ascension [ra] _(rad)_, declination [dec] _(rad)_, and slant
 /// range [r] _(km)_ into a position vector relative to the observer.
-Vector radecToPosition(final double ra, final double dec, final double r) {
+Vector3D radecToPosition(final double ra, final double dec, final double r) {
   final ca = cos(ra);
   final sa = sin(ra);
   final cd = cos(dec);
   final sd = sin(dec);
-  final v = Float64List(3);
-  v[0] = r * cd * ca;
-  v[1] = r * cd * sa;
-  v[2] = r * sd;
-  return Vector(v);
+  return Vector3D(r * cd * ca, r * cd * sa, r * sd);
 }
 
 /// Convert right-ascension [ra] _(rad)_, declination [dec] _(rad)_, slant
 /// range [r] _(km)_, right-ascension rate [raDot] _(rad/s)_, declination rate
 /// [decDot] _(rad/s)_, and slant range rate _(km/s)_ into a velocity vector
 /// relative to the observer.
-Vector radecToVelocity(final double ra, final double dec, final double r,
+Vector3D radecToVelocity(final double ra, final double dec, final double r,
     final double raDot, final double decDot, final double rDot) {
   final ca = cos(ra);
   final sa = sin(ra);
   final cd = cos(dec);
   final sd = sin(dec);
-  final v = Float64List(3);
-  v[0] = rDot * cd * ca - r * sd * ca * decDot - r * cd * sa * raDot;
-  v[1] = rDot * cd * sa - r * sd * sa * decDot + r * cd * ca * raDot;
-  v[2] = rDot * sd + r * cd * decDot;
-  return Vector(v);
+  return Vector3D(
+      rDot * cd * ca - r * sd * ca * decDot - r * cd * sa * raDot,
+      rDot * cd * sa - r * sd * sa * decDot + r * cd * ca * raDot,
+      rDot * sd + r * cd * decDot);
 }
 
 /// Calculate the difference between two angles.

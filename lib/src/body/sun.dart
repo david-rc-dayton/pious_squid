@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
@@ -30,7 +29,7 @@ class Sun {
   static const double radius = 695500.0;
 
   /// Calculate the Sun's ECI position _(km)_ for a given UTC [epoch].
-  static Vector position(final EpochUTC epoch) {
+  static Vector3D position(final EpochUTC epoch) {
     final tt = epoch.toTT().toJulianCenturies();
     final ut1 = epoch.toJulianCenturies();
     final dtr = deg2rad;
@@ -43,18 +42,18 @@ class Sun {
     final rMag = 1.000140612 -
         0.016708617 * cos(mSun * dtr) -
         0.000139589 * cos(2.0 * mSun * dtr);
-    final r = Float64List(3);
-    r[0] = rMag * cos(lamEc * dtr);
-    r[1] = rMag * cos(obliq * dtr) * sin(lamEc * dtr);
-    r[2] = rMag * sin(obliq * dtr) * sin(lamEc * dtr);
-    final rMOD = Vector(r).scale(astronomicalUnit);
+    final r = Vector3D(
+        rMag * cos(lamEc * dtr),
+        rMag * cos(obliq * dtr) * sin(lamEc * dtr),
+        rMag * sin(obliq * dtr) * sin(lamEc * dtr));
+    final rMOD = r.scale(astronomicalUnit);
     final p = Earth.precession(epoch);
     return rMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);
   }
 
   /// Calculate the Sun's apparent ECI position _(km)_ from Earth for a given
   /// UTC [epoch].
-  static Vector positionApparent(final EpochUTC epoch) {
+  static Vector3D positionApparent(final EpochUTC epoch) {
     final distance = position(epoch).magnitude();
     final dSec = distance / speedOfLight;
     return position(epoch.roll(-dSec));
@@ -62,7 +61,7 @@ class Sun {
 
   /// Return `true` if the ECI satellite position [posSat] is in eclipse at the
   /// given UTC [epoch].
-  static bool shadow(final EpochUTC epoch, final Vector posSat) {
+  static bool shadow(final EpochUTC epoch, final Vector3D posSat) {
     final posSun = positionApparent(epoch);
     var shadow = false;
     if (posSun.dot(posSat) < 0) {
@@ -86,7 +85,7 @@ class Sun {
   ///   - central body apparant radius _(rad)_
   ///   - sun apparant radius _(rad)_
   static (double bodyAngle, double bodyRadius, double sunRadius) eclipseAngles(
-      final Vector satPos, final Vector sunPos) {
+      final Vector3D satPos, final Vector3D sunPos) {
     final satSun = sunPos.subtract(satPos);
     final r = satPos.magnitude();
     return (
@@ -104,7 +103,7 @@ class Sun {
   ///
   /// Returns `1.0` if the satellite is fully illuminated and `0.0` when
   /// fully eclipsed.
-  static double lightingRatio(final Vector satPos, final Vector sunPos) {
+  static double lightingRatio(final Vector3D satPos, final Vector3D sunPos) {
     final (sunSatAngle, aCent, aSun) = eclipseAngles(satPos, sunPos);
     if (sunSatAngle - aCent + aSun <= 1e-10) {
       return 0.0;
@@ -129,7 +128,7 @@ class Sun {
 
   /// Calculate the Sun's angular diameter _(rad)_ from an ECI satellite
   /// position [satPos] and Sun position [sunPos] _(km)_.
-  static double diameter(final Vector satPos, final Vector sunPos) =>
+  static double diameter(final Vector3D satPos, final Vector3D sunPos) =>
       angularDiameter(radius * 2, satPos.subtract(sunPos).magnitude(),
           AngularDiameterMethod.sphere);
 }

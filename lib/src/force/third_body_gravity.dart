@@ -16,7 +16,7 @@ class ThirdBodyGravity implements Force {
   /// Sun gravity enabled if `true`.
   final bool sun;
 
-  static Vector _moonGravity(final J2000 state) {
+  static Vector3D _moonGravity(final J2000 state) {
     final rMoon = Moon.position(state.epoch);
     final aNum = rMoon.subtract(state.position);
     final aDen = pow(aNum.magnitude(), 3);
@@ -26,7 +26,7 @@ class ThirdBodyGravity implements Force {
     return gravity.scale(Moon.mu);
   }
 
-  static Vector _sunGravity(final J2000 state) {
+  static Vector3D _sunGravity(final J2000 state) {
     final rSun = Sun.positionApparent(state.epoch);
     final aNum = rSun.subtract(state.position);
     final aDen = pow(aNum.magnitude(), 3);
@@ -37,8 +37,8 @@ class ThirdBodyGravity implements Force {
   }
 
   @override
-  Vector acceleration(final J2000 state) {
-    var accVec = Vector.origin3;
+  Vector3D acceleration(final J2000 state) {
+    var accVec = Vector3D.origin;
     if (moon) {
       accVec = accVec.add(_moonGravity(state));
     }

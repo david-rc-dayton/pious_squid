@@ -146,8 +146,7 @@ class Earth {
   static const double j6 = 5.40681239107085e-7;
 
   /// Earth rotation vector _(rad/s)_.
-  static final Vector rotation =
-      Vector(Float64List.fromList([0, 0, 7.292115146706979e-5]));
+  static final Vector3D rotation = Vector3D(0, 0, 7.292115146706979e-5);
 
   /// Calculate mean motion _(rad/s)_ from a given [semimajorAxis] _(km)_.
   static double smaToMeanMotion(final double semimajorAxis) =>
@@ -224,6 +223,6 @@ class Earth {
 
   /// Calculate the Earth's angular diameter _(rad)_ from an ECI satellite
   /// position [satPos] _(km)_.
-  static double diameter(final Vector satPos) => angularDiameter(
+  static double diameter(final Vector3D satPos) => angularDiameter(
       radiusEquator * 2, satPos.magnitude(), AngularDiameterMethod.sphere);
 }

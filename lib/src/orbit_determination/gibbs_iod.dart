@@ -23,7 +23,7 @@ class GibbsIOD {
   /// Attempt to create a state estimate from three inertial position vectors.
   ///
   /// Throws an error if the positions are not coplanar.
-  J2000 solve(final Vector r1, final Vector r2, final Vector r3,
+  J2000 solve(final Vector3D r1, final Vector3D r2, final Vector3D r3,
       final EpochUTC t2, final EpochUTC t3) {
     final num = r1.normalize().dot(r2.normalize().cross(r3.normalize()));
     final alpha = halfPi - acos(num);

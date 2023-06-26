@@ -78,22 +78,11 @@ class ChebyshevCoefficients {
 
   /// Return the interpolated position _(km)_ and velocity _(km/s)_ vectors at
   /// he provided time [t] _(POSIX seconds)_.
-  (Vector, Vector) interpolate(final double t) {
-    final x = evaluate(_cx, t);
-    final y = evaluate(_cy, t);
-    final z = evaluate(_cz, t);
-    final xd = evaluate(_cxd, t);
-    final yd = evaluate(_cyd, t);
-    final zd = evaluate(_czd, t);
-    final pos = Float64List(3);
-    pos[0] = x;
-    pos[1] = y;
-    pos[2] = z;
-    final vel = Float64List(3);
-    vel[0] = xd;
-    vel[1] = yd;
-    vel[2] = zd;
-    return (Vector(pos), Vector(vel));
+  (Vector3D, Vector3D) interpolate(final double t) {
+    final pos = Vector3D(evaluate(_cx, t), evaluate(_cy, t), evaluate(_cz, t));
+    final vel =
+        Vector3D(evaluate(_cxd, t), evaluate(_cyd, t), evaluate(_czd, t));
+    return (pos, vel);
   }
 }
 
