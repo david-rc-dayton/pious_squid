@@ -46,14 +46,11 @@ class LeapSecond {
 class LeapSecondData {
   /// Create a new [LeapSecondData] container object given an array
   /// of [offsets].
-  LeapSecondData(this._offsets) {
-    final o0 = _offsets.first;
-    final oN = _offsets.last;
-    _jdFirst = o0.jd;
-    _jdLast = oN.jd;
-    _offsetFirst = o0.offset;
-    _offsetLast = oN.offset;
-  }
+  LeapSecondData(this._offsets)
+      : _jdFirst = _offsets.first.jd,
+        _jdLast = _offsets.last.jd,
+        _offsetFirst = _offsets.first.offset,
+        _offsetLast = _offsets.last.offset;
 
   /// Create a new [LeapSecondData] object from an array of leap second
   /// value tuples [vals].
@@ -70,16 +67,16 @@ class LeapSecondData {
   final List<LeapSecond> _offsets;
 
   /// First Julian date.
-  late final double _jdFirst;
+  final double _jdFirst;
 
   /// Last Julian date.
-  late final double _jdLast;
+  final double _jdLast;
 
   /// First offset seconds.
-  late final double _offsetFirst;
+  final double _offsetFirst;
 
   /// Last offset seconds.
-  late final double _offsetLast;
+  final double _offsetLast;
 
   /// Return the number of leap seconds for a given Julian date [jd].
   double getLeapSeconds(final double jd) {

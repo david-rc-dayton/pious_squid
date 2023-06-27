@@ -7,10 +7,9 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 /// Matrix operations.
 class Matrix {
   /// Create a matrix from a nested array.
-  Matrix(this._elements) {
-    rows = _elements.length;
-    columns = _elements.first.length;
-  }
+  Matrix(this._elements)
+      : rows = _elements.length,
+        columns = _elements.first.length;
 
   /// Create a 3x3 x-axis rotation matrix, rotated by angle [theta] _(rad)_.
   factory Matrix.rotX(final double theta) {
@@ -78,10 +77,10 @@ class Matrix {
   final List<List<double>> _elements;
 
   /// Number of rows in this matrix.
-  late final int rows;
+  final int rows;
 
   /// Number of columns in this matrix.
-  late final int columns;
+  final int columns;
 
   /// Return the matrix row at the provided [index].
   List<double> operator [](final int index) => _elements[index];

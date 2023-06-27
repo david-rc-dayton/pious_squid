@@ -8,8 +8,7 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 class BoxMuller {
   /// Create a new [BoxMuller] object with mean [mu], standard deviation
   /// [sigma], and [seed] number.
-  BoxMuller(this.mu, this.sigma, [final int seed = 0]) {
-    rand = Random(seed);
+  BoxMuller(this.mu, this.sigma, [final int seed = 0]) : rand = Random(seed) {
     _generate();
   }
 
@@ -26,7 +25,7 @@ class BoxMuller {
   int _index = 0;
 
   /// Uniform random number generator.
-  late final Random rand;
+  final Random rand;
 
   /// Refill the cache with random Gaussian numbers.
   void _generate() {
@@ -64,12 +63,11 @@ class BoxMuller {
 /// deviation of 1.
 class RandomGaussianSource {
   /// Create a new [RandomGaussianSource] with an optional [seed] value.
-  RandomGaussianSource([final int seed = 0]) {
-    _boxMuller = BoxMuller(0, 1, seed);
-  }
+  RandomGaussianSource([final int seed = 0])
+      : _boxMuller = BoxMuller(0, 1, seed);
 
   /// Box-Muller number generator.
-  late final BoxMuller _boxMuller;
+  final BoxMuller _boxMuller;
 
   /// Generate a gaussian number, with mean 0 and standard
   /// deviation 1.

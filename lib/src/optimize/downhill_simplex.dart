@@ -11,19 +11,18 @@ typedef CostFunction = double Function(Float64List xs);
 class SimplexEntry {
   /// Create a new [SimplexEntry] object, with score function [_f] and
   /// an array of simplex [points].
-  SimplexEntry(this._f, final Float64List points) {
-    _x = Vector(points);
-    _score = _f(points);
-  }
+  SimplexEntry(this._f, final Float64List points)
+      : _x = Vector(points),
+        _score = _f(points);
 
   /// Cost function.
   final CostFunction _f;
 
   /// Cost function result for the simplex point.
-  late final double _score;
+  final double _score;
 
   /// Values for the simplex point.
-  late final Vector _x;
+  final Vector _x;
 
   /// Simplex point element array.
   Float64List get points => _x.toArray();

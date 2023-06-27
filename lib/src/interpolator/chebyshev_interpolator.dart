@@ -8,11 +8,10 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Chebyshev compressed ephemeris coefficients.
 class ChebyshevCoefficients {
   /// Create a new [ChebyshevCoefficients] object.
-  ChebyshevCoefficients(this.a, this.b, this._cx, this._cy, this._cz) {
-    _cxd = _derivative(a, b, _cx);
-    _cyd = _derivative(a, b, _cy);
-    _czd = _derivative(a, b, _cz);
-  }
+  ChebyshevCoefficients(this.a, this.b, this._cx, this._cy, this._cz)
+      : _cxd = _derivative(a, b, _cx),
+        _cyd = _derivative(a, b, _cy),
+        _czd = _derivative(a, b, _cz);
 
   /// Coefficient start epoch _(POSIX seconds)_.
   final double a;
@@ -30,13 +29,13 @@ class ChebyshevCoefficients {
   final Float64List _cz;
 
   /// Velocity x-component coefficients.
-  late final Float64List _cxd;
+  final Float64List _cxd;
 
   /// Velocity y-component coefficients.
-  late final Float64List _cyd;
+  final Float64List _cyd;
 
   /// Velocity z-component coefficients.
-  late final Float64List _czd;
+  final Float64List _czd;
 
   /// Create a new array containing the coefficients needed to compute the
   /// derivative of the given Chebyshev coefficient set, using start time [a],

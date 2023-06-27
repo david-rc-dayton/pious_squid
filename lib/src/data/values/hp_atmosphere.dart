@@ -86,10 +86,9 @@ class HpAtmosphereResult {
 class HpAtmosphereData {
   /// Create a new [HpAtmosphereData] object given an array of
   /// [HpAtmosphere] objects.
-  HpAtmosphereData(this._table) {
-    _hMin = _table.first.h;
-    _hMax = _table.last.h;
-  }
+  HpAtmosphereData(this._table)
+      : _hMin = _table.first.h,
+        _hMax = _table.last.h;
 
   /// Create a new [HpAtmosphereData] object from a list of Harris-Priester
   /// atmospheric parameter tuples.
@@ -106,10 +105,10 @@ class HpAtmosphereData {
   final List<HpAtmosphere> _table;
 
   /// Minimum atmosphere height _(km)_
-  late final int _hMin;
+  final int _hMin;
 
   /// Maximum atmosphere height _(km)_
-  late final int _hMax;
+  final int _hMax;
 
   /// Return atmospheric parameters for a given [height] above Earth's
   /// surface _(km)_.

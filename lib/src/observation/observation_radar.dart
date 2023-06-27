@@ -10,9 +10,8 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Radar observation data.
 class ObservationRadar extends Observation {
   /// Create a new [ObservationRadar] object.
-  ObservationRadar(this._site, this.observation, [final Matrix? noise]) {
-    _noise = noise ?? defaultNoise;
-  }
+  ObservationRadar(this._site, this.observation, [final Matrix? noise])
+      : _noise = noise ?? defaultNoise;
 
   /// Range-Azimuth-Elevation observation.
   final Razel observation;
@@ -21,7 +20,7 @@ class ObservationRadar extends Observation {
   final J2000 _site;
 
   /// Noise matrix.
-  late final Matrix _noise;
+  final Matrix _noise;
 
   /// Default noise matrix.
   static final Matrix defaultNoise =

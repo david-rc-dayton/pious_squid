@@ -12,9 +12,8 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Optical observation data.
 class ObservationOptical extends Observation {
   /// Create a new [ObservationOptical] object.
-  ObservationOptical(this._site, this.observation, [final Matrix? noise]) {
-    _noise = noise ?? defaultNoise;
-  }
+  ObservationOptical(this._site, this.observation, [final Matrix? noise])
+      : _noise = noise ?? defaultNoise;
 
   /// Topocentric radec observation.
   final RadecTopocentric observation;
@@ -23,7 +22,7 @@ class ObservationOptical extends Observation {
   final J2000 _site;
 
   /// Noise matrix.
-  late final Matrix _noise;
+  final Matrix _noise;
 
   /// Default noise matrix _(right-ascension, declination)_.
   ///

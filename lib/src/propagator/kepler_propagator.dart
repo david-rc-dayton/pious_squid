@@ -9,13 +9,13 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Kepler analytical two-body propagator.
 class KeplerPropagator extends Propagator {
   /// Create a new [KeplerPropagator] object from orbital elements.
-  KeplerPropagator(this._initElements) {
-    _elements = _initElements;
-    _cacheState = J2000.fromClassicalElements(_initElements);
-  }
+  KeplerPropagator(this._initElements)
+      : _elements = _initElements,
+        _cacheState = J2000.fromClassicalElements(_initElements);
+
   final ClassicalElements _initElements;
-  late ClassicalElements _elements;
-  late J2000 _cacheState;
+  ClassicalElements _elements;
+  J2000 _cacheState;
 
   @override
   J2000 get state => _cacheState;

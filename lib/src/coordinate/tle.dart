@@ -28,9 +28,9 @@ class TLE {
   /// Create a new [TLE] object from [line1] and [line2] of the element set.
   TLE(this.line1, this.line2,
       {final Sgp4OpsMode opsMode = Sgp4OpsMode.afspc,
-      final Sgp4GravConst gravConst = Sgp4GravConst.wgs72}) {
-    epoch = _parseEpoch(line1.substring(18, 32));
-    satnum = _parseSatnum(line1.substring(2, 7));
+      final Sgp4GravConst gravConst = Sgp4GravConst.wgs72})
+      : epoch = _parseEpoch(line1.substring(18, 32)),
+        satnum = _parseSatnum(line1.substring(2, 7)) {
     twoline2rv(line1, line2, opsMode.value, gravConst, _satrec);
   }
 
@@ -41,11 +41,11 @@ class TLE {
   final String line2;
 
   /// Element set epoch.
-  late final EpochUTC epoch;
+  final EpochUTC epoch;
 
   /// NORAD satellite number.
-  late final int satnum;
-  late final ElsetRec _satrec = ElsetRec();
+  final int satnum;
+  final ElsetRec _satrec = ElsetRec();
   static final Map<String, String> _alpha5 = {
     'A': '10',
     'B': '11',

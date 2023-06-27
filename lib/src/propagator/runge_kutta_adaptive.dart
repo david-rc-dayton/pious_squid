@@ -27,19 +27,18 @@ class RkResult {
 abstract class RungeKuttaAdaptive extends Propagator {
   /// Create a new [RungeKuttaAdaptive] object from an initial state vector
   /// and optional [ForceModel].
-  RungeKuttaAdaptive(this._initState, [final ForceModel? forceModel]) {
-    _cacheState = _initState;
-    _forceModel = forceModel ?? (ForceModel()..setEarthGravity(0, 0));
-  }
+  RungeKuttaAdaptive(this._initState, [final ForceModel? forceModel])
+      : _cacheState = _initState,
+        _forceModel = forceModel ?? (ForceModel()..setEarthGravity(0, 0));
 
   /// Initial state vector.
   final J2000 _initState;
 
   /// Propagator perturbation model.
-  late ForceModel _forceModel;
+  ForceModel _forceModel;
 
   /// Cache of last propagated state.
-  late J2000 _cacheState;
+  J2000 _cacheState;
 
   /// Integrator local error tolerance.
   double _tolerance = 1e-9;

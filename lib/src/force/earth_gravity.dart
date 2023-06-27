@@ -17,9 +17,8 @@ class EarthGravity implements Force {
   /// if the degree and order are both non-zero.
   EarthGravity(final int degree, final int order)
       : degree = degree.clamp(0, 36),
-        order = order.clamp(0, 36) {
-    _asphericalFlag = degree >= 2;
-  }
+        order = order.clamp(0, 36),
+        _asphericalFlag = degree >= 2;
 
   /// Geopotential degree _(zonal)_.
   final int degree;
@@ -28,7 +27,7 @@ class EarthGravity implements Force {
   final int order;
 
   /// Use aspherical perturbations if `true`.
-  late final bool _asphericalFlag;
+  final bool _asphericalFlag;
 
   /// Calculate the inertial acceleration vector _(km/s²)_ due to
   /// a spherical Earth for the given [state] vector.

@@ -13,10 +13,9 @@ class Hill extends RelativeState {
   /// Create a new [Hill] object, from relative state.
   Hill(this.epoch, final Vector3D position, final Vector3D velocity,
       final double semimajorAxis)
-      : super(position, velocity) {
-    _semimajorAxis = semimajorAxis;
-    _meanMotion = Earth.smaToMeanMotion(semimajorAxis);
-  }
+      : _semimajorAxis = semimajorAxis,
+        _meanMotion = Earth.smaToMeanMotion(semimajorAxis),
+        super(position, velocity);
 
   /// Create a new [Hill] object from ECI [state] and its relative
   /// motion [origin].
@@ -110,10 +109,10 @@ class Hill extends RelativeState {
   final EpochUTC epoch;
 
   /// Origin semimajor-axis _(km)_.
-  late double _semimajorAxis;
+  double _semimajorAxis;
 
   /// Origin mean motion _(rad/s)_.
-  late double _meanMotion;
+  double _meanMotion;
 
   @override
   String get name => 'Hill';

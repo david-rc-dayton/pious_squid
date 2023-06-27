@@ -8,7 +8,7 @@ import 'package:pious_squid/src/operations/vector.dart';
 class EulerAngles {
   /// Create a new [EulerAngles] object from [roll], [pitch], and [yaw]
   /// angles _(rad)_.
-  EulerAngles(this.roll, this.pitch, this.yaw);
+  const EulerAngles(this.roll, this.pitch, this.yaw);
 
   /// Create a new [EulerAngles] object from roll, pitch, and yaw
   /// angles _(deg)_.
