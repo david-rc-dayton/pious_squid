@@ -174,6 +174,11 @@ class Vector3D {
   Vector3D bisect(final Vector3D v) =>
       scale(v.magnitude()).add(v.scale(magnitude())).normalize();
 
+  /// Convert this [Vector3D] into a row [Matrix].
+  Matrix row() => Matrix([
+        [x, y, z]
+      ]);
+
   /// Convert this [Vector3D] into a column [Matrix].
   Matrix column() => Matrix([
         [x],
@@ -431,6 +436,9 @@ class Vector {
   /// from index [start] to [end] _(exclusive)_.
   Vector slice(final int start, final int end) =>
       Vector(_elements.sublist(start, end));
+
+  /// Convert this [Vector] into a row [Matrix].
+  Matrix row() => Matrix([_elements.toList()]);
 
   /// Convert this [Vector] into a column [Matrix].
   Matrix column() => Matrix(_elements.map((final e) => [e]).toList());
