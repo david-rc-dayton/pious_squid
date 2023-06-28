@@ -32,6 +32,20 @@ void main() {
       expect(k.y, closeTo(0.00955956, 1e-7));
       expect(k.z, closeTo(0.00477978, 1e-7));
       expect(k.w, closeTo(-0.00955956, 1e-7));
+
+      final b1 = Vector3D(1, 0, 0);
+      final b2 = Vector3D(0, 1, 0);
+      final r1 = Vector3D(0, 0, 1);
+      final r2 = Vector3D(-1, 0, 0);
+      final a = Quaternion.triad(b1, b2, r1, r2);
+      final bp1 = a.rotateVector3D(b1);
+      final bp2 = a.rotateVector3D(b2);
+      expect(bp1.x, closeTo(0, 1e-3));
+      expect(bp1.y, closeTo(0, 1e-3));
+      expect(bp1.z, closeTo(1, 1e-3));
+      expect(bp2.x, closeTo(-1, 1e-3));
+      expect(bp2.y, closeTo(0, 1e-3));
+      expect(bp2.z, closeTo(0, 1e-3));
     });
   });
 }

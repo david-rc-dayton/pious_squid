@@ -73,6 +73,21 @@ class Quaternion {
     return Quaternion(rotAxis.x, rotAxis.y, rotAxis.z, dot + 1.0).normalize();
   }
 
+  /// Perform Tri-Axial Attitude Determination (TRIAD) to find the rotation
+  /// quaternion that transforms reference unit vectors [v1] and [v2] to
+  /// the new frame defined by [w1] and [w2].
+  factory Quaternion.triad(final Vector3D v1, final Vector3D v2,
+      final Vector3D w1, final Vector3D w2) {
+    final rr = v1.cross(v2).normalize();
+    final sr = v1.cross(rr);
+    final mr = Matrix([v1.toList(), rr.toList(), sr.toList()]);
+    final rb = w1.cross(w2).normalize();
+    final sb = w1.cross(rb);
+    final mb = Matrix([w1.toList(), rb.toList(), sb.toList()]);
+    final a = mr.transpose().multiply(mb);
+    return Quaternion.fromDirectionCosineMatrix(a);
+  }
+
   /// X-axis.
   final double x;
 
