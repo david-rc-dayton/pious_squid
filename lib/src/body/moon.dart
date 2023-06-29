@@ -57,7 +57,7 @@ class Moon {
   ///
   /// Result is `1.0` when the Moon fully illuminated and `0.0` is fully
   /// in shadow.
-  static double illumination(final EpochUTC epoch, {final Vector3D? origin}) {
+  static double illumination(final EpochUTC epoch, [final Vector3D? origin]) {
     final orig = origin ?? Vector3D.origin;
     final sunPos = Sun.position(epoch).subtract(orig);
     final moonPos = position(epoch).subtract(orig);

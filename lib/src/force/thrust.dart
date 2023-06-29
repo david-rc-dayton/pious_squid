@@ -12,7 +12,7 @@ class Thrust implements Force {
   /// finite maneuvers.
   Thrust(this.center, final double radial, final double intrack,
       final double crosstrack,
-      {this.durationRate = 0.0})
+      [this.durationRate = 0.0])
       : deltaV = Vector3D(radial * 1e-3, intrack * 1e-3, crosstrack * 1e-3);
 
   /// Maneuver center time.

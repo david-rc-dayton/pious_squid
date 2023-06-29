@@ -70,9 +70,9 @@ class DownhillSimplex {
   }
 
   /// Generate a new simplex from initial guess [x0], and an optional
-  /// simples [step] value.
+  /// simplex [step] value.
   static List<Float64List> generateSimplex(final Float64List x0,
-      {final double step = 0.01}) {
+      [final double step = 0.01]) {
     final output = [x0.sublist(0)];
     for (var i = 0; i < x0.length; i++) {
       final tmp = x0.sublist(0);

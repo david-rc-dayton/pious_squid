@@ -17,12 +17,12 @@ class Sgp4Propagator extends Propagator {
   @override
   VerletBlendInterpolator ephemerisManeuver(
       final EpochUTC start, final EpochUTC finish, final List<Thrust> maneuvers,
-      {final double interval = 60.0}) {
+      [final double interval = 60.0]) {
     throw 'Maneuvers cannot be modelled with SGP4.';
   }
 
   @override
-  List<J2000> maneuver(final Thrust maneuver, {final double interval = 60.0}) {
+  List<J2000> maneuver(final Thrust maneuver, [final double interval = 60.0]) {
     throw 'Maneuvers cannot be modelled with SGP4.';
   }
 

@@ -80,7 +80,7 @@ class Hill extends RelativeState {
   /// intrack [translation] _(km)_.
   factory Hill.fromNmc(final J2000 origin, final double majorAxisRange,
       final double nodeVelocity, final double nodeOffsetTime,
-      {final double translation = 0.0}) {
+      [final double translation = 0.0]) {
     final a = origin.semimajorAxis();
     final n = Earth.smaToMeanMotion(a);
     final xDot = (majorAxisRange * n) * 0.5;
@@ -211,7 +211,7 @@ class Hill extends RelativeState {
   ///
   /// Takes an optional ephemeris [step] size _(seconds)_.
   List<Hill> ephemeris(final EpochUTC start, final EpochUTC stop,
-      {final double step = 60.0}) {
+      [final double step = 60.0]) {
     final output = <Hill>[];
     var current = start;
     while (stop >= current) {

@@ -21,12 +21,12 @@ class LagrangeInterpolator extends StateInterpolator {
   /// Create a new [LagrangeInterpolator] object from the ephemeris
   /// time/position component arrays and interpolation [order]
   /// _(positive integer)_.
-  LagrangeInterpolator(this._t, this._x, this._y, this._z, {this.order = 10});
+  LagrangeInterpolator(this._t, this._x, this._y, this._z, [this.order = 10]);
 
   /// Create a new [LagrangeInterpolator] object from an array of inertial
   /// state vectors, and an optional interpolation [order] _(positive integer)_.
   factory LagrangeInterpolator.fromEphemeris(final List<J2000> ephemeris,
-      {final int order = 10}) {
+      [final int order = 10]) {
     final k = ephemeris.length;
     final t = Float64List(k);
     final x = Float64List(k);
@@ -40,7 +40,7 @@ class LagrangeInterpolator extends StateInterpolator {
       y[i] = state.position.y;
       z[i] = state.position.z;
     }
-    return LagrangeInterpolator(t, x, y, z, order: order);
+    return LagrangeInterpolator(t, x, y, z, order);
   }
 
   /// Epochs _(POSIX seconds)_.

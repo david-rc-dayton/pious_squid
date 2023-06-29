@@ -33,7 +33,7 @@ class KeplerPropagator extends Propagator {
   }
 
   @override
-  List<J2000> maneuver(final Thrust maneuver, {final double interval = 60}) {
+  List<J2000> maneuver(final Thrust maneuver, [final double interval = 60]) {
     _cacheState = maneuver.apply(propagate(maneuver.center));
     _elements = _cacheState.toClassicalElements();
     return [_cacheState];
@@ -42,7 +42,7 @@ class KeplerPropagator extends Propagator {
   @override
   VerletBlendInterpolator ephemerisManeuver(
       final EpochUTC start, final EpochUTC finish, final List<Thrust> maneuvers,
-      {final double interval = 60.0}) {
+      [final double interval = 60.0]) {
     final tMvr = maneuvers.sublist(0);
     tMvr.retainWhere(
         (final mvr) => (mvr.center >= start) || (mvr.center <= finish));
@@ -58,7 +58,7 @@ class KeplerPropagator extends Propagator {
           ephemeris.add(_cacheState);
         }
       }
-      ephemeris.addAll(maneuver(mvr, interval: interval));
+      ephemeris.addAll(maneuver(mvr, interval));
     }
     while (_cacheState.epoch < finish) {
       final step = min(finish.difference(_cacheState.epoch), interval);

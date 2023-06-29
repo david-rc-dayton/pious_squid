@@ -31,9 +31,8 @@ class Waypoint {
       final ForceModel forceModel,
       final StateInterpolator target,
       final Float64List components) {
-    final testManeuver = Thrust(
-        maneuver.center, components[0], components[1], components[2],
-        durationRate: maneuver.durationRate);
+    final testManeuver = Thrust(maneuver.center, components[0], components[1],
+        components[2], maneuver.durationRate);
     final propagator = RungeKutta89Propagator(state, forceModel);
     final maneuverSteps = propagator.maneuver(testManeuver);
     final postManeuver = maneuverSteps.last;
@@ -118,9 +117,8 @@ class Waypoint {
       }
       final componentsRel =
           RIC.fromJ2000(components, state).velocity.scale(1e3);
-      final maneuver = Thrust(
-          state.epoch, componentsRel.x, componentsRel.y, componentsRel.z,
-          durationRate: durationRate);
+      final maneuver = Thrust(state.epoch, componentsRel.x, componentsRel.y,
+          componentsRel.z, durationRate);
       final tempProp = RungeKutta89Propagator(state, forceModel);
       tempProp.maneuver(maneuver);
       state = tempProp.propagate(wp.epoch);
@@ -157,7 +155,7 @@ class Waypoint {
       final maneuver = maneuvers[i];
       final waypoint = waypoints[i];
       final guess = maneuver.deltaV.scale(1e3).toArray();
-      final simplex = DownhillSimplex.generateSimplex(guess, step: 1e-1);
+      final simplex = DownhillSimplex.generateSimplex(guess, 1e-1);
       final scoreFn =
           _refineManeuverScore(waypoint, maneuver, state, forceModel, target);
       final results = DownhillSimplex.solveSimplex(scoreFn, simplex,
@@ -168,8 +166,8 @@ class Waypoint {
       final tR = results[0];
       final tI = results[1];
       final tC = results[2];
-      final newManeuver = Thrust(maneuver.center, tR, tI, tC,
-          durationRate: maneuver.durationRate);
+      final newManeuver =
+          Thrust(maneuver.center, tR, tI, tC, maneuver.durationRate);
       output.add(newManeuver);
       final mvrStep =
           RungeKutta89Propagator(state, forceModel).maneuver(newManeuver);

@@ -34,6 +34,15 @@ class Vector3D {
   /// Z-axis unit vector.
   static const zAxis = Vector3D(0, 0, 1);
 
+  /// Negative x-axis unit vector.
+  static const xAxisNeg = Vector3D(-1, 0, 0);
+
+  /// Negative y-axis unit vector.
+  static const yAxisNeg = Vector3D(0, -1, 0);
+
+  /// Negative z-axis unit vector.
+  static const zAxisNeg = Vector3D(0, 0, -1);
+
   /// Convert this to a [List] of doubles.
   List<double> toList() => [x, y, z];
 
@@ -241,6 +250,15 @@ class Vector {
 
   /// Z-axis unit vector.
   static final zAxis = Vector(Float64List.fromList([0, 0, 1]));
+
+  /// Negative x-axis unit vector.
+  static final xAxisNeg = Vector.fromList([-1, 0, 0]);
+
+  /// Negative y-axis unit vector.
+  static final yAxisNeg = Vector.fromList([0, -1, 0]);
+
+  /// Negative z-axis unit vector.
+  static final zAxisNeg = Vector.fromList([0, 0, -1]);
 
   @override
   String toString([final int fixed = -1]) {

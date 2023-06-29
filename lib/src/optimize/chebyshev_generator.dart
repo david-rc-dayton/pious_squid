@@ -53,7 +53,7 @@ class ChebyshevCompressor {
 
   /// Compress this object's interpolater, using the provided coefficients
   /// per revolution [cpr].
-  ChebyshevInterpolator compress({final int cpr = 21}) {
+  ChebyshevInterpolator compress([final int cpr = 21]) {
     final (start, stop) = _interpolator.window();
     final period = _interpolator.interpolate(start)!.period();
     final coefficients = <ChebyshevCoefficients>[];

@@ -12,7 +12,7 @@ abstract class Propagator {
   /// [start] and [stop] propagation period, with an optional
   /// ephemeris [interval].
   VerletBlendInterpolator ephemeris(final EpochUTC start, final EpochUTC stop,
-      {final double interval = 60.0}) {
+      [final double interval = 60.0]) {
     final output = <J2000>[propagate(start)];
     var tempEpoch = start;
     while (tempEpoch <= stop) {
@@ -33,13 +33,13 @@ abstract class Propagator {
   /// Generate a list of [J2000] states integrating over a maneuver.
   ///
   /// If the maneuver is impulsive, the list will only contain a single state.
-  List<J2000> maneuver(final Thrust maneuver, {final double interval = 60.0});
+  List<J2000> maneuver(final Thrust maneuver, [final double interval = 60.0]);
 
   /// Generate a [VerletBlendInterpolator] containing maneuver ephemeris over
   /// the [start] and [finish] interval, with an optional ephemeris [interval].
   VerletBlendInterpolator ephemerisManeuver(
       final EpochUTC start, final EpochUTC finish, final List<Thrust> maneuvers,
-      {final double interval = 60.0});
+      [final double interval = 60.0]);
 
   /// Return the epoch of apogee after the [start] epoch.
   EpochUTC apogeeEpoch(final EpochUTC start) {

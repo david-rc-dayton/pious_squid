@@ -44,11 +44,10 @@ class TwoBurnOrbitTransfer {
   /// Convert this burn sequence into [Thrust] objects at the provided UTC
   /// [epoch], and optional thruster [durationRate] _(s/m/s)_.
   (Thrust, Thrust) toManeuvers(final EpochUTC epoch,
-      {final double durationRate = 0.0}) {
-    final mA =
-        Thrust(epoch, 0.0, vTransA * 1000.0, 0.0, durationRate: durationRate);
-    final mB = Thrust(epoch.roll(tTrans), 0.0, vTransB * 1000.0, 0.0,
-        durationRate: durationRate);
+      [final double durationRate = 0.0]) {
+    final mA = Thrust(epoch, 0.0, vTransA * 1000.0, 0.0, durationRate);
+    final mB =
+        Thrust(epoch.roll(tTrans), 0.0, vTransB * 1000.0, 0.0, durationRate);
     return (mA, mB);
   }
 }

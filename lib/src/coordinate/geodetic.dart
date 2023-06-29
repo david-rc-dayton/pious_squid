@@ -57,24 +57,24 @@ class Geodetic {
   /// Calculate the angular distance _(rad)_ between this and another
   /// [Geodetic] object.
   double angle(final Geodetic g,
-          {final AngularDistanceMethod method =
-              AngularDistanceMethod.haversine}) =>
+          [final AngularDistanceMethod method =
+              AngularDistanceMethod.haversine]) =>
       angularDistance(longitude, latitude, g.longitude, g.latitude,
           method: method);
 
   /// Calculate the angular distance _(°)_ between this and another
   /// [Geodetic] object.
   double angleDegrees(final Geodetic g,
-          {final AngularDistanceMethod method =
-              AngularDistanceMethod.haversine}) =>
-      angle(g, method: method) * rad2deg;
+          [final AngularDistanceMethod method =
+              AngularDistanceMethod.haversine]) =>
+      angle(g, method) * rad2deg;
 
   /// Calculate the distance _(km)_ along the Earth's surface between this and
   /// another [Geodetic] object.
   double distance(final Geodetic g,
-          {final AngularDistanceMethod method =
-              AngularDistanceMethod.haversine}) =>
-      angle(g, method: method) * Earth.radiusMean;
+          [final AngularDistanceMethod method =
+              AngularDistanceMethod.haversine]) =>
+      angle(g, method) * Earth.radiusMean;
 
   /// Calculate the angular field-of-view _(rad)_ of the Earth's surface
   /// an observer would have at this location.
@@ -84,8 +84,8 @@ class Geodetic {
   /// Return `true` if this location is visible to an observer at the provided
   /// [Geodetic] coordinates.
   bool sight(final Geodetic g,
-      {final AngularDistanceMethod method = AngularDistanceMethod.haversine}) {
+      [final AngularDistanceMethod method = AngularDistanceMethod.haversine]) {
     final fov = max(fieldOfView(), g.fieldOfView());
-    return angle(g, method: method) <= fov;
+    return angle(g, method) <= fov;
   }
 }

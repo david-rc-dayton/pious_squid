@@ -111,6 +111,6 @@ class VerletBlendInterpolator extends StateInterpolator {
       CubicSplineInterpolator.fromEphemeris(ephemeris);
 
   /// Convert this into a [LagrangeInterpolator] object.
-  LagrangeInterpolator toLagrange({final int order = 10}) =>
-      LagrangeInterpolator.fromEphemeris(ephemeris, order: order);
+  LagrangeInterpolator toLagrange([final int order = 10]) =>
+      LagrangeInterpolator.fromEphemeris(ephemeris, order);
 }

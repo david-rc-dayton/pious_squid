@@ -138,7 +138,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
   }
 
   @override
-  List<J2000> maneuver(final Thrust maneuver, {final double interval = 60.0}) {
+  List<J2000> maneuver(final Thrust maneuver, [final double interval = 60.0]) {
     if (maneuver.isImpulsive) {
       _cacheState = maneuver.apply(propagate(maneuver.center));
       return [_cacheState];
@@ -158,7 +158,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
   @override
   VerletBlendInterpolator ephemerisManeuver(
       final EpochUTC start, final EpochUTC finish, final List<Thrust> maneuvers,
-      {final double interval = 60.0}) {
+      [final double interval = 60.0]) {
     final tMvr = maneuvers.sublist(0);
     tMvr.retainWhere(
         (final mvr) => (mvr.start >= start) || (mvr.stop <= finish));
@@ -174,7 +174,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
           ephemeris.add(_cacheState);
         }
       }
-      ephemeris.addAll(maneuver(mvr, interval: interval));
+      ephemeris.addAll(maneuver(mvr, interval));
     }
     while (_cacheState.epoch.posix < finish.posix) {
       final step = min(finish.difference(_cacheState.epoch), interval);
