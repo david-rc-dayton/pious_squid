@@ -76,7 +76,7 @@ class EarthGravity implements Force {
       final twonm1 = 2.0 * n - 1.0;
 
       reorn *= reor;
-      final cN0 = dh.getEgm96Coeffs(n, 0).clm;
+      final (_, _, cN0, _) = dh.getEgm96Coeffs(n, 0);
 
       pN[0] = (twonm1 * ep * pNm1[0] - nm1 * pNm2[0]) / n;
       pN[1] = pNm2[1] + twonm1 * pNm1[0];
@@ -105,9 +105,7 @@ class EarthGravity implements Force {
           final pNm = pN[m];
           final pNmp1 = pN[mp1];
 
-          final coeffs = dh.getEgm96Coeffs(n, m);
-          final cNm = coeffs.clm;
-          final sNm = coeffs.slm;
+          final (_, _, cNm, sNm) = dh.getEgm96Coeffs(n, m);
 
           final mxPnm = dm * pNm;
           final bNmtil = cNm * cTil[m] + sNm * sTil[m];

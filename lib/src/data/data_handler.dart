@@ -15,10 +15,11 @@ class DataHandler {
   static final DataHandler _instance = DataHandler._internal();
 
   /// Return de-normalized [Egm96] coefficients for a given [l] and [m] index.
-  Egm96 getEgm96Coeffs(final int l, final int m) => egm96Data.getCoeffs(l, m);
+  Egm96Entry getEgm96Coeffs(final int l, final int m) =>
+      egm96Data.getCoeffs(l, m);
 
   /// Return [Iau1980] nutation coefficients for a given [row].
-  Iau1980 getIau1980Coeffs(final int row) => iau1980Data.getCoeffs(row);
+  Iau1980Entry getIau1980Coeffs(final int row) => iau1980Data.getCoeffs(row);
 
   /// Return the leap second offset for a given Julian date [jd].
   double getLeapSeconds(final double jd) => leapSecondData.getLeapSeconds(jd);

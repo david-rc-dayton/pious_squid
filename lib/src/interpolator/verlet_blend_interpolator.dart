@@ -26,8 +26,7 @@ class VerletBlendInterpolator extends StateInterpolator {
   int get sizeBytes => (64 * 7 * ephemeris.length) ~/ 8;
 
   @override
-  (EpochUTC, EpochUTC) window() =>
-      (ephemeris.first.epoch, ephemeris.last.epoch);
+  EpochWindow window() => (ephemeris.first.epoch, ephemeris.last.epoch);
 
   static J2000 _getClosest(
           final double target, final J2000 s1, final J2000 s2) =>

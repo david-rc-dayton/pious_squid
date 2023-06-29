@@ -47,14 +47,14 @@ class AtmosphericDrag implements Force {
     final cPsi2 = sqrt(c2Psi2);
     final cosPow = (cPsi2 > 1e-12) ? c2Psi2 * pow(cPsi2, n - 2) : 0.0;
     final altitude = hpa.height;
-    final hp0 = hpa.hp0;
-    final hp1 = hpa.hp1;
-    final dH = (hp0.h - altitude) / (hp0.h - hp1.h);
-    final rhoMin = hp0.minD * pow(hp1.minD / hp0.minD, dH);
+    final (h0, min0, max0) = hpa.hp0;
+    final (h1, min1, max1) = hpa.hp1;
+    final dH = (h0 - altitude) / (h0 - h1);
+    final rhoMin = min0 * pow(min1 / min0, dH);
     if (cosPow == 0) {
       return rhoMin;
     }
-    final rhoMax = hp0.maxD * pow(hp1.maxD / hp0.maxD, dH);
+    final rhoMax = max0 * pow(max1 / max0, dH);
     return rhoMin + (rhoMax - rhoMin) * cosPow;
   }
 

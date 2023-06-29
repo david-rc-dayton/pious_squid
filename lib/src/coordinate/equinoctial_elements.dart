@@ -4,7 +4,6 @@ import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/functions.dart';
-import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
 /// Equinoctial element set.
@@ -82,6 +81,6 @@ class EquinoctialElements {
   }
 
   /// Convert this to inertial position and velocity vectors.
-  ({Vector3D position, Vector3D velocity}) toPositionVelocity() =>
+  PositionVelocity toPositionVelocity() =>
       toClassicalElements().toPositionVelocity();
 }

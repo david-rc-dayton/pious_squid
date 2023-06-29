@@ -8,6 +8,9 @@ import 'package:pious_squid/src/time/epoch.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 import 'package:pious_squid/src/time/time_scales.dart';
 
+/// Start and stop epoch window.
+typedef EpochWindow = (EpochUTC, EpochUTC);
+
 final Float64List _gmstPoly = Float64List.fromList(
     [-6.2e-6, 0.093104, 876600 * 3600 + 8640184.812866, 67310.54841]);
 

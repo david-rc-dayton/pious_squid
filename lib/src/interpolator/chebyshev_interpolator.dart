@@ -77,11 +77,11 @@ class ChebyshevCoefficients {
 
   /// Return the interpolated position _(km)_ and velocity _(km/s)_ vectors at
   /// he provided time [t] _(POSIX seconds)_.
-  (Vector3D, Vector3D) interpolate(final double t) {
+  PositionVelocity interpolate(final double t) {
     final pos = Vector3D(evaluate(_cx, t), evaluate(_cy, t), evaluate(_cz, t));
     final vel =
         Vector3D(evaluate(_cxd, t), evaluate(_cyd, t), evaluate(_czd, t));
-    return (pos, vel);
+    return (position: pos, velocity: vel);
   }
 }
 
@@ -116,12 +116,12 @@ class ChebyshevInterpolator extends StateInterpolator {
       return null;
     }
     final coeffs = _matchCoefficients(epoch.posix);
-    final (pos, vel) = coeffs.interpolate(epoch.posix);
+    final (position: pos, velocity: vel) = coeffs.interpolate(epoch.posix);
     return J2000(epoch, pos, vel);
   }
 
   @override
-  (EpochUTC, EpochUTC) window() =>
+  EpochWindow window() =>
       (EpochUTC(_coefficients.first.a), EpochUTC(_coefficients.last.b));
 
   ChebyshevCoefficients _matchCoefficients(final double posix) {

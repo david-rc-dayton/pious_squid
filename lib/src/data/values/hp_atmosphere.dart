@@ -1,5 +1,8 @@
+/// Harris-Priester atmosphere entry for height, min, and max density values.
+typedef HpAtmosphereEntry = (int, double, double);
+
 /// Harris-Priester atmosphere data, assuming mean solar flux.
-final List<(int, double, double)> hpAtmosphere = [
+final List<HpAtmosphereEntry> hpAtmosphere = [
   (100, 4.974e-7, 4.974e-7),
   (120, 2.49e-8, 2.49e-8),
   (130, 8.377e-9, 8.71e-9),
@@ -52,21 +55,6 @@ final List<(int, double, double)> hpAtmosphere = [
   (1000, 1.15e-15, 1.81e-14),
 ];
 
-/// Harris-Priester atmosphere fields.
-class HpAtmosphere {
-  /// Create a new [HpAtmosphere] object.
-  HpAtmosphere(this.h, this.minD, this.maxD);
-
-  /// Height above Earth's surface _(km)_.
-  final int h;
-
-  /// Minimum density _(kg/m³)_.
-  final double minD;
-
-  /// Maximum density _(kg/m³)_.
-  final double maxD;
-}
-
 /// Harris-Priester atmospheric density bracket.
 class HpAtmosphereResult {
   /// Create a new [HpAtmosphereResult] object.
@@ -76,10 +64,10 @@ class HpAtmosphereResult {
   final double height;
 
   /// Lower bound for atmospheric parameters.
-  final HpAtmosphere hp0;
+  final HpAtmosphereEntry hp0;
 
   /// Upper bound for atmospheric parameters.
-  final HpAtmosphere hp1;
+  final HpAtmosphereEntry hp1;
 }
 
 /// Container for Harris-Priester atmosphere data.
@@ -87,22 +75,22 @@ class HpAtmosphereData {
   /// Create a new [HpAtmosphereData] object given an array of
   /// [HpAtmosphere] objects.
   HpAtmosphereData(this._table)
-      : _hMin = _table.first.h,
-        _hMax = _table.last.h;
+      : _hMin = _table.first.$1,
+        _hMax = _table.last.$1;
 
   /// Create a new [HpAtmosphereData] object from a list of Harris-Priester
   /// atmospheric parameter tuples.
   factory HpAtmosphereData.fromVals(final List<(int, double, double)> vals) {
-    final output = <HpAtmosphere>[];
+    final output = <HpAtmosphereEntry>[];
     for (final v in vals) {
       final (h, minD, maxD) = v;
-      output.add(HpAtmosphere(h, minD, maxD));
+      output.add((h, minD, maxD));
     }
     return HpAtmosphereData(output);
   }
 
   /// Array of Harris-Priester atmospheric parameters
-  final List<HpAtmosphere> _table;
+  final List<HpAtmosphereEntry> _table;
 
   /// Minimum atmosphere height _(km)_
   final int _hMin;
@@ -117,7 +105,7 @@ class HpAtmosphereData {
       return null;
     }
     var index = 0;
-    while (index < _table.length - 2 && height > _table[index + 1].h) {
+    while (index < _table.length - 2 && height > _table[index + 1].$1) {
       index++;
     }
     return HpAtmosphereResult(height, _table[index], _table[index + 1]);

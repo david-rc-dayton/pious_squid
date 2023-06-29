@@ -154,7 +154,7 @@ class ClassicalElements {
   }
 
   /// Convert this to inertial position and velocity vectors.
-  ({Vector3D position, Vector3D velocity}) toPositionVelocity() {
+  PositionVelocity toPositionVelocity() {
     final rVec = Vector3D(cos(trueAnomaly), sin(trueAnomaly), 0.0);
     final rPQW = rVec.scale((semimajorAxis * (1.0 - pow(eccentricity, 2))) /
         (1.0 + eccentricity * cos(trueAnomaly)));

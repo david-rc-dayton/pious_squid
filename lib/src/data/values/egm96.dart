@@ -2,8 +2,11 @@ import 'dart:math';
 
 import 'package:pious_squid/src/operations/functions.dart';
 
+/// EGM-96 entry for l, m indexes and clm, slm values.
+typedef Egm96Entry = (int, int, double, double);
+
 /// The first degree 36 EGM-96 normalized coefficients.
-const List<(int, int, double, double)> egm96 = [
+const List<Egm96Entry> egm96 = [
   (2, 0, -0.000484165371736, 0),
   (2, 1, -1.86987635955e-10, 1.19528012031e-9),
   (2, 2, 2.43914352398e-6, -1.40016683654e-6),
@@ -709,24 +712,6 @@ const List<(int, int, double, double)> egm96 = [
 /// Return the EGM-96 index for a given [l] and [m] lookup.
 int _index(final int l, final int m) => (((l - 2) * (l + 2) + l) >> 1) - 1 + m;
 
-/// De-normalized EGM-96 Coefficients.
-class Egm96 {
-  /// Create a new [Egm96] object.
-  Egm96(this.l, this.m, this.clm, this.slm);
-
-  /// L index.
-  final int l;
-
-  /// M index.
-  final int m;
-
-  /// Clm coefficient _(denormalized)_.
-  final double clm;
-
-  /// Slm coefficient _(denormalized)_.
-  final double slm;
-}
-
 /// Container for EGM-96 data.
 class Egm96Data {
   /// Create a new [Egm96Data] object.
@@ -734,8 +719,8 @@ class Egm96Data {
 
   /// Create a new [Egm96Data] container given a list of EGM-96
   /// coefficient tuples [vals].
-  factory Egm96Data.fromVals(final List<(int, int, double, double)> vals) {
-    final output = <Egm96>[];
+  factory Egm96Data.fromVals(final List<Egm96Entry> vals) {
+    final output = <Egm96Entry>[];
     for (final v in vals) {
       var (l, m, clm, slm) = v;
       final k = m == 0 ? 1 : 2;
@@ -744,16 +729,16 @@ class Egm96Data {
       final nFac = sqrt(a / b);
       clm /= nFac;
       slm /= nFac;
-      output.add(Egm96(l, m, clm, slm));
+      output.add((l, m, clm, slm));
     }
     return Egm96Data(output);
   }
 
   /// EGM-96 coefficients
-  List<Egm96> _coeffs;
+  List<Egm96Entry> _coeffs;
 
   /// Return de-normalized EGM-96 coefficients for a given [l] and [m] index.
-  Egm96 getCoeffs(final int l, final int m) => _coeffs[_index(l, m)];
+  Egm96Entry getCoeffs(final int l, final int m) => _coeffs[_index(l, m)];
 }
 
 /// De-normalized EGM-96 data container.

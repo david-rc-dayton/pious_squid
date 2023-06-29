@@ -170,5 +170,5 @@ class LagrangeInterpolator extends StateInterpolator {
   }
 
   @override
-  (EpochUTC, EpochUTC) window() => (EpochUTC(_t.first), EpochUTC(_t.last));
+  EpochWindow window() => (EpochUTC(_t.first), EpochUTC(_t.last));
 }

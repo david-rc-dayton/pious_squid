@@ -113,6 +113,6 @@ class CubicSplineInterpolator extends StateInterpolator {
   }
 
   @override
-  (EpochUTC, EpochUTC) window() =>
+  EpochWindow window() =>
       (EpochUTC(_splines.first.t0), EpochUTC(_splines.last.t1));
 }

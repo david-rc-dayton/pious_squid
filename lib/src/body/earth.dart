@@ -67,46 +67,18 @@ final Float64List _meanEpsilonPoly = Float64List.fromList([
   84381.448 * asec2rad,
 ]);
 
-/// Container for Earth precession values.
-class PrecessionAngles {
-  /// Create a new [PrecessionAngles] object, given the precession
-  /// angles _(rad)_.
-  PrecessionAngles(this.zeta, this.theta, this.zed);
+/// Earth precession angles _(rad)_.
+typedef PrecessionAngles = ({double zeta, double theta, double zed});
 
-  /// Zeta angle _(rad)_.
-  final double zeta;
-
-  /// Theta angle _(rad)_.
-  final double theta;
-
-  /// Zed angle _(rad)_.
-  final double zed;
-}
-
-/// Container for Earth nutation values.
-class NutationAngles {
-  /// Create a new [NutationAngles] object, given the nutation angles _(rad)_.
-  NutationAngles(
-      this.dPsi, this.dEps, this.mEps, this.eps, this.eqEq, this.gast);
-
-  /// Delta-psi angle _(rad)_.
-  final double dPsi;
-
-  /// Delta-epsilon angle _(rad)_.
-  final double dEps;
-
-  /// Mean-epsilon angle _(rad)_.
-  final double mEps;
-
-  /// Epsilon angle _(rad)_.
-  final double eps;
-
-  /// Equation of equinoxes angle _(rad)_.
-  final double eqEq;
-
-  /// Greenwich apparent sidereal time angle _(rad)_.
-  final double gast;
-}
+/// Earth nutation angles _(rad)_.
+typedef NutationAngles = ({
+  double dPsi,
+  double dEps,
+  double mEps,
+  double eps,
+  double eqEq,
+  double gast
+});
 
 /// Earth metrics and operations.
 class Earth {
@@ -163,7 +135,7 @@ class Earth {
     final zeta = evalPoly(t, _zetaPoly);
     final theta = evalPoly(t, _thetaPoly);
     final zed = evalPoly(t, _zedPoly);
-    return PrecessionAngles(zeta, theta, zed);
+    return (zeta: zeta, theta: theta, zed: zed);
   }
 
   /// Calculate Earth [NutationAngles] for a given UTC [epoch].
@@ -178,14 +150,14 @@ class Earth {
     var deltaEpsilon = 0.0;
     final dh = DataHandler();
     for (var i = 0; i < 4; i++) {
-      final coeffs = dh.getIau1980Coeffs(i);
-      final arg = coeffs.a1 * moonAnom +
-          coeffs.a2 * sunAnom +
-          coeffs.a3 * moonLat +
-          coeffs.a4 * sunElong +
-          coeffs.a5 * moonRaan;
-      final sinC = coeffs.ai + coeffs.bi * t;
-      final cosC = coeffs.ci + coeffs.di * t;
+      final (a1, a2, a3, a4, a5, ai, bi, ci, di) = dh.getIau1980Coeffs(i);
+      final arg = a1 * moonAnom +
+          a2 * sunAnom +
+          a3 * moonLat +
+          a4 * sunElong +
+          a5 * moonRaan;
+      final sinC = ai + bi * t;
+      final cosC = ci + di * t;
       deltaPsi += sinC * sin(arg);
       deltaEpsilon += cosC * cos(arg);
     }
@@ -197,8 +169,14 @@ class Earth {
         (0.00264 * asec2rad) * sin(moonRaan) +
         (0.000063 * asec2rad) * sin(2.0 * moonRaan);
     final gast = epoch.gmstAngle() + eqEq;
-    return NutationAngles(
-        deltaPsi, deltaEpsilon, meanEpsilon, epsilon, eqEq, gast);
+    return (
+      dPsi: deltaPsi,
+      dEps: deltaEpsilon,
+      mEps: meanEpsilon,
+      eps: epsilon,
+      eqEq: eqEq,
+      gast: gast
+    );
   }
 
   /// Convert a [semimajorAxis] _(km)_ to an eastward drift rate _(rad/day)_.

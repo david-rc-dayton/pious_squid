@@ -1,5 +1,4 @@
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
-import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 
 /// Base class for relative states.
@@ -36,8 +35,5 @@ abstract class RelativeState {
   double range() => position.magnitude();
 
   /// Return the relative range rate _(km/s)_.
-  double rangeRate() {
-    final direction = (position.angle(velocity) > halfPi) ? -1.0 : 1.0;
-    return velocity.magnitude() * direction;
-  }
+  double rangeRate() => position.dot(velocity) / range();
 }

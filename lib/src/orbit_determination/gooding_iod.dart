@@ -15,6 +15,7 @@ class GoodingIOD {
   /// Create a new [GoodingIOD] object from three optical observations and
   /// optional gravitational parameter [_mu].
   GoodingIOD(this._o1, this._o2, this._o3, [this._mu = Earth.mu]);
+
   final double _mu;
   final ObservationOptical _o1;
   final ObservationOptical _o2;

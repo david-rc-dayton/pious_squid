@@ -6,6 +6,9 @@ import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
+/// Position and velocity [Vector3D] container.
+typedef PositionVelocity = ({Vector3D position, Vector3D velocity});
+
 /// Base class for state vectors.
 abstract class StateVector {
   /// Create a new [StateVector] object, from [position] and [velocity] _(km)_.
