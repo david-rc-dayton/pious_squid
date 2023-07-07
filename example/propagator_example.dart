@@ -25,7 +25,7 @@ void main() {
   // Create a Runge-Kutta 8(9) propagator.
   final rk89Prop = RungeKutta89Propagator(startState, forceModel);
 
-  // Propagate start state 1 day in the future.
+  // Propagate the start state to 1 day in the future.
   final oneDay = 86400.0; // seconds
   final finalState = rk89Prop.propagate(startState.epoch.roll(oneDay));
 
