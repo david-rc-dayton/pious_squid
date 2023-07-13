@@ -64,11 +64,12 @@ class Matrix {
     return Matrix(output);
   }
 
-  /// Create a new square [Matrix] using vector [v] for the diagonal components.
-  factory Matrix.diagonal(final Vector v) {
-    final output = array2d(v.length, v.length);
-    for (var i = 0; i < v.length; i++) {
-      output[i][i] = v[i];
+  /// Create a new square [Matrix] using elements [d] for the diagonal
+  /// components.
+  factory Matrix.diagonal(final List<double> d) {
+    final output = array2d(d.length, d.length);
+    for (var i = 0; i < d.length; i++) {
+      output[i][i] = d[i];
     }
     return Matrix(output);
   }
@@ -132,6 +133,17 @@ class Matrix {
         for (var k = 0; k < columns; k++) {
           result[i][j] += _elements[i][k] * m._elements[k][j];
         }
+      }
+    }
+    return Matrix(result);
+  }
+
+  /// Return the result of element-wise multiplying this and another [Matrix].
+  Matrix outerProduct(final Matrix m) {
+    final result = array2d(rows, columns);
+    for (var i = 0; i < rows; i++) {
+      for (var j = 0; j < columns; j++) {
+        result[i][j] = _elements[i][j] * m._elements[i][j];
       }
     }
     return Matrix(result);
