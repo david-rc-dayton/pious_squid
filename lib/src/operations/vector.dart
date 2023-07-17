@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/constants.dart';
+import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/matrix.dart';
 
 /// 3-dimensional vector.
@@ -115,6 +116,13 @@ class Vector3D {
 
   /// Calculate the dot product of this and another [Vector3D].
   double dot(final Vector3D v) => x * v.x + y * v.y + z * v.z;
+
+  /// Calculate the outer product between this and another [Vector3D].
+  Matrix outer(final Vector3D v) => Matrix([
+        [x * v.x, x * v.y, x * v.z],
+        [y * v.x, y * v.y, y * v.z],
+        [z * v.x, z * v.y, z * v.z],
+      ]);
 
   /// Calculate the cross product of this and another [Vector3D].
   Vector3D cross(final Vector3D v) =>
@@ -347,6 +355,17 @@ class Vector {
       total += _elements[i] * v._elements[i];
     }
     return total;
+  }
+
+  /// Calculate the outer product between this and another [Vector].
+  Matrix outer(final Vector v) {
+    final result = array2d(length, v.length);
+    for (var i = 0; i < length; i++) {
+      for (var j = 0; j < v.length; j++) {
+        result[i][j] = _elements[i] * v._elements[j];
+      }
+    }
+    return Matrix(result);
   }
 
   /// Calculate the cross product of this and another [Vector];
