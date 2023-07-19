@@ -28,5 +28,12 @@ void main() {
       expect(himmelblauSolve[0], closeTo(-2.805118, 1e-5));
       expect(himmelblauSolve[1], closeTo(3.131312, 1e-5));
     });
+
+    test('SimpleLinearRegression', () {
+      final xs = <double>[17, 13, 12, 15, 16, 14, 16, 16, 18, 19];
+      final ys = <double>[94, 73, 59, 80, 93, 85, 66, 79, 77, 91];
+      final f = SimpleLinearRegression(xs, ys);
+      expect(f.evaluate(15), closeTo(77.792, 1e-3));
+    });
   });
 }
