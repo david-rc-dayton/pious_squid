@@ -84,7 +84,7 @@ class EpochUTC extends Epoch {
   /// Create a new [EpochUTC] object for a given [year], [month], [day], [hour],
   /// [minute], and [second].
   EpochUTC.fromDate(final int year, final int month, final int day,
-      final int hour, final int minute, final double second)
+      [final int hour = 0, final int minute = 0, final double second = 0.0])
       : super(_dateToPosix(year, month, day, hour, minute, second));
 
   /// Create a new [EpochUTC] from from a [DateTime] object.
