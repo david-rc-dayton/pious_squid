@@ -34,6 +34,7 @@ void main() {
       final ys = <double>[94, 73, 59, 80, 93, 85, 66, 79, 77, 91];
       final f = SimpleLinearRegression(xs, ys);
       expect(f.evaluate(15), closeTo(77.792, 1e-3));
+      expect(f.error, closeTo(9.295, 1e-3));
     });
   });
 }

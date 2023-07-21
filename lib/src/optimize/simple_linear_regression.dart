@@ -20,11 +20,28 @@ class SimpleLinearRegression {
   /// Y-axis intercept
   double _intercept = 0.0;
 
+  double _error = 0.0;
+
   /// Line slope
   double get slope => _slope;
 
   /// Y-axis intercept
   double get intercept => _intercept;
+
+  /// Linear regression standard deviation
+  double get error => _error;
+
+  /// Data length
+  int get length => min(xs.length, ys.length);
+
+  void _calcError() {
+    var total = 0.0;
+    for (var i = 0; i < length; i++) {
+      final delta = ys[i] - evaluate(xs[i]);
+      total += delta * delta;
+    }
+    _error = sqrt(total / (length - 1));
+  }
 
   /// Update the linear fit with this object's current [xs] and [ys] values.
   void update() {
@@ -52,8 +69,24 @@ class SimpleLinearRegression {
     ySig = sqrt(ySig / (n - 1));
     _slope = p * (ySig / xSig);
     _intercept = yMu - (_slope * xMu);
+    _calcError();
   }
 
   /// Evaluate this linear fit for y, given an [x] value.
   double evaluate(final double x) => _slope * x + _intercept;
+
+  /// Create a new [SimpleLinearRegression] object with outliers above the
+  /// provided standard deviation [sigma] value removed.
+  SimpleLinearRegression filterOutliers([final double sigma = 1.0]) {
+    final limit = error * sigma;
+    final xsOut = <double>[];
+    final ysOut = <double>[];
+    for (var i = 0; i < length; i++) {
+      if (ys[i] < limit) {
+        xsOut.add(xs[i]);
+        ysOut.add(ys[i]);
+      }
+    }
+    return SimpleLinearRegression(xsOut, ysOut);
+  }
 }
