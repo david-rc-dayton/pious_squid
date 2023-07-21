@@ -82,7 +82,7 @@ class SimpleLinearRegression {
     final xsOut = <double>[];
     final ysOut = <double>[];
     for (var i = 0; i < length; i++) {
-      if (ys[i] < limit) {
+      if ((ys[i] - evaluate(xs[i])).abs() < limit) {
         xsOut.add(xs[i]);
         ysOut.add(ys[i]);
       }
