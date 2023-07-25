@@ -35,6 +35,8 @@ void main() {
       final f = SimpleLinearRegression(xs, ys);
       expect(f.evaluate(15), closeTo(77.792, 1e-3));
       expect(f.error, closeTo(9.295, 1e-3));
+      final f1 = f.filterOutliers(1.0);
+      expect(f1.length, equals(5));
     });
   });
 }
