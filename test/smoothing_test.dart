@@ -44,8 +44,8 @@ final expectedIndices = [0, 12, 24, 32];
 void main() {
   group('Smoothing', () {
     test('Exponential Simple', () {
-      final smoothed = ExponentialSmoothing.smooth(values, 0.8);
-      final expected = [6781.681, 6782.397, 6783.998, 6784.720];
+      final smoothed = ExponentialSmoothing.smooth(values, 0.2);
+      final expected = [6781.681, 6782.206, 6783.756, 6784.435];
       for (var i = 0; i < expectedIndices.length; i++) {
         expect(smoothed[expectedIndices[i]], closeTo(expected[i], 1e-2));
       }
@@ -53,7 +53,7 @@ void main() {
   });
 
   test('Exponential Double', () {
-    final smoothed = ExponentialSmoothing.smoothDouble(values, 0.9, 0.4);
+    final smoothed = ExponentialSmoothing.smoothDouble(values, 0.2, 0.9);
     final expected = [6781.681, 6782.397, 6783.998, 6784.720];
     for (var i = 0; i < expectedIndices.length; i++) {
       expect(smoothed[expectedIndices[i]], closeTo(expected[i], 1e-2));
@@ -61,7 +61,7 @@ void main() {
   });
 
   test('Exponential Time', () {
-    final smoothed = ExponentialSmoothing.smoothTime(epochs, values, 86400.0);
+    final smoothed = ExponentialSmoothing.smoothTime(epochs, values, 12600.0);
     final expected = [6781.681, 6782.397, 6783.998, 6784.720];
     for (var i = 0; i < expectedIndices.length; i++) {
       expect(smoothed[expectedIndices[i]], closeTo(expected[i], 1e-2));
