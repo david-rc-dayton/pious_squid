@@ -1,6 +1,7 @@
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/force/force_base.dart';
 import 'package:pious_squid/src/interpolator/interpolator_base.dart';
+import 'package:pious_squid/src/optimize/optimize_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
 /// Propagator base class.
@@ -41,53 +42,100 @@ abstract class Propagator {
       final EpochUTC start, final EpochUTC finish, final List<Thrust> maneuvers,
       [final double interval = 60.0]);
 
+  /// Return the epoch of the ascending node after the [start] epoch.
+  EpochUTC ascendingNodeEpoch(final EpochUTC start) {
+    final period = state.period();
+    final step = period / 8;
+    var current = start;
+    final stop = current.roll(period);
+    propagate(current);
+    var previous = state.position.z;
+    while (current <= stop) {
+      current = current.roll(step);
+      propagate(current);
+      if ((state.position.z.sign == -previous.sign) && (state.velocity.z > 0)) {
+        break;
+      }
+      previous = state.position.z;
+    }
+    final t = GoldenSection.search((final x) {
+      propagate(EpochUTC(x));
+      return state.position.z.abs();
+    }, current.posix - step, current.posix, tolerance: 1e-3);
+    return EpochUTC(t);
+  }
+
+  /// Return the epoch of the descending node after the [start] epoch.
+  EpochUTC descendingNodeEpoch(final EpochUTC start) {
+    final period = state.period();
+    final step = period / 8;
+    var current = start;
+    final stop = current.roll(period);
+    propagate(current);
+    var previous = state.position.z;
+    while (current <= stop) {
+      current = current.roll(step);
+      propagate(current);
+      if ((state.position.z.sign == -previous.sign) && (state.velocity.z < 0)) {
+        break;
+      }
+      previous = state.position.z;
+    }
+    final t = GoldenSection.search((final x) {
+      propagate(EpochUTC(x));
+      return state.position.z.abs();
+    }, current.posix - step, current.posix, tolerance: 1e-3);
+    return EpochUTC(t);
+  }
+
   /// Return the epoch of apogee after the [start] epoch.
   EpochUTC apogeeEpoch(final EpochUTC start) {
+    final slice = 8;
+    final period = state.period();
+    final step = period / slice;
     var current = start;
-    var hub = start;
-    var step = 300.0;
-    while (true) {
-      final r0 = propagate(current).position.magnitude();
+    propagate(current);
+    var tCache = current;
+    var rCache = state.position.magnitude();
+    for (var i = 0; i < slice; i++) {
       current = current.roll(step);
-      final r1 = propagate(current).position.magnitude();
-      current = current.roll(step);
-      final r2 = propagate(current).position.magnitude();
-      if (r1 > r0 && r1 > r2) {
-        if (step < 1e-1) {
-          break;
-        }
-        current = hub;
-        step /= 2;
-        continue;
+      final t = EpochUTC(GoldenSection.search((final x) {
+        propagate(EpochUTC(x));
+        return state.position.magnitude();
+      }, current.posix - step, current.posix, tolerance: 1e-3, solveMax: true));
+      propagate(t);
+      final r = state.position.magnitude();
+      if (r > rCache) {
+        tCache = t;
+        rCache = r;
       }
-      hub = hub.roll(step);
-      current = hub;
     }
-    return hub.roll(step);
+    return tCache;
   }
 
   /// Return the epoch of perigee after the [start] epoch.
   EpochUTC perigeeEpoch(final EpochUTC start) {
+    final slice = 8;
+    final period = state.period();
+    final step = period / slice;
     var current = start;
-    var hub = start;
-    var step = 300.0;
-    while (true) {
-      final r0 = propagate(current).position.magnitude();
+    propagate(current);
+    var tCache = current;
+    var rCache = state.position.magnitude();
+    for (var i = 0; i < slice; i++) {
       current = current.roll(step);
-      final r1 = propagate(current).position.magnitude();
-      current = current.roll(step);
-      final r2 = propagate(current).position.magnitude();
-      if (r1 < r0 && r1 < r2) {
-        if (step < 1e-1) {
-          break;
-        }
-        current = hub;
-        step /= 2;
-        continue;
+      final t = EpochUTC(GoldenSection.search((final x) {
+        propagate(EpochUTC(x));
+        return state.position.magnitude();
+      }, current.posix - step, current.posix,
+          tolerance: 1e-3, solveMax: false));
+      propagate(t);
+      final r = state.position.magnitude();
+      if (r < rCache) {
+        tCache = t;
+        rCache = r;
       }
-      hub = hub.roll(step);
-      current = hub;
     }
-    return hub.roll(step);
+    return tCache;
   }
 }

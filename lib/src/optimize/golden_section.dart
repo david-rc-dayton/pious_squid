@@ -4,8 +4,12 @@ import 'package:pious_squid/src/operations/functions.dart';
 
 /// Golden Secton bounded single value optimizer.
 class GoldenSection {
-  static final double _invPhi = 0.5 * (sqrt(5.0) - 1.0);
-  static final double _invPhi2 = 0.5 * (3.0 - sqrt(5.0));
+  GoldenSection._(); // disable constructor
+
+  static final double _grInv = 1.0 / (0.5 * (sqrt(5) + 1));
+
+  static bool _check(final double fc, final double fd, final bool solveMax) =>
+      solveMax ? fc > fd : fc < fd;
 
   /// Search for an optimal input value for function [f] that minimizes the
   /// output value.
@@ -14,38 +18,20 @@ class GoldenSection {
   /// search [tolerance].
   static double search(
       final DifferentiableFunction f, final double lower, final double upper,
-      {final double tolerance = 1e-5}) {
-    var a = min(lower, upper);
-    var b = max(lower, upper);
-    var h = b - a;
-    if (h <= tolerance) {
-      return 0.5 * (a + b);
-    }
-    final n = (log(tolerance / h) / log(_invPhi)).ceil();
-    var c = a + _invPhi2 * h;
-    var d = a + _invPhi * h;
-    var yc = f(c);
-    var yd = f(d);
-    for (var k = 0; k < n - 1; k++) {
-      if (yc < yd) {
+      {final double tolerance = 1e-5, final bool solveMax = false}) {
+    var a = lower;
+    var b = upper;
+    var c = b - (b - a) * _grInv;
+    var d = a + (b - a) * _grInv;
+    while ((b - a).abs() > tolerance) {
+      if (_check(f(c), f(d), solveMax)) {
         b = d;
-        d = c;
-        yd = yc;
-        h = _invPhi * h;
-        c = a + _invPhi2 * h;
-        yc = f(c);
       } else {
         a = c;
-        c = d;
-        yc = yd;
-        h = _invPhi * h;
-        d = a + _invPhi2 * h;
-        yd = f(d);
       }
+      c = b - (b - a) * _grInv;
+      d = a + (b - a) * _grInv;
     }
-    if (yc < yd) {
-      return 0.5 * (a + d);
-    }
-    return 0.5 * (c + b);
+    return 0.5 * (b + a);
   }
 }
