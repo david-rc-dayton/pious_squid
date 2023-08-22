@@ -15,6 +15,13 @@ abstract class RelativeState {
   /// Return the name of this coordinate frame.
   String get name;
 
+  @override
+  String toString() => [
+        '[$name]',
+        '  Position: ${position.toString(6)} km',
+        '  Velocity: ${velocity.toString(9)} km/s'
+      ].join('\n');
+
   /// Convert this to a [J2000] state vector object.
   J2000 toJ2000(final J2000 origin);
 

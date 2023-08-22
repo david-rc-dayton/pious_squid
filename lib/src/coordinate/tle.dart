@@ -73,6 +73,9 @@ class TLE {
     'Z': '33'
   };
 
+  @override
+  String toString() => '$line1\n$line2';
+
   static EpochUTC _parseEpoch(final String epochStr) {
     var year = int.parse(epochStr.substring(0, 2));
     if (year >= 57) {
