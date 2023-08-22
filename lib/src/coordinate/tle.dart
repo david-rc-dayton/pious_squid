@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
@@ -22,6 +24,17 @@ enum Sgp4OpsMode {
   /// Return the string value of this enumeration.
   final String value;
 }
+
+double _tleSma(final String line2) {
+  final n = double.parse(line2.substring(52, 63));
+  return pow(Earth.mu, 1 / 3) / pow((twoPi * n) / secondsPerDay, 2 / 3);
+}
+
+double _tleEcc(final String line2) =>
+    double.parse('0.${line2.substring(26, 33)}');
+
+double _tleInc(final String line2) =>
+    double.parse(line2.substring(8, 16)) * deg2rad;
 
 /// Two-line element set.
 class TLE {
@@ -75,6 +88,27 @@ class TLE {
 
   @override
   String toString() => '$line1\n$line2';
+
+  /// Semimajor axis (km).
+  double get semimajorAxis => _tleSma(line2);
+
+  /// Eccentricity (unitless).
+  double get eccentricity => _tleEcc(line2);
+
+  /// Inclination (radians).
+  double get inclination => _tleInc(line2);
+
+  /// Inclination (degrees).
+  double get inclinationDegrees => _tleInc(line2) * rad2deg;
+
+  /// Apogee radius (km).
+  double get apogee => semimajorAxis * (1 + eccentricity);
+
+  /// Perigee radius (km).
+  double get perigee => semimajorAxis * (1 - eccentricity);
+
+  /// Orbit period (seconds).
+  double get period => twoPi * sqrt(pow(semimajorAxis, 3) / Earth.mu);
 
   static EpochUTC _parseEpoch(final String epochStr) {
     var year = int.parse(epochStr.substring(0, 2));
