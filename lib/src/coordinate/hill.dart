@@ -20,16 +20,39 @@ class Hill extends RelativeState {
   /// Create a new [Hill] object from ECI [state] and its relative
   /// motion [origin].
   factory Hill.fromJ2000(final J2000 state, final J2000 origin) {
-    final rotm = RelativeState.createMatrix(origin.position, origin.velocity);
-    final rmag = origin.position.magnitude();
-    final omega = origin.position.cross(origin.velocity).scale(1 / rmag / rmag);
-    final deltaPos = state.position.subtract(origin.position);
-    final posRic = rotm.multiplyVector3D(deltaPos);
-    final deltaVel = state.velocity
-        .subtract(origin.velocity)
-        .subtract(omega.cross(deltaPos));
-    final velRic = rotm.multiplyVector3D(deltaVel);
-    return Hill(origin.epoch, posRic, velRic, origin.semimajorAxis());
+    final magrtgt = origin.position.magnitude();
+    final magrint = state.position.magnitude();
+    final rotEciRsw =
+        RelativeState.createMatrix(origin.position, origin.velocity);
+    final vtgtrsw = rotEciRsw.multiplyVector3D(origin.velocity);
+    final rintrsw = rotEciRsw.multiplyVector3D(state.position);
+    final vintrsw = rotEciRsw.multiplyVector3D(state.velocity);
+
+    final sinphiint = rintrsw.z / magrint;
+    final phiint = asin(sinphiint);
+    final cosphiint = cos(phiint);
+    final lambdaint = atan2(rintrsw.y, rintrsw.x);
+    final sinlambdaint = sin(lambdaint);
+    final coslambdaint = cos(lambdaint);
+    final lambdadottgt = vtgtrsw.y / magrtgt;
+
+    final rhill =
+        Vector3D(magrint - magrtgt, lambdaint * magrtgt, phiint * magrtgt);
+
+    final rotRswSez = Matrix([
+      [sinphiint * coslambdaint, sinphiint * sinlambdaint, -cosphiint],
+      [-sinlambdaint, coslambdaint, 0.0],
+      [cosphiint * coslambdaint, cosphiint * sinlambdaint, sinphiint]
+    ]);
+
+    final vintsez = rotRswSez.multiplyVector3D(vintrsw);
+    final phidotint = -vintsez.x / magrint;
+    final lambdadotint = vintsez.y / (magrint * cosphiint);
+
+    final vhill = Vector3D(vintsez.z - vtgtrsw.x,
+        magrtgt * (lambdadotint - lambdadottgt), magrtgt * phidotint);
+
+    return Hill(origin.epoch, rhill, vhill, origin.semimajorAxis());
   }
 
   /// Create a new [Hill] object in a linear drift relative to an origin state,
@@ -106,16 +129,40 @@ class Hill extends RelativeState {
 
   @override
   J2000 toJ2000(final J2000 origin) {
-    final rmag = origin.position.magnitude();
-    final rotm = RelativeState.createMatrix(origin.position, origin.velocity);
-    final rotmRev = rotm.transpose();
-    final omega = rotm.multiplyVector3D(
-        origin.position.cross(origin.velocity).scale(1 / rmag / rmag));
-    final deltaPos = rotmRev.multiplyVector3D(position);
-    final posEci = origin.position.add(deltaPos);
-    final deltaVel = velocity.add(omega.cross(position));
-    final velEci = rotmRev.multiplyVector3D(deltaVel).add(origin.velocity);
-    return J2000(origin.epoch, posEci, velEci);
+    final magrtgt = origin.position.magnitude();
+    final magrint = magrtgt + position.x;
+    final rotEciRsw =
+        RelativeState.createMatrix(origin.position, origin.velocity);
+    final vtgtrsw = rotEciRsw.multiplyVector3D(origin.velocity);
+
+    final lambdadottgt = vtgtrsw.y / magrtgt;
+    final lambdaint = position.y / magrtgt;
+    final phiint = position.z / magrtgt;
+    final sinphiint = sin(phiint);
+    final cosphiint = cos(phiint);
+    final sinlambdaint = sin(lambdaint);
+    final coslambdaint = cos(lambdaint);
+
+    final rotRswSez = Matrix([
+      [sinphiint * coslambdaint, sinphiint * sinlambdaint, -cosphiint],
+      [-sinlambdaint, coslambdaint, 0],
+      [cosphiint * coslambdaint, cosphiint * sinlambdaint, sinphiint]
+    ]);
+
+    final rdotint = velocity.x + vtgtrsw.x;
+    final lambdadotint = velocity.y / magrtgt + lambdadottgt;
+    final phidotint = velocity.z / magrtgt;
+    final vintsez = Vector3D(
+        -magrint * phidotint, magrint * lambdadotint * cosphiint, rdotint);
+    final vintrsw = rotRswSez.transpose().multiplyVector3D(vintsez);
+    final vinteci = rotEciRsw.transpose().multiplyVector3D(vintrsw);
+
+    final rintrsw = Vector3D(cosphiint * magrint * coslambdaint,
+        cosphiint * magrint * sinlambdaint, sinphiint * magrint);
+
+    final rinteci = rotEciRsw.transpose().multiplyVector3D(rintrsw);
+
+    return J2000(origin.epoch, rinteci, vinteci);
   }
 
   /// Return the Clohessy-Wiltshire relative motion state transition matrix for
