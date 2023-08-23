@@ -130,10 +130,6 @@ class ClassicalElements {
   /// Compute the number of revolutions completed per day for this orbit.
   double revsPerDay() => secondsPerDay / period();
 
-  /// Compute the angle between the spacecraft's velocity vector and the local
-  /// horizontal of this orbit _(rad)_.
-  double flightPathAngle() => twoPi * sqrt(pow(semimajorAxis, 3) / mu);
-
   /// Return the orbit regime for this orbit.
   OrbitRegime getOrbitRegime() {
     final n = revsPerDay();
