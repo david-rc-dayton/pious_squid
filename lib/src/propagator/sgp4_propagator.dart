@@ -7,8 +7,11 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// SGP4 propagator.
 class Sgp4Propagator extends Propagator {
   /// Create a new [Sgp4Propagator] object from a [TLE].
-  Sgp4Propagator(this._tle) : _cacheState = _tle.state.toJ2000();
-  final TLE _tle;
+  Sgp4Propagator(this.tle) : _cacheState = tle.state.toJ2000();
+
+  /// [TLE] object used for propagation.
+  final TLE tle;
+
   J2000 _cacheState;
 
   @override
@@ -28,7 +31,7 @@ class Sgp4Propagator extends Propagator {
 
   @override
   J2000 propagate(final EpochUTC epoch) {
-    _cacheState = _tle.propagate(epoch).toJ2000();
+    _cacheState = tle.propagate(epoch).toJ2000();
     return _cacheState;
   }
 
