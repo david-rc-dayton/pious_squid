@@ -37,6 +37,6 @@ class Sgp4Propagator extends Propagator {
 
   @override
   void reset() {
-    // do nothing
+    _cacheState = tle.state.toJ2000();
   }
 }
