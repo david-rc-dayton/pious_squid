@@ -29,6 +29,13 @@ void main() {
       expect(actual.distance(expected), lessThanOrEqualTo(0.01));
     });
 
+    test('Runge-Kutta 4', () {
+      final propagator = RungeKutta4(startState, forceModel);
+      final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
+      final actual = propagator.propagate(stopEpoch).position;
+      expect(actual.distance(expected), lessThanOrEqualTo(0.15));
+    });
+
     test('Dormand-Prince 5(4)', () {
       final propagator = DormandPrince54Propagator(startState, forceModel);
       final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
