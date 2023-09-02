@@ -117,6 +117,14 @@ class Hill extends RelativeState {
   @override
   String get name => 'Hill';
 
+  @override
+  String toString() => [
+        '[$name]',
+        '  Epoch: $epoch',
+        '  Position: ${position.toString(6)} km',
+        '  Velocity: ${velocity.toString(9)} km/s'
+      ].join('\n');
+
   /// Origin semimajor-axis _(km)_.
   double get semimajorAxis => _semimajorAxis;
   set semimajorAxis(final double sma) {

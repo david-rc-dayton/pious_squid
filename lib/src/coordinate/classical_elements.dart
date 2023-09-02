@@ -112,12 +112,12 @@ class ClassicalElements {
   String toString() => [
         '[ClassicalElements]',
         '  Epoch: $epoch',
-        '  Semimajor Axis (a):       $semimajorAxis km',
-        '  Eccentricity (e):         $eccentricity',
-        '  Inclination (i):          $inclinationDegrees°',
-        '  Right Ascension (Ω):      $rightAscensionDegrees°',
-        '  Argument of Perigee (ω):  $argPerigeeDegrees°',
-        '  True Anomaly (ν):         $trueAnomalyDegrees°'
+        '  Semimajor Axis (a):       ${semimajorAxis.toStringAsFixed(4)} km',
+        '  Eccentricity (e):         ${eccentricity.toStringAsFixed(7)}',
+        '  Inclination (i):          ${inclinationDegrees.toStringAsFixed(4)}°',
+        '  Right Ascension (Ω):      ${rightAscensionDegrees.toStringAsFixed(4)}°',
+        '  Argument of Perigee (ω):  ${argPerigeeDegrees.toStringAsFixed(4)}°',
+        '  True Anomaly (ν):         ${trueAnomalyDegrees.toStringAsFixed(4)}°'
       ].join('\n');
 
   /// Compute the mean motion _(rad/s)_ of this orbit.

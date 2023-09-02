@@ -30,8 +30,8 @@ class Geodetic {
   @override
   String toString() => [
         '[Geodetic]',
-        '  Latitude:  ${latitudeDegrees.toStringAsFixed(6)}°',
-        '  Longitude: ${longitudeDegrees.toStringAsFixed(6)}°',
+        '  Latitude:  ${latitudeDegrees.toStringAsFixed(4)}°',
+        '  Longitude: ${longitudeDegrees.toStringAsFixed(4)}°',
         '  Altitude:  ${altitude.toStringAsFixed(3)} km',
       ].join('\n');
 

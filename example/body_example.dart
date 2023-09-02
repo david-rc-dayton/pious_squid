@@ -15,17 +15,14 @@ void main() {
 
   // Calculate orbit mean motion (rad/s) from semimajor axis (km).
   final meanMotion = Earth.smaToMeanMotion(42164.1);
-  print(meanMotion);
-  // => 0.00007292133916998565 (rad)
-  print(meanMotion * rad2deg);
-  // => 0.004178084970882192 (deg)
+  print(meanMotion); // => 0.00007292133916998565 (rad)
+  print(meanMotion * rad2deg); // => 0.004178084970882192 (deg)
 
   // Calculate orbit semimajor axis (km) given revolutions per day.
   final semimajorAxis = Earth.revsPerDayToSma(
     15.501, // revs/day
   );
-  print(semimajorAxis);
-  // => 6794.570831048931 (km)
+  print(semimajorAxis); // => 6794.570831048931 (km)
 
   // ---- Sun -----------------------------------------------------------------
 
@@ -42,20 +39,16 @@ void main() {
 
   // Get Sun angular diameter from an inertial observer position (rad).
   final sunDiameter = Sun.diameter(position, sunPosition);
-  print(sunDiameter);
-  // => 0.009445185896037878 (rad)
-  print(sunDiameter * rad2deg);
-  // => 0.5411692885594611 (deg)
+  print(sunDiameter); // => 0.009445185896037878 (rad)
+  print(sunDiameter * rad2deg); // => 0.5411692885594611 (deg)
 
   // Check if the observer is eclipsed by the Earth.
   final shadow = Sun.shadow(epoch, position);
-  print(shadow);
-  // => false (not in shadow)
+  print(shadow); // => false (not in shadow)
 
   // Calculate the lighting ratio of the observer (ratio).
   final lightingRatio = Sun.lightingRatio(position, sunPosition);
-  print(lightingRatio);
-  // => 1.0 (fully illuminated)
+  print(lightingRatio); // => 1.0 (fully illuminated)
 
   // ---- Moon ----------------------------------------------------------------
 
@@ -66,13 +59,10 @@ void main() {
 
   // Get Moon angular diameter from an observer position (rad).
   final moonDiameter = Moon.diameter(position, moonPosition);
-  print(moonDiameter);
-  // => 0.009632157811104816 (rad)
-  print(moonDiameter * rad2deg);
-  // => 0.5518819901802752 (deg)
+  print(moonDiameter); // => 0.009632157811104816 (rad)
+  print(moonDiameter * rad2deg); // => 0.5518819901802752 (deg)
 
   // Calculate Moon illumination.
   final moonIllumination = Moon.illumination(epoch, position);
-  print(moonIllumination);
-  // => 0.980361106792833 (nearly fully illuminated)
+  print(moonIllumination); // => 0.980361106792833 (nearly fully illuminated)
 }
