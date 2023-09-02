@@ -23,10 +23,21 @@ abstract class Propagator {
     return VerletBlendInterpolator(output);
   }
 
-  /// Reset cached propagator state to it's initial value.
+  /// Reset cached propagator state to its initial value.
   ///
   /// This will clear any post-maneuver states in the propagator.
   void reset();
+
+  /// Store a checkpoint of this propagator's current state, and return the
+  /// checkpoint index that can be used to [restore] the propagator state
+  /// later.
+  int checkpoint();
+
+  /// Restore a state [checkpoint] at the provided index.
+  void restore(final int index);
+
+  /// Remove any stored [checkpoint] values from this propagator.
+  void clearCheckpoints();
 
   /// Return the last propagated state.
   J2000 get state;

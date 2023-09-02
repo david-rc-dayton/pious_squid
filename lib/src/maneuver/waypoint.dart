@@ -125,14 +125,9 @@ class Waypoint {
       waypointManeuvers.add(maneuver);
     }
     if (refine) {
-      waypointManeuvers = _refineManeuvers(
-          waypoints,
-          waypointManeuvers,
-          pivotState,
-          forceModel ?? (ForceModel()..setEarthGravity(0, 0)),
-          target,
-          maxIter: maxIter,
-          printIter: printIter);
+      waypointManeuvers = _refineManeuvers(waypoints, waypointManeuvers,
+          pivotState, forceModel ?? (ForceModel()..setGravity()), target,
+          maxIter: maxIter, printIter: printIter);
     }
     final output = <Thrust>[];
     output.addAll(preMnv);

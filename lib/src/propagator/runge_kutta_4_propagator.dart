@@ -10,12 +10,12 @@ import 'package:pious_squid/src/time/epoch_utc.dart';
 /// Runge-Kutta 4 fixed numerical propagator.
 class RungeKutta4 extends Propagator {
   /// Create a new [RungeKutta4] object from an initial state vector and
-  /// optional [ForceModel].
+  /// along with an optional [ForceModel] and [stepSize] in seconds.
   RungeKutta4(this._initState,
-      [final ForceModel? forceModel, final double _stepSize = 15.0])
+      [final ForceModel? forceModel, final double stepSize = 15.0])
       : _cacheState = _initState,
-        _forceModel = forceModel ?? (ForceModel()..setEarthGravity(0, 0)),
-        _stepSize = _stepSize.abs();
+        _forceModel = forceModel ?? (ForceModel()..setGravity()),
+        _stepSize = stepSize.abs();
 
   /// Initial state vector.
   final J2000 _initState;
@@ -25,6 +25,8 @@ class RungeKutta4 extends Propagator {
 
   /// Cache of last propagated state.
   J2000 _cacheState;
+
+  final List<J2000> _checkpoints = [];
 
   /// Integration step size _(seconds)_.
   double _stepSize;
@@ -126,4 +128,20 @@ class RungeKutta4 extends Propagator {
 
   @override
   J2000 get state => _cacheState;
+
+  @override
+  int checkpoint() {
+    _checkpoints.add(_cacheState);
+    return _checkpoints.length - 1;
+  }
+
+  @override
+  void clearCheckpoints() {
+    _checkpoints.clear();
+  }
+
+  @override
+  void restore(final int index) {
+    _cacheState = _checkpoints[index];
+  }
 }

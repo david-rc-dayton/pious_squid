@@ -1,4 +1,5 @@
 import 'package:pious_squid/pious_squid.dart';
+import 'package:pious_squid/src/operations/constants.dart';
 import 'package:test/test.dart';
 
 final startState = J2000(
@@ -59,5 +60,54 @@ void main() {
       expect(actual.position.distance(expectedPos), lessThanOrEqualTo(0.01));
       expect(actual.velocity.distance(expectedVel), lessThanOrEqualTo(0.01));
     });
+  });
+
+  group('Propagator Checkpoint', () {
+    test('Kepler Checkpoint', () {
+      final propagator = KeplerPropagator(startState.toClassicalElements());
+      final check =
+          propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+      final checkpoint = propagator.checkpoint();
+      propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+      expect(
+          propagator.state.position.distance(check.position), greaterThan(0));
+      propagator.restore(checkpoint);
+      expect(propagator.state.position.distance(check.position), equals(0));
+    });
+
+    test('Runge-Kutta Fixed Checkpoint', () {
+      final propagator = RungeKutta4(startState);
+      final check =
+          propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+      final checkpoint = propagator.checkpoint();
+      propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+      expect(
+          propagator.state.position.distance(check.position), greaterThan(0));
+      propagator.restore(checkpoint);
+      expect(propagator.state.position.distance(check.position), equals(0));
+    });
+
+    test('Runge-Kutta Adaptive Checkpoint', () {
+      final propagator = DormandPrince54Propagator(startState);
+      final check =
+          propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+      final checkpoint = propagator.checkpoint();
+      propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+      expect(
+          propagator.state.position.distance(check.position), greaterThan(0));
+      propagator.restore(checkpoint);
+      expect(propagator.state.position.distance(check.position), equals(0));
+    });
+  });
+
+  test('SGP4 Checkpoint', () {
+    final propagator = Sgp4Propagator(tle);
+    final check =
+        propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+    final checkpoint = propagator.checkpoint();
+    propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
+    expect(propagator.state.position.distance(check.position), greaterThan(0));
+    propagator.restore(checkpoint);
+    expect(propagator.state.position.distance(check.position), equals(0));
   });
 }

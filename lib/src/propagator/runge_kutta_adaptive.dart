@@ -23,13 +23,26 @@ class RkResult {
   final double newStep;
 }
 
+/// Runge-Kutta adaptive state checkpoint.
+class _RkCheckpoint {
+  _RkCheckpoint(this.cacheState, this.stepSize);
+
+  /// Last cached state.
+  J2000 cacheState;
+
+  /// Last used step size (seconds).
+  double stepSize;
+}
+
 /// Adaptive Runge-Kutta propagator base class.
 abstract class RungeKuttaAdaptive extends Propagator {
   /// Create a new [RungeKuttaAdaptive] object from an initial state vector
-  /// and optional [ForceModel].
-  RungeKuttaAdaptive(this._initState, [final ForceModel? forceModel])
+  /// along with an optional [ForceModel] and [tolerance].
+  RungeKuttaAdaptive(this._initState,
+      [final ForceModel? forceModel, final double tolerance = 1e-9])
       : _cacheState = _initState,
-        _forceModel = forceModel ?? (ForceModel()..setEarthGravity(0, 0));
+        _forceModel = forceModel ?? (ForceModel()..setGravity()),
+        _tolerance = max(_minTolerance, tolerance.abs());
 
   /// Initial state vector.
   final J2000 _initState;
@@ -40,8 +53,10 @@ abstract class RungeKuttaAdaptive extends Propagator {
   /// Cache of last propagated state.
   J2000 _cacheState;
 
+  final List<_RkCheckpoint> _checkpoints = [];
+
   /// Integrator local error tolerance.
-  double _tolerance = 1e-9;
+  final double _tolerance;
 
   /// Integration step size _(seconds)_.
   double _stepSize = 60.0;
@@ -71,11 +86,6 @@ abstract class RungeKuttaAdaptive extends Propagator {
   void reset() {
     _cacheState = _initState;
     _stepSize = 60.0;
-  }
-
-  /// Set numerical integration tolerance.
-  void setTolerance(final double epsilon) {
-    _tolerance = max(_minTolerance, epsilon.abs());
   }
 
   /// Set numerical integration force model.
@@ -182,5 +192,23 @@ abstract class RungeKuttaAdaptive extends Propagator {
       ephemeris.add(_cacheState);
     }
     return VerletBlendInterpolator(ephemeris);
+  }
+
+  @override
+  int checkpoint() {
+    _checkpoints.add(_RkCheckpoint(_cacheState, _stepSize));
+    return _checkpoints.length - 1;
+  }
+
+  @override
+  void clearCheckpoints() {
+    _checkpoints.clear();
+  }
+
+  @override
+  void restore(final int index) {
+    final checkpoint = _checkpoints[index];
+    _cacheState = checkpoint.cacheState;
+    _stepSize = checkpoint.stepSize;
   }
 }

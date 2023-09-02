@@ -16,6 +16,7 @@ class KeplerPropagator extends Propagator {
   final ClassicalElements _initElements;
   ClassicalElements _elements;
   J2000 _cacheState;
+  final List<J2000> _checkpoints = [];
 
   @override
   J2000 get state => _cacheState;
@@ -66,5 +67,21 @@ class KeplerPropagator extends Propagator {
       ephemeris.add(_cacheState);
     }
     return VerletBlendInterpolator(ephemeris);
+  }
+
+  @override
+  int checkpoint() {
+    _checkpoints.add(_cacheState);
+    return _checkpoints.length - 1;
+  }
+
+  @override
+  void clearCheckpoints() {
+    _checkpoints.clear();
+  }
+
+  @override
+  void restore(final int index) {
+    _cacheState = _checkpoints[index];
   }
 }

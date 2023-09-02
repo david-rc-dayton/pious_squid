@@ -38,7 +38,7 @@ class BatchLeastSquaresOD {
       final bool fastDerivatives = false})
       : _propPairs = PropagatorPairs(posStep, velStep),
         _fastDerivatives = fastDerivatives,
-        _forceModel = forceModel ?? (ForceModel()..setEarthGravity(0, 0)) {
+        _forceModel = forceModel ?? (ForceModel()..setGravity()) {
     _nominal = _propagator.propagate(_start);
     _propagator = RungeKutta89Propagator(apriori, _forceModel);
     _observations
