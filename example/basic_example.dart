@@ -30,8 +30,8 @@ void main() {
   final finalState = rk89Prop.propagate(startState.epoch.roll(oneDay));
 
   print(finalState);
-  // => [J2000]
-  //   Epoch: 2017-02-04T06:26:37.976Z
-  //   Position: [5704.152604, -5470.867057, -3040.596172] km
-  //   Velocity: [4.554130415, 4.557924102, -2.152201163] km/s
+  // ->[J2000]
+  // Epoch: 2017-02-04T06:26:37.976Z
+  // Position: [5704.152590, -5470.867067, -3040.596164] km
+  // Velocity: [4.554130436, 4.557924086, -2.152201166] km/s
 }

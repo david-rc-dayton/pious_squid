@@ -8,7 +8,7 @@ import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
-/// Modified Hill Equidistant Cyllindrical _(HillEQCM)_ coordinates.
+/// Hill Modified Equidistant Cyllindrical _(EQCM)_ coordinates.
 class Hill extends RelativeState {
   /// Create a new [Hill] object, from relative state.
   Hill(this.epoch, final Vector3D position, final Vector3D velocity,

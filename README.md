@@ -12,7 +12,7 @@ An astrodynamics library, for the Dart ecosystem.
   - Classical Orbital Elements
   - Equinoctial Elements
   - Geodetic Coordinates
-  - Hill Relative Frame
+  - Hill Modified Equidistant Cylindrical Frame _(EQCM)_
   - International Terrestrial Reference Frame _(ITRF)_
   - J2000 Inertial Frame _(J2000)_
   - Radial-Intrack-Crosstrack Relative Frame _(RIC)_
@@ -21,18 +21,18 @@ An astrodynamics library, for the Dart ecosystem.
 - Covariance
   - Cartesian Covariance
   - Classical Element Covariance
-  - Equinoctial Covariance
+  - Equinoctial Element Covariance
   - Relative Covariance
 - Perturbation Forces
   - Atmospheric Drag _(Harris-Priester)_
-  - Earth Geopotential _(up to 36x36 geopotential)_
+  - Earth Gravity _(up to 36x36 geopotential)_
   - Solar Radiation Pressure
   - Spacecraft Thrust
-  - Spherical Gravity
+  - Spherical Body Gravity
   - Third Body Gravity _(Sun and Moon)_
 - Interpolators
   - Chebyshev Ephemeris Interpolator
-  - Cubic Spline Ephemeris Interpolator
+  - Cubic-Spline Ephemeris Interpolator
   - Lagrange Ephemeris Interpolator
   - Verlet-Blend Ephemeris Interpolator
 - Maneuvers
@@ -51,7 +51,9 @@ An astrodynamics library, for the Dart ecosystem.
 - Optimization
   - Chebyshev Ephemeris Compression
   - Downhill Simplex _(Nelder-Mead)_
-  - Polynomial Regression
+  - Golden Section
+  - Polynomial Regression _(WIP)_
+  - Simple Linear Regression
 - Orbit Determination
   - Batch Least Squares Orbit Determination _(OD)_
   - Gibbs Initial Orbit Determination _(IOD)_
@@ -62,8 +64,11 @@ An astrodynamics library, for the Dart ecosystem.
 - State Propagation
   - Dormand-Prince 5(4) Adaptive Numerical Propagator
   - Kepler Two-Body Analytical Propagator
+  - Runge-Kutta 4 - Fixed Numerical Propagator
   - Runge-Kutta 8(9) Adaptive Numerical Propagator
-  - Simplified Perturbations Models 4 _(SGP4)_
+  - Simplified Perturbations Model 4 _(SGP4)_
+- Data Smoothing
+  - Exponential Smoothing _(single/double/time)_
 - Time
   - Barycentric Dynamical Time _(TDB)_
   - Global Positioning System Time _(GPS)_
@@ -106,10 +111,10 @@ void main() {
   final finalState = rk89Prop.propagate(startState.epoch.roll(oneDay));
 
   print(finalState);
-  // => [J2000]
-  //   Epoch: 2017-02-04T06:26:37.976Z
-  //   Position: [5704.152604, -5470.867057, -3040.596172] km
-  //   Velocity: [4.554130415, 4.557924102, -2.152201163] km/s
+  // ->[J2000]
+  // Epoch: 2017-02-04T06:26:37.976Z
+  // Position: [5704.152590, -5470.867067, -3040.596164] km
+  // Velocity: [4.554130436, 4.557924086, -2.152201166] km/s
 }
 ```
 ## License
