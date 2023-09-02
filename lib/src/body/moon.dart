@@ -65,9 +65,9 @@ class Moon {
     return 0.5 * (1 - cos(phaseAngle));
   }
 
-  /// Calculate the Moon's angular diameter _(rad)_ from an ECI satellite
-  /// position [satPos] and Moon position [moonPos] _(km)_.
-  static double diameter(final Vector3D satPos, final Vector3D moonPos) =>
-      angularDiameter(radiusEquator * 2, satPos.subtract(moonPos).magnitude(),
+  /// Calculate the Moon's angular diameter _(rad)_ from an ECI observer
+  /// position [obsPos] and Moon position [moonPos] _(km)_.
+  static double diameter(final Vector3D obsPos, final Vector3D moonPos) =>
+      angularDiameter(radiusEquator * 2, obsPos.subtract(moonPos).magnitude(),
           AngularDiameterMethod.sphere);
 }

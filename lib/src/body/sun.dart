@@ -125,9 +125,9 @@ class Sun {
     return 1.0;
   }
 
-  /// Calculate the Sun's angular diameter _(rad)_ from an ECI satellite
-  /// position [satPos] and Sun position [sunPos] _(km)_.
-  static double diameter(final Vector3D satPos, final Vector3D sunPos) =>
-      angularDiameter(radius * 2, satPos.subtract(sunPos).magnitude(),
+  /// Calculate the Sun's angular diameter _(rad)_ from an ECI observer
+  /// position [obsPos] and Sun position [sunPos] _(km)_.
+  static double diameter(final Vector3D obsPos, final Vector3D sunPos) =>
+      angularDiameter(radius * 2, obsPos.subtract(sunPos).magnitude(),
           AngularDiameterMethod.sphere);
 }
