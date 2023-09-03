@@ -115,6 +115,20 @@ void main() {
   // Epoch: 2017-02-04T06:26:37.976Z
   // Position: [5704.152590, -5470.867067, -3040.596164] km
   // Velocity: [4.554130436, 4.557924086, -2.152201166] km/s
+
+  // Create a observer location.
+  final observer = Geodetic.fromDegrees(-15, 80, 0.05);
+
+  // Calculate look-angles from the observer to the satellite .
+  print(finalState.toITRF().toGeodetic());
+  final razel = Razel.fromStateVectors(
+      finalState, observer.toITRF(finalState.epoch).toJ2000());
+  print(razel);
+  // => [RazEl]
+  // Epoch:     2017-02-04T06:26:37.976Z
+  // Azimuth:   141.6525°
+  // Elevation: 60.3304°
+  // Range:     2318.580 km
 }
 ```
 ## License
