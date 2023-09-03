@@ -94,6 +94,15 @@ class Razel {
   double? get elevationRateDegrees =>
       (elevationRate != null) ? elevationRate! * rad2deg : null;
 
+  @override
+  String toString() => [
+        '[RazEl]',
+        '  Epoch:     $epoch',
+        '  Azimuth:   ${azimuthDegrees.toStringAsFixed(4)}°',
+        '  Elevation: ${elevationDegrees.toStringAsFixed(4)}°',
+        '  Range:     ${range.toStringAsFixed(3)} km',
+      ].join('\n');
+
   /// Return the position relative to the observer [site].
   ///
   /// An optional azimuth [az] _(rad)_ and elevation [el] _(rad)_ value can be
