@@ -1,6 +1,7 @@
 # pious_squid
 
-An astrodynamics library, for the Dart ecosystem.
+An astrodynamics library for the Dart ecosystem, covering orbital mechanics
+and satellite mission analysis logic.
 
 ## Features
 
@@ -131,6 +132,10 @@ void main() {
   // Range:     2318.580 km
 }
 ```
+More examples can be found in the
+[examples](https://github.com/david-rc-dayton/pious_squid/tree/master/example)
+directory.
+
 ## License
 
 ```text
