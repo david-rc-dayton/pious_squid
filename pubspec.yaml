@@ -1,6 +1,7 @@
 name: pious_squid
 description: An astrodynamics library, for the Dart ecosystem.
 version: 0.1.0
+repository: https://github.com/david-rc-dayton/pious_squid
 
 environment:
   sdk: ^3.0.0
