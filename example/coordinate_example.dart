@@ -130,7 +130,7 @@ void main() {
 
   // Convert back to a J2000 state, by using the origin state propagated
   // to the Hill state epoch.
-  final originProp = RungeKutta4(origin);
+  final originProp = RungeKutta4Propagator(origin);
   final originPropState = originProp.propagate(hillPropEpoch);
   final j2000FromHill = hillPropState.toJ2000(originPropState);
   print(j2000FromHill);

@@ -8,10 +8,10 @@ import 'package:pious_squid/src/propagator/propagator_base.dart';
 import 'package:pious_squid/src/time/epoch_utc.dart';
 
 /// Runge-Kutta 4 fixed numerical propagator.
-class RungeKutta4 extends Propagator {
-  /// Create a new [RungeKutta4] object from an initial state vector and
+class RungeKutta4Propagator extends Propagator {
+  /// Create a new [RungeKutta4Propagator] object from an initial state vector and
   /// along with an optional [ForceModel] and [stepSize] in seconds.
-  RungeKutta4(this._initState,
+  RungeKutta4Propagator(this._initState,
       [final ForceModel? forceModel, final double stepSize = 15.0])
       : _cacheState = _initState,
         _forceModel = forceModel ?? (ForceModel()..setGravity()),

@@ -31,7 +31,7 @@ void main() {
     });
 
     test('Runge-Kutta 4', () {
-      final propagator = RungeKutta4(startState, forceModel);
+      final propagator = RungeKutta4Propagator(startState, forceModel);
       final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
       final actual = propagator.propagate(stopEpoch).position;
       expect(actual.distance(expected), lessThanOrEqualTo(0.15));
@@ -76,7 +76,7 @@ void main() {
     });
 
     test('Runge-Kutta Fixed Checkpoint', () {
-      final propagator = RungeKutta4(startState);
+      final propagator = RungeKutta4Propagator(startState);
       final check =
           propagator.propagate(propagator.state.epoch.roll(secondsPerDay));
       final checkpoint = propagator.checkpoint();
