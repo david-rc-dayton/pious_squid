@@ -133,7 +133,7 @@ void main() {
 }
 ```
 More examples can be found in the
-[examples](https://github.com/david-rc-dayton/pious_squid/tree/master/example)
+[example](https://github.com/david-rc-dayton/pious_squid/tree/master/example)
 directory.
 
 ## License
