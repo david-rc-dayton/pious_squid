@@ -35,19 +35,19 @@ class BatchLeastSquaresOD {
       {final ForceModel? forceModel,
       final double posStep = 1e-5,
       final double velStep = 1e-5,
-      final bool fastDerivatives = false})
-      : _propPairs = PropagatorPairs(posStep, velStep),
-        _fastDerivatives = fastDerivatives,
-        _forceModel = forceModel ?? (ForceModel()..setGravity()) {
-    _nominal = _propagator.propagate(_start);
-    _propagator = RungeKutta89Propagator(apriori, _forceModel);
+      final bool fastDerivatives = false}) {
     _observations
         .sort((final a, final b) => a.epoch.posix.compareTo(b.epoch.posix));
     _start = _observations.first.epoch;
+    _propPairs = PropagatorPairs(posStep, velStep);
+    _forceModel = forceModel ?? (ForceModel()..setGravity());
+    _propagator = RungeKutta89Propagator(apriori, _forceModel);
+    _nominal = _propagator.propagate(_start);
+    _fastDerivatives = fastDerivatives;
   }
 
   /// Propagator pair cache, for generating observation Jacobians.
-  final PropagatorPairs _propPairs;
+  late final PropagatorPairs _propPairs;
 
   /// Observations to use in the solve.
   final List<Observation> _observations;
@@ -59,13 +59,13 @@ class BatchLeastSquaresOD {
   late final J2000 _nominal;
 
   /// Spacecraft force model.
-  final ForceModel _forceModel;
+  late final ForceModel _forceModel;
 
   /// Solve start epoch.
   late final EpochUTC _start;
 
   /// Use Keplerian logic for derivatives if `true`.
-  final bool _fastDerivatives;
+  late final bool _fastDerivatives;
 
   Propagator _buildPropagator(final Float64List x0, final bool simple) {
     final state = J2000(_nominal.epoch, Vector3D(x0[0], x0[1], x0[2]),
