@@ -9,3 +9,7 @@
 ## 0.2.1
 
 - update metadata
+
+## 0.2.2
+
+- fix batch least squares init ordering

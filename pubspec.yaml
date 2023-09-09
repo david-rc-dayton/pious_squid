@@ -2,7 +2,7 @@ name: pious_squid
 description: >-
   An astrodynamics library for the Dart ecosystem, covering orbital mechanics
   and satellite mission analysis logic.
-version: 0.2.1
+version: 0.2.2
 repository: https://github.com/david-rc-dayton/pious_squid
 
 environment:
