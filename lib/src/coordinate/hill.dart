@@ -196,6 +196,13 @@ class Hill extends RelativeState {
     ]);
   }
 
+  /// Return the Clohessy-Wiltshire relative motion state transition matrix for
+  /// a [newEpoch] _(UTC)_.
+  Matrix transitionMatrixEpoch(final EpochUTC newEpoch) {
+    final t = newEpoch.difference(epoch);
+    return transitionMatrix(t);
+  }
+
   /// Return this state transitioned by elapsed time [t] _(seconds)_.
   Hill transition(final double t) {
     final sysMat = transitionMatrix(t);
@@ -204,9 +211,22 @@ class Hill extends RelativeState {
         _semimajorAxis);
   }
 
+  /// Return this state transitioned by elapsed time [t] _(seconds)_  using the
+  /// provided state transition matrix ([stm]).
+  Hill transitionWithMatrix(final Matrix stm, final double t) {
+    final output = stm.multiplyVector(position.join(velocity));
+    return Hill(epoch.roll(t), output.toVector3D(0), output.toVector3D(3),
+        _semimajorAxis);
+  }
+
   /// Return this state propagated to the [newEpoch].
   Hill propagate(final EpochUTC newEpoch) =>
       transition(newEpoch.difference(epoch));
+
+  /// Return this state propagated to the [newEpoch] using the provided state
+  /// transition matrix ([stm]).
+  Hill propagateWithMatrix(final Matrix stm, final EpochUTC newEpoch) =>
+      transitionWithMatrix(stm, newEpoch.difference(epoch));
 
   /// Return a copy of this state with the [maneuver] applied.
   Hill maneuver(final Thrust maneuver) {

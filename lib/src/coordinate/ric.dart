@@ -16,6 +16,15 @@ class RIC extends RelativeState {
     return RIC(q.multiplyVector3D(dr), q.multiplyVector3D(dv));
   }
 
+  /// Create a new [RIC] object given an inertial [state] vector, its relative
+  /// motion origin, and its tranformation matrix.
+  factory RIC.fromJ2000Matrix(
+      final J2000 state, final J2000 origin, final Matrix transform) {
+    final dr = state.position.subtract(origin.position);
+    final dv = state.velocity.subtract(origin.velocity);
+    return RIC(transform.multiplyVector3D(dr), transform.multiplyVector3D(dv));
+  }
+
   @override
   String get name => 'RIC';
 
@@ -25,6 +34,15 @@ class RIC extends RelativeState {
         .transpose();
     final tr = qT.multiplyVector3D(position);
     final tv = qT.multiplyVector3D(velocity);
+    return J2000(
+        origin.epoch, origin.position.add(tr), origin.velocity.add(tv));
+  }
+
+  /// Convert this state to J2000 given an [origin] state and [tranform]
+  /// (transposed) matrix.
+  J2000 toJ2000Matrix(final J2000 origin, final Matrix transform) {
+    final tr = transform.multiplyVector3D(position);
+    final tv = transform.multiplyVector3D(velocity);
     return J2000(
         origin.epoch, origin.position.add(tr), origin.velocity.add(tv));
   }
