@@ -17,16 +17,15 @@ class Hill extends RelativeState {
         _meanMotion = Earth.smaToMeanMotion(semimajorAxis),
         super(position, velocity);
 
-  /// Create a new [Hill] object from ECI [state] and its relative
-  /// motion [origin].
-  factory Hill.fromJ2000(final J2000 state, final J2000 origin) {
+  /// Create a new [Hill] object from ECI [state], its relative
+  /// motion [origin], and [transform] matrix.
+  factory Hill.fromJ2000Matrix(
+      final J2000 state, final J2000 origin, final Matrix transform) {
     final magrtgt = origin.position.magnitude();
     final magrint = state.position.magnitude();
-    final rotEciRsw =
-        RelativeState.createMatrix(origin.position, origin.velocity);
-    final vtgtrsw = rotEciRsw.multiplyVector3D(origin.velocity);
-    final rintrsw = rotEciRsw.multiplyVector3D(state.position);
-    final vintrsw = rotEciRsw.multiplyVector3D(state.velocity);
+    final vtgtrsw = transform.multiplyVector3D(origin.velocity);
+    final rintrsw = transform.multiplyVector3D(state.position);
+    final vintrsw = transform.multiplyVector3D(state.velocity);
 
     final sinphiint = rintrsw.z / magrint;
     final phiint = asin(sinphiint);
@@ -54,6 +53,12 @@ class Hill extends RelativeState {
 
     return Hill(origin.epoch, rhill, vhill, origin.semimajorAxis());
   }
+
+  /// Create a new [Hill] object from ECI [state] and its relative
+  /// motion [origin].
+  factory Hill.fromJ2000(final J2000 state, final J2000 origin) =>
+      Hill.fromJ2000Matrix(state, origin,
+          RelativeState.createMatrix(origin.position, origin.velocity));
 
   /// Create a new [Hill] object in a linear drift relative to an origin state,
   /// given the [radialPosition] _(km)_, [intrackPosition] _(km)_,
@@ -135,13 +140,12 @@ class Hill extends RelativeState {
   /// Origin mean motion _(rad/s)_.
   double get meanMotion => _meanMotion;
 
-  @override
-  J2000 toJ2000(final J2000 origin) {
+  /// Convert this to [J2000] from an [origin] frame and reltative [transform]
+  /// matrix.
+  J2000 toJ2000Matrix(final J2000 origin, final Matrix transform) {
     final magrtgt = origin.position.magnitude();
     final magrint = magrtgt + position.x;
-    final rotEciRsw =
-        RelativeState.createMatrix(origin.position, origin.velocity);
-    final vtgtrsw = rotEciRsw.multiplyVector3D(origin.velocity);
+    final vtgtrsw = transform.multiplyVector3D(origin.velocity);
 
     final lambdadottgt = vtgtrsw.y / magrtgt;
     final lambdaint = position.y / magrtgt;
@@ -163,15 +167,19 @@ class Hill extends RelativeState {
     final vintsez = Vector3D(
         -magrint * phidotint, magrint * lambdadotint * cosphiint, rdotint);
     final vintrsw = rotRswSez.transpose().multiplyVector3D(vintsez);
-    final vinteci = rotEciRsw.transpose().multiplyVector3D(vintrsw);
+    final vinteci = transform.transpose().multiplyVector3D(vintrsw);
 
     final rintrsw = Vector3D(cosphiint * magrint * coslambdaint,
         cosphiint * magrint * sinlambdaint, sinphiint * magrint);
 
-    final rinteci = rotEciRsw.transpose().multiplyVector3D(rintrsw);
+    final rinteci = transform.transpose().multiplyVector3D(rintrsw);
 
     return J2000(origin.epoch, rinteci, vinteci);
   }
+
+  @override
+  J2000 toJ2000(final J2000 origin) => toJ2000Matrix(
+      origin, RelativeState.createMatrix(origin.position, origin.velocity));
 
   /// Return the Clohessy-Wiltshire relative motion state transition matrix for
   /// elapsed time [t] _(seconds)_.
