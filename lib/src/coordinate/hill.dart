@@ -182,9 +182,9 @@ class Hill extends RelativeState {
       origin, RelativeState.createMatrix(origin.position, origin.velocity));
 
   /// Return the Clohessy-Wiltshire relative motion state transition matrix for
-  /// elapsed time [t] _(seconds)_.
-  Matrix transitionMatrix(final double t) {
-    final n = _meanMotion;
+  /// elapsed time [t] _(seconds)_ and [meanMotion] _(rad/s)_.
+  Matrix transitionMatrix(final double t, final double meanMotion) {
+    final n = meanMotion;
     final sn = sin(n * t);
     final cs = cos(n * t);
     return Matrix([
@@ -208,12 +208,12 @@ class Hill extends RelativeState {
   /// a [newEpoch] _(UTC)_.
   Matrix transitionMatrixEpoch(final EpochUTC newEpoch) {
     final t = newEpoch.difference(epoch);
-    return transitionMatrix(t);
+    return transitionMatrix(t, _meanMotion);
   }
 
   /// Return this state transitioned by elapsed time [t] _(seconds)_.
   Hill transition(final double t) {
-    final sysMat = transitionMatrix(t);
+    final sysMat = transitionMatrix(t, _meanMotion);
     final output = sysMat.multiplyVector(position.join(velocity));
     return Hill(epoch.roll(t), output.toVector3D(0), output.toVector3D(3),
         _semimajorAxis);
@@ -287,7 +287,7 @@ class Hill extends RelativeState {
     final t = waypoint.epoch.difference(epoch);
     final w = waypoint.relativePosition;
     // get matrix of CW equations for the given time
-    final sysMat = transitionMatrix(t);
+    final sysMat = transitionMatrix(t, _meanMotion);
     // solve constant side of linear system using the first three equations in
     // the CW matrix; this is possible because starting and stopping positions
     // are known over the given interval; we are left with three unknown
