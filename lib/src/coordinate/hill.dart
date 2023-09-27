@@ -183,7 +183,7 @@ class Hill extends RelativeState {
 
   /// Return the Clohessy-Wiltshire relative motion state transition matrix for
   /// elapsed time [t] _(seconds)_ and [meanMotion] _(rad/s)_.
-  Matrix transitionMatrix(final double t, final double meanMotion) {
+  static Matrix transitionMatrix(final double t, final double meanMotion) {
     final n = meanMotion;
     final sn = sin(n * t);
     final cs = cos(n * t);
