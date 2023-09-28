@@ -63,7 +63,7 @@ class ObservationRadar extends Observation {
 
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
-    final result = array2d(3, 6);
+    final result = array2d(3, 6, 0.0);
     for (var i = 0; i < 6; i++) {
       final step = propPairs.step(i);
       final (high, low) = propPairs.get(i);
@@ -82,7 +82,7 @@ class ObservationRadar extends Observation {
 
   @override
   Matrix residual(final Propagator propagator) {
-    final result = array2d(3, 1);
+    final result = array2d(3, 1, 0.0);
     final state = propagator.propagate(epoch);
     final razel = Razel.fromStateVectors(state, site);
     result[0][0] = observation.range - razel.range;

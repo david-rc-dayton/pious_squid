@@ -359,7 +359,7 @@ class Vector {
 
   /// Calculate the outer product between this and another [Vector].
   Matrix outer(final Vector v) {
-    final result = array2d(length, v.length);
+    final result = array2d(length, v.length, 0.0);
     for (var i = 0; i < length; i++) {
       for (var j = 0; j < v.length; j++) {
         result[i][j] = _elements[i] * v._elements[j];

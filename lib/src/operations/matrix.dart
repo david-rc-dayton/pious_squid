@@ -15,7 +15,7 @@ class Matrix {
   factory Matrix.rotX(final double theta) {
     final cosT = cos(theta);
     final sinT = sin(theta);
-    final result = array2d(3, 3);
+    final result = array2d(3, 3, 0.0);
     result[0][0] = 1.0;
     result[1][1] = cosT;
     result[1][2] = sinT;
@@ -28,7 +28,7 @@ class Matrix {
   factory Matrix.rotY(final double theta) {
     final cosT = cos(theta);
     final sinT = sin(theta);
-    final result = array2d(3, 3);
+    final result = array2d(3, 3, 0.0);
     result[0][0] = cosT;
     result[0][2] = -sinT;
     result[1][1] = 1.0;
@@ -41,7 +41,7 @@ class Matrix {
   factory Matrix.rotZ(final double theta) {
     final cosT = cos(theta);
     final sinT = sin(theta);
-    final result = array2d(3, 3);
+    final result = array2d(3, 3, 0.0);
     result[0][0] = cosT;
     result[0][1] = sinT;
     result[1][0] = -sinT;
@@ -53,11 +53,11 @@ class Matrix {
   /// Create a new zero-filled matrix of the provided [rows] and
   /// [columns] dimensions.
   factory Matrix.zero(final int rows, final int columns) =>
-      Matrix(array2d(rows, columns));
+      Matrix(array2d(rows, columns, 0.0));
 
   /// Create a new square identity matrix of the provided [dimension].
   factory Matrix.identity(final int dimension) {
-    final output = array2d(dimension, dimension);
+    final output = array2d(dimension, dimension, 0.0);
     for (var i = 0; i < dimension; i++) {
       output[i][i] = 1.0;
     }
@@ -67,7 +67,7 @@ class Matrix {
   /// Create a new square [Matrix] using elements [d] for the diagonal
   /// components.
   factory Matrix.diagonal(final List<double> d) {
-    final output = array2d(d.length, d.length);
+    final output = array2d(d.length, d.length, 0.0);
     for (var i = 0; i < d.length; i++) {
       output[i][i] = d[i];
     }
@@ -91,7 +91,7 @@ class Matrix {
 
   /// Return the result of adding this and another [Matrix].
   Matrix add(final Matrix m) {
-    final result = array2d(rows, columns);
+    final result = array2d(rows, columns, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < columns; j++) {
         result[i][j] = _elements[i][j] + m._elements[i][j];
@@ -102,7 +102,7 @@ class Matrix {
 
   /// Return the result of subtracting this and another [Matrix].
   Matrix subtract(final Matrix m) {
-    final result = array2d(rows, columns);
+    final result = array2d(rows, columns, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < columns; j++) {
         result[i][j] = _elements[i][j] - m._elements[i][j];
@@ -113,7 +113,7 @@ class Matrix {
 
   /// Return a copy of this [Matrix], scaled by [n].
   Matrix scale(final double n) {
-    final result = array2d(rows, columns);
+    final result = array2d(rows, columns, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < columns; j++) {
         result[i][j] = _elements[i][j] * n;
@@ -127,7 +127,7 @@ class Matrix {
 
   /// Return the result of multiplying this by another [Matrix];
   Matrix multiply(final Matrix m) {
-    final result = array2d(rows, m.columns);
+    final result = array2d(rows, m.columns, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < m.columns; j++) {
         for (var k = 0; k < columns; k++) {
@@ -140,7 +140,7 @@ class Matrix {
 
   /// Return the result of element-wise multiplying this and another [Matrix].
   Matrix outerProduct(final Matrix m) {
-    final result = array2d(rows, columns);
+    final result = array2d(rows, columns, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < columns; j++) {
         result[i][j] = _elements[i][j] * m._elements[i][j];
@@ -177,7 +177,7 @@ class Matrix {
 
   /// Return a copy of this [Matrix] with all elements inverted.
   Matrix reciprocal() {
-    final output = array2d(rows, columns);
+    final output = array2d(rows, columns, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < columns; j++) {
         if (_elements[i][j] != 0) {
@@ -190,7 +190,7 @@ class Matrix {
 
   /// Return the transpose of this [Matrix].
   Matrix transpose() {
-    final result = array2d(columns, rows);
+    final result = array2d(columns, rows, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var j = 0; j < columns; j++) {
         result[j][i] = _elements[i][j];
@@ -201,7 +201,7 @@ class Matrix {
 
   /// Return the lower-triangular Cholesky decomposed form of this [Matrix];
   Matrix cholesky() {
-    final result = array2d(rows, rows);
+    final result = array2d(rows, rows, 0.0);
     for (var i = 0; i < rows; i++) {
       for (var k = 0; k < (i + 1); k++) {
         var total = 0.0;

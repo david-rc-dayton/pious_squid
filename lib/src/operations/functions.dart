@@ -290,10 +290,11 @@ double gamma(final int n) => factorial(n - 1);
   return (e0: e0, m: m);
 }
 
-///  Create a 2D array with the provided [rows] and [columns].
-List<List<double>> array2d(final int rows, final int columns,
-    {final double value = 0.0, final bool growable = false}) {
-  final output = <List<double>>[];
+/// Create a 2D array with the provided [rows] and [columns] and
+/// default [value].
+List<List<T>> array2d<T>(final int rows, final int columns, final T value,
+    {final bool growable = false}) {
+  final output = <List<T>>[];
   for (var i = 0; i < rows; i++) {
     output.add(List.filled(columns, value, growable: growable));
   }
@@ -305,7 +306,7 @@ List<List<double>> array2d(final int rows, final int columns,
 Matrix jacobian(final JacobianFunction f, final int m, final Float64List x0,
     {final double step = 1e-5}) {
   final n = x0.length;
-  final j = array2d(m, n);
+  final j = array2d(m, n, 0.0);
   final h = 0.5 * step;
 
   for (var k = 0; k < n; k++) {

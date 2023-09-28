@@ -73,7 +73,7 @@ double observationDerivative(
 /// values [sigmas].
 Matrix observationNoiseFromSigmas(final List<double> sigmas) {
   final n = sigmas.length;
-  final result = array2d(n, n);
+  final result = array2d(n, n, 0.0);
   for (var i = 0; i < n; i++) {
     final s = sigmas[i];
     result[i][i] = 1 / (s * s);
