@@ -1,6 +1,5 @@
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/observation/observation_base.dart';
-import 'package:pious_squid/src/observation/observation_utils.dart';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';

@@ -44,7 +44,7 @@ double _dateToPosix(final int year, final int month, final int day,
 /// Universal Coordinated Time _(UTC)_.
 class EpochUTC extends Epoch {
   /// Create a new [EpochUTC] epoch given a [posix] timestamp _(s)_.
-  EpochUTC(final double posix) : super(posix);
+  EpochUTC(super.posix);
 
   /// Create a new [EpochUTC] object from an ISO formatted string of the form
   /// `yyyy-mm-ddThh:mm:ss.sssZ`, e.g.: `2022-11-26T12:14:11.362Z`.

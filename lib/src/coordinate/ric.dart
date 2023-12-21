@@ -4,8 +4,7 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 /// Radial-Intrack-Crosstrack relative state.
 class RIC extends RelativeState {
   /// Create a new [RIC] object, from relative [position] and [velocity] _(km)_.
-  RIC(final Vector3D position, final Vector3D velocity)
-      : super(position, velocity);
+  RIC(super.position, super.velocity);
 
   /// Create a new [RIC] object given an inertial [state] vector, its relative
   /// motion origin, and its tranformation matrix.

@@ -290,6 +290,10 @@ class Vector {
   /// Return the [Vector] element at the provided [index].
   double operator [](final int index) => _elements[index];
 
+  /// Set [Vector] element [value] at the provided [index].
+  void operator []=(final int index, final double value) =>
+      _elements[index] = value;
+
   /// Convert the elements of this [Vector] to a list object.
   List<double> toList({final bool growable = false}) =>
       _elements.toList(growable: true);

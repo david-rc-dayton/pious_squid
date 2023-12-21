@@ -5,7 +5,6 @@ import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/covariance/covariance_base.dart';
 import 'package:pious_squid/src/force/force_base.dart';
 import 'package:pious_squid/src/observation/observation_base.dart';
-import 'package:pious_squid/src/observation/observation_utils.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/propagator/propagator_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
@@ -20,7 +19,7 @@ class BatchLeastSquaresResult {
   final J2000 state;
 
   /// Solved covariance matrix.
-  final CovarianceCartesian covariance;
+  final StateCovariance covariance;
 
   /// Root-mean-squared error.
   final double rms;
@@ -136,8 +135,10 @@ class BatchLeastSquaresOD {
       }
     }
     final p = atwaMat.inverse();
-    final covariance =
-        CovarianceCartesian(_buildPropagator(xNom, false).propagate(_start), p);
-    return BatchLeastSquaresResult(covariance.state, covariance, weightedRms);
+    final covariance = StateCovariance(p, CovarianceFrame.eci);
+    return BatchLeastSquaresResult(
+        _buildPropagator(xNom, false).propagate(_start),
+        covariance,
+        weightedRms);
   }
 }

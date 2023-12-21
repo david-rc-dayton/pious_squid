@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/force/force_base.dart';
 import 'package:pious_squid/src/propagator/runge_kutta_adaptive.dart';
 
@@ -55,9 +54,7 @@ final Float64List _c = Float64List.fromList([
 class DormandPrince54Propagator extends RungeKuttaAdaptive {
   /// Create a new [DormandPrince54Propagator] from an initial [state] and
   /// an optional [ForceModel].
-  DormandPrince54Propagator(final J2000 state,
-      [final ForceModel? forceModel, final double tolerance = 1e-9])
-      : super(state, forceModel, tolerance);
+  DormandPrince54Propagator(super.state, [super.forceModel, super.tolerance]);
 
   @override
   Float64List get a => _a;

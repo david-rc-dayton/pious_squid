@@ -2,14 +2,11 @@ import 'dart:math';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
-import 'package:pious_squid/src/operations/operations_base.dart';
-import 'package:pious_squid/src/time/time_base.dart';
 
 /// J2000 state vector.
 class J2000 extends StateVector {
   /// Create a new [J2000] state vector object.
-  J2000(final EpochUTC epoch, final Vector3D position, final Vector3D velocity)
-      : super(epoch, position, velocity);
+  J2000(super.epoch, super.position, super.velocity);
 
   /// Create a new [J2000] object from a [ClassicalElements] object.
   factory J2000.fromClassicalElements(final ClassicalElements elements) {
