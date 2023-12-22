@@ -135,7 +135,7 @@ class BatchLeastSquaresOD {
       }
     }
     final p = atwaMat.inverse();
-    final covariance = StateCovariance(p, CovarianceFrame.eci);
+    final covariance = StateCovariance(p, CovarianceFrame.j2000);
     return BatchLeastSquaresResult(
         _buildPropagator(xNom, false).propagate(_start),
         covariance,

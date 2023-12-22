@@ -5,11 +5,11 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 
 /// Covaraiance coordinate frame.
 enum CovarianceFrame {
-  /// Earth Centered Earth Fixed frame
-  ecef,
+  /// J2000 inertial frame
+  j2000,
 
-  /// Earth Centered Inertial frame
-  eci,
+  /// ITRF earth-fixed frame
+  itrf,
 
   /// Radial-Intrack-Crosstrack frame
   ric,
