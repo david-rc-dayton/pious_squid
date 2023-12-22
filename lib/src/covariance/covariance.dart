@@ -40,12 +40,12 @@ class StateCovariance {
 
   /// Calculate the standard deviations along the covariance
   /// diagonal variances.
-  Vector sigmas() {
+  Vector sigmas([final double stddev = 1.0]) {
     final c = matrix.columns;
     final result = Float64List(c);
     for (var i = 0; i < c; i++) {
       final variance = matrix[i][i];
-      result[i] = sqrt(variance);
+      result[i] = sqrt(variance) * stddev;
     }
     return Vector(result);
   }
