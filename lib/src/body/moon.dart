@@ -18,27 +18,27 @@ class Moon {
 
   /// Calculate the Moon's ECI position _(km)_ for a given UTC [epoch].
   static Vector3D position(final EpochUTC epoch) {
-    final jc = epoch.toJulianCenturies();
+    final jc = epoch.toTDB().toJulianCenturies();
     final dtr = deg2rad;
     final lamEcl = 218.32 +
         481267.8813 * jc +
         6.29 * sin((134.9 + 477198.85 * jc) * dtr) -
         1.27 * sin((259.2 - 413335.38 * jc) * dtr) +
         0.66 * sin((235.7 + 890534.23 * jc) * dtr) +
-        0.21 * sin((269.9 + 954397.7 * jc) * dtr) -
+        0.21 * sin((269.9 + 954397.70 * jc) * dtr) -
         0.19 * sin((357.5 + 35999.05 * jc) * dtr) -
         0.11 * sin((186.6 + 966404.05 * jc) * dtr);
     final phiEcl = 5.13 * sin((93.3 + 483202.03 * jc) * dtr) +
         0.28 * sin((228.2 + 960400.87 * jc) * dtr) -
         0.28 * sin((318.3 + 6003.18 * jc) * dtr) -
-        0.17 * sin((217.6 - 407332.2 * jc) * dtr);
+        0.17 * sin((217.6 - 407332.20 * jc) * dtr);
     final pllx = 0.9508 +
         0.0518 * cos((134.9 + 477198.85 * jc) * dtr) +
         0.0095 * cos((259.2 - 413335.38 * jc) * dtr) +
         0.0078 * cos((235.7 + 890534.23 * jc) * dtr) +
         0.0028 * cos((269.9 + 954397.7 * jc) * dtr);
     final obq = 23.439291 - 0.0130042 * jc;
-    final rMag = 1 / sin(pllx * dtr);
+    final rMag = 1.0 / sin(pllx * dtr);
     final r = Vector3D(
         rMag * (cos(phiEcl * dtr) * cos(lamEcl * dtr)),
         rMag *
@@ -47,9 +47,7 @@ class Moon {
         rMag *
             (sin(obq * dtr) * cos(phiEcl * dtr) * sin(lamEcl * dtr) +
                 cos(obq * dtr) * sin(phiEcl * dtr)));
-    final rMOD = r.scale(Earth.radiusEquator);
-    final p = Earth.precession(epoch);
-    return rMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);
+    return r.scale(Earth.radiusEquator);
   }
 
   /// Calculate lunar illumination at a given UTC [epoch] and optional ECI

@@ -111,12 +111,18 @@ class EpochUTC extends Epoch {
   /// Convert to Terrestrial Time _(TT)_.
   EpochTT toTT() => EpochTT(toTAI().posix + 32.184);
 
+  /// Convert to UT1.
+  EpochUT1 toUT1() {
+    final dut1 = DataHandler().getEop(this).dut1;
+    return EpochUT1(posix + dut1);
+  }
+
   /// Convert to Barycentric Dynamical Time _(TDB)_.
   EpochTDB toTDB() {
     final tt = toTT();
     final tTT = tt.toJulianCenturies();
     final mEarth = (357.5277233 + 35999.05034 * tTT) * deg2rad;
-    final seconds = 0.001658 * sin(mEarth) + 0.00001385 * sin(2 * mEarth);
+    final seconds = 0.001657 * sin(mEarth) + 0.000014 * sin(2 * mEarth);
     return EpochTDB(tt.posix + seconds);
   }
 
@@ -132,7 +138,7 @@ class EpochUTC extends Epoch {
 
   /// Calculate the Greenwich Mean Sidereal Time _(GMST)_ angle _(rad)_.
   double gmstAngle() {
-    final t = toJulianCenturies();
+    final t = toUT1().toJulianCenturies();
     final seconds = evalPoly(t, _gmstPoly);
     var result = ((seconds / 240) * deg2rad) % twoPi;
     if (result < 0) {

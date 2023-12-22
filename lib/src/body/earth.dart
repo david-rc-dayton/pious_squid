@@ -91,7 +91,7 @@ class Earth {
   static const double radiusEquator = 6378.1363;
 
   /// Earth coefficient of flattening _(unitless)_.
-  static const double flattening = 1.0 / 298.257223563;
+  static const double flattening = 1.0 / 298.25642;
 
   /// Earth polar radius _(km)_.
   static const double radiusPolar = radiusEquator * (1.0 - flattening);
@@ -118,7 +118,14 @@ class Earth {
   static const double j6 = 5.40681239107085e-7;
 
   /// Earth rotation vector _(rad/s)_.
-  static final Vector3D rotation = Vector3D(0, 0, 7.292115146706979e-5);
+  static final Vector3D rotation = Vector3D(0, 0, 7.292115e-5);
+
+  /// Earth rotation vector _(rad/s)_, factoring length of day changes if
+  /// Earth Orientation Parameters are available.
+  static Vector3D rotationLod(final EpochUTC epoch) {
+    final eop = DataHandler().getEop(epoch);
+    return rotation.scale(1.0 - (eop.lod / secondsPerDay));
+  }
 
   /// Calculate mean motion _(rad/s)_ from a given [semimajorAxis] _(km)_.
   static double smaToMeanMotion(final double semimajorAxis) =>
@@ -127,7 +134,7 @@ class Earth {
   /// Calculate semimajor-axis _(km)_ from a given number of revolutions per
   /// day [rpd].
   static double revsPerDayToSma(final double rpd) =>
-      pow(mu, 1 / 3) / pow((twoPi * rpd) / secondsPerDay, 2 / 3);
+      pow(mu, 1.0 / 3.0) / pow((twoPi * rpd) / secondsPerDay, 2.0 / 3.0);
 
   /// Calculate Earth [PrecessionAngles] at a given UTC [epoch].
   static PrecessionAngles precession(final EpochUTC epoch) {
@@ -139,7 +146,8 @@ class Earth {
   }
 
   /// Calculate Earth [NutationAngles] for a given UTC [epoch].
-  static NutationAngles nutation(final EpochUTC epoch) {
+  static NutationAngles nutation(final EpochUTC epoch,
+      {final int coeffs = 4, final bool useEop = false}) {
     final t = epoch.toTT().toJulianCenturies();
     final moonAnom = evalPoly(t, _moonAnomPoly);
     final sunAnom = evalPoly(t, _sunAnomPoly);
@@ -149,7 +157,7 @@ class Earth {
     var deltaPsi = 0.0;
     var deltaEpsilon = 0.0;
     final dh = DataHandler();
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < coeffs; i++) {
       final (a1, a2, a3, a4, a5, ai, bi, ci, di) = dh.getIau1980Coeffs(i);
       final arg = a1 * moonAnom +
           a2 * sunAnom +
@@ -163,6 +171,11 @@ class Earth {
     }
     deltaPsi *= ttasec2rad;
     deltaEpsilon *= ttasec2rad;
+    if (useEop) {
+      final eop = DataHandler().getEop(epoch);
+      deltaPsi += eop.dpsi;
+      deltaEpsilon += eop.deps;
+    }
     final meanEpsilon = evalPoly(t, _meanEpsilonPoly);
     final epsilon = meanEpsilon + deltaEpsilon;
     final eqEq = deltaPsi * cos(meanEpsilon) +

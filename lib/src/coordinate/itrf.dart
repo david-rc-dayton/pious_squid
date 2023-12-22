@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
+import 'package:pious_squid/src/data/data_base.dart';
 
 /// International Terrestrial Reference Frame _(ITRF)_
 class ITRF extends StateVector {
@@ -29,9 +30,12 @@ class ITRF extends StateVector {
   J2000 toJ2000() {
     final p = Earth.precession(epoch);
     final n = Earth.nutation(epoch);
+    final w = DataHandler().getEop(epoch);
     final ast = epoch.gmstAngle() + n.eqEq;
-    final rTOD = position.rotZ(-ast);
-    final vTOD = velocity.add(Earth.rotation.cross(position)).rotZ(-ast);
+    final rPEF = position.rotY(w.x).rotX(w.y);
+    final vPEF = velocity.rotY(w.x).rotX(w.y);
+    final rTOD = rPEF.rotZ(-ast);
+    final vTOD = vPEF.add(Earth.rotationLod(epoch).cross(rPEF)).rotZ(-ast);
     final rMOD = rTOD.rotX(n.eps).rotZ(n.dPsi).rotX(-n.mEps);
     final vMOD = vTOD.rotX(n.eps).rotZ(n.dPsi).rotX(-n.mEps);
     final rJ2000 = rMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);

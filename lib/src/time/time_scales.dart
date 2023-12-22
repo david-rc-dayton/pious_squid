@@ -12,6 +12,12 @@ class EpochTT extends Epoch {
   EpochTT(super.posix);
 }
 
+/// UT1 epoch.
+class EpochUT1 extends Epoch {
+  /// Create a new [EpochUT1] object.
+  EpochUT1(super.posix);
+}
+
 /// Barycentric Dynamical Time (TDB) epoch.
 class EpochTDB extends Epoch {
   /// Create a new [EpochTDB] object.

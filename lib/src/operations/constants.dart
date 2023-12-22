@@ -21,6 +21,9 @@ const double sec2day = sec2deg / 24.0;
 /// Convert arcseconds to radians.
 const double asec2rad = sec2deg * deg2rad;
 
+/// Convert radians to arcseconds.
+const double rad2asec = 3600.0 * rad2deg;
+
 /// Convert ten-thousandths of an arcsecond to radians.
 const double ttasec2rad = asec2rad / 10000.0;
 

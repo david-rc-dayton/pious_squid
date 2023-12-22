@@ -1,6 +1,7 @@
 export 'package:pious_squid/src/body/body_base.dart';
 export 'package:pious_squid/src/coordinate/coordinate_base.dart';
 export 'package:pious_squid/src/covariance/covariance_base.dart';
+export 'package:pious_squid/src/data/data_base.dart';
 export 'package:pious_squid/src/force/force_base.dart';
 export 'package:pious_squid/src/interpolator/interpolator_base.dart';
 export 'package:pious_squid/src/maneuver/maneuver_base.dart';

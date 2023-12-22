@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:pious_squid/pious_squid.dart';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:test/test.dart';
@@ -22,6 +24,9 @@ final tle = TLE(
     '2 00005  34.2682 348.7242 1859667 331.7664  19.3264 10.82419157413667');
 
 void main() {
+  DataHandler()
+      .updateEopFromCsv(File('external/EOP-All.csv').readAsStringSync());
+
   group('Propagator', () {
     test('Kepler', () {
       final propagator = KeplerPropagator(startState.toClassicalElements());

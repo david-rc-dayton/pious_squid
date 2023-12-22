@@ -1,7 +1,4 @@
-import 'package:pious_squid/src/data/values/egm96.dart';
-import 'package:pious_squid/src/data/values/hp_atmosphere.dart';
-import 'package:pious_squid/src/data/values/iau1980.dart';
-import 'package:pious_squid/src/data/values/leap_second.dart';
+import 'package:pious_squid/pious_squid.dart';
 
 /// Astrodynamic data management singleton.
 class DataHandler {
@@ -28,4 +25,20 @@ class DataHandler {
   /// surface _(km)_
   HpAtmosphereResult? getHpAtmosphere(final double height) =>
       hpAtmosphereData.getAtmosphere(height);
+
+  /// Update Earth Orientation parameters from Celestrak CSV data.
+  void updateEopFromCsv(final String csv) {
+    eopData.updateFromCsv(csv);
+  }
+
+  /// Clear any loaded Earth Orentation Parameter data.
+  void clearEop() {
+    eopData.clearEntries();
+  }
+
+  /// Get Earth Orientation Parameter data for the provided epoch.
+  ///
+  /// An empty [EOP] object will be returned if there isn't data available
+  /// for the provided epoch.
+  EOP getEop(final EpochUTC epoch) => eopData.getEOP(epoch.toMjd());
 }

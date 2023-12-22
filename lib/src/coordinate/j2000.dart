@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
+import 'package:pious_squid/src/data/data_base.dart';
 
 /// J2000 state vector.
 class J2000 extends StateVector {
@@ -24,14 +25,18 @@ class J2000 extends StateVector {
   ITRF toITRF() {
     final p = Earth.precession(epoch);
     final n = Earth.nutation(epoch);
+    final w = DataHandler().getEop(epoch);
     final ast = epoch.gmstAngle() + n.eqEq;
     final rMOD = position.rotZ(-p.zeta).rotY(p.theta).rotZ(-p.zed);
     final vMOD = velocity.rotZ(-p.zeta).rotY(p.theta).rotZ(-p.zed);
     final rTOD = rMOD.rotX(n.mEps).rotZ(-n.dPsi).rotX(-n.eps);
     final vTOD = vMOD.rotX(n.mEps).rotZ(-n.dPsi).rotX(-n.eps);
     final rPEF = rTOD.rotZ(ast);
-    final vPEF = vTOD.rotZ(ast).add(Earth.rotation.negate().cross(rPEF));
-    return ITRF(epoch, rPEF, vPEF);
+    final vPEF =
+        vTOD.rotZ(ast).add(Earth.rotationLod(epoch).negate().cross(rPEF));
+    final rITRF = rPEF.rotX(-w.y).rotY(-w.x);
+    final vITRF = vPEF.rotX(-w.y).rotY(-w.x);
+    return ITRF(epoch, rITRF, vITRF);
   }
 
   /// Convert this to an [TEME] state vector object.
@@ -45,5 +50,25 @@ class J2000 extends StateVector {
     final rTEME = rMOD.rotX(n.mEps).rotZ(-n.dPsi).rotX(-eps).rotZ(dPsiCosEps);
     final vTEME = vMOD.rotX(n.mEps).rotZ(-n.dPsi).rotX(-eps).rotZ(dPsiCosEps);
     return TEME(epoch, rTEME, vTEME);
+  }
+
+  /// Convert this to a [GCRF] state vector object.
+  GCRF toGCRF() {
+    final p = Earth.precession(epoch);
+
+    final n0 = Earth.nutation(epoch, coeffs: 106);
+    final n1 = Earth.nutation(epoch, coeffs: 106, useEop: true);
+
+    var rMOD = position.rotZ(-p.zeta).rotY(p.theta).rotZ(-p.zed);
+    var vMOD = velocity.rotZ(-p.zeta).rotY(p.theta).rotZ(-p.zed);
+    final rTOD = rMOD.rotX(n0.mEps).rotZ(-n0.dPsi).rotX(-n0.eps);
+    final vTOD = vMOD.rotX(n0.mEps).rotZ(-n0.dPsi).rotX(-n0.eps);
+
+    rMOD = rTOD.rotX(n1.eps).rotZ(n1.dPsi).rotX(-n1.mEps);
+    vMOD = vTOD.rotX(n1.eps).rotZ(n1.dPsi).rotX(-n1.mEps);
+    final rGCRF = rMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);
+    final vGCRF = vMOD.rotZ(p.zed).rotY(-p.theta).rotZ(p.zeta);
+
+    return GCRF(epoch, rGCRF, vGCRF);
   }
 }
