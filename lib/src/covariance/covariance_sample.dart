@@ -19,6 +19,8 @@ class CovarianceSample {
     originForceModel ??= (ForceModel()..setGravity());
     sampleForceModel ??= (ForceModel()..setGravity());
     _origin = RungeKutta89Propagator(state, originForceModel);
+
+    // build sigma points
     final s = covariance.matrix.cholesky();
     final sqrt6 = sqrt(6.0);
     for (var i = 0; i < 6; i++) {
@@ -39,12 +41,19 @@ class CovarianceSample {
       }
     }
 
+    // build propagators from points
     for (var i = 0; i < 12; i++) {
       final sampleR = Vector3D(sigmapts[0][i], sigmapts[1][i], sigmapts[2][i]);
       final sampleV = Vector3D(sigmapts[3][i], sigmapts[4][i], sigmapts[5][i]);
       if (covariance.frame == CovarianceFrame.eci) {
         final sample = J2000(state.epoch, state.position.add(sampleR),
             state.velocity.add(sampleV));
+        _samples.add(RungeKutta89Propagator(sample, sampleForceModel));
+      } else if (covariance.frame == CovarianceFrame.ecef) {
+        final itrf = state.toITRF();
+        final sample = ITRF(state.epoch, itrf.position.add(sampleR),
+                itrf.velocity.add(sampleV))
+            .toJ2000();
         _samples.add(RungeKutta89Propagator(sample, sampleForceModel));
       } else if (covariance.frame == CovarianceFrame.ric) {
         final sample = RIC(sampleR, sampleV).toJ2000(state);
@@ -136,5 +145,20 @@ class CovarianceSample {
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.ric);
+  }
+
+  /// Desample covariance in ECEF frame.
+  StateCovariance desampleECEF() {
+    for (var i = 0; i < 12; i++) {
+      final state = _samples[i].state.toITRF();
+      _pts[0][i] = state.position[0];
+      _pts[1][i] = state.position[1];
+      _pts[2][i] = state.position[2];
+      _pts[3][i] = state.velocity[0];
+      _pts[4][i] = state.velocity[1];
+      _pts[5][i] = state.velocity[2];
+    }
+    final matrix = _rebuildCovariance(_pts);
+    return StateCovariance(matrix, CovarianceFrame.ecef);
   }
 }

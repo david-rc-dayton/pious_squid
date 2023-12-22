@@ -5,6 +5,9 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 
 /// Covaraiance coordinate frame.
 enum CovarianceFrame {
+  /// Earth Centered Earth Fixed frame
+  ecef,
+
   /// Earth Centered Inertial frame
   eci,
 
