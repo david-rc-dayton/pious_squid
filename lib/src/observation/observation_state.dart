@@ -36,6 +36,12 @@ class ObservationState extends Observation {
   @override
   Matrix get noise => _noise;
 
+  /// Create a noise matrix from the position/velocity standard
+  /// deviantions _(km,km/s)_.
+  static Matrix noiseFromSigmas(final double rx, final double ry,
+          final double rz, final double vx, final double vy, final double vz) =>
+      observationNoiseFromSigmas([rx, ry, rz, vx, vy, vz]);
+
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
     final result = Matrix.zero(6, 6);
