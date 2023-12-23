@@ -82,7 +82,7 @@ class ObservationState extends Observation {
       [final double sigma = 1.0]) {
     final result = sampleVector(random, sigma);
     return ObservationState(
-        ITRF(epoch, result.toVector3D(0), result.toVector3D(3)));
+        ITRF(epoch, result.toVector3D(0), result.toVector3D(3)), noise);
   }
 
   @override
