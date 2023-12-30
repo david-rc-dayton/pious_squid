@@ -44,7 +44,7 @@ class ForceModel {
   }
 
   /// Enable complex Earth gravity model using the provided geopotential
-  /// [degree] and [order] _(max: 36)_.
+  /// [degree] and [order] _(max: 70)_.
   void setEarthGravity(final int degree, final int order) {
     _centralGravity = EarthGravity(degree, order);
   }

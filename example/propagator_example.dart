@@ -90,24 +90,33 @@ void main() {
   // Propagator Methods
   // --------------------------------------------------------------------------
 
-  // Get epoch of apogee after the propagation epoch.
-  print(rk89Prop.apogeeEpoch(propEpoch)); // => 2023-09-03T13:30:27.910Z
-
-  // Get epoch of perigee after the propagation epoch.
-  print(rk89Prop.perigeeEpoch(propEpoch)); // => 2023-09-03T12:49:05.183Z
-
-  // Get epoch of the ascending node after the propagation epoch.
-  print(rk89Prop.ascendingNodeEpoch(propEpoch)); // => 2023-09-03T12:29:52.085Z
-
-  // Get epoch of the decending node after the propagation epoch.
-  print(rk89Prop.descendingNodeEpoch(propEpoch)); // => 2023-09-03T13:16:12.907Z
-
-  // Note the propagator caches the last value, at the descending node.
-  print(rk89Prop.state);
+  // Propagate to apogee after the propagation epoch.
+  print(rk89Prop.propagateApogee(propEpoch));
   // => [J2000]
-  // Epoch: 2023-09-03T13:16:12.907Z
-  // Position: [-3405.922639, 5883.389508, 0.000808] km
-  // Velocity: [-4.126180407, -2.378569093, -5.997749849] km/s
+  //   Epoch: 2023-09-03T13:30:27.907Z
+  //   Position: [-4952.421703, 1625.602174, -4369.858629] km
+  //   Velocity: [0.788540066, -6.796430678, -3.421958633] km/s
+
+  // Propagate to perigee after the propagation epoch.
+  print(rk89Prop.propagatePerigee(propEpoch));
+  // => [J2000]
+  //   Epoch: 2023-09-03T12:49:05.182Z
+  //   Position: [4422.176988, 496.420118, 5121.699040] km
+  //   Velocity: [-2.626183697, 7.026830728, 1.586424502] km/s
+
+  // Propagate to the ascending node after the propagation epoch.
+  print(rk89Prop.propagateAscendingNode(propEpoch));
+  // => [J2000]
+  //   Epoch: 2023-09-03T12:29:52.085Z
+  //   Position: [3419.157113, -5868.411319, 0.000385] km
+  //   Velocity: [4.114659551, 2.407441184, 6.003348144] km/s
+
+  // Propagate to the descending node after the propagation epoch.
+  print(rk89Prop.propagateDescendingNode(propEpoch));
+  // => [J2000]
+  //   Epoch: 2023-09-03T13:16:12.907Z
+  //   Position: [-3405.923131, 5883.389223, -0.000025] km
+  //   Velocity: [-4.126179601, -2.378569951, -5.997750061] km/s
 
   // Create a checkpoint at this state if you want to restore it later.
   final checkpoint = rk89Prop.checkpoint();

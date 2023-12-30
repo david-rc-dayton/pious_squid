@@ -32,7 +32,7 @@ class AtmosphericDrag implements Force {
   /// Return Harris-Priester atmospheric density for a given [state] and
   /// cosine exponent [n].
   static double _getHPDensity(final ITRF state, final int n) {
-    final hpa = DataHandler().getHpAtmosphere(state.getHeight());
+    final hpa = DataHandler().getHpAtmosphere(state.epoch, state.getHeight());
     if (hpa == null) {
       return 0.0;
     }
@@ -47,8 +47,8 @@ class AtmosphericDrag implements Force {
     final cPsi2 = sqrt(c2Psi2);
     final cosPow = (cPsi2 > 1e-12) ? c2Psi2 * pow(cPsi2, n - 2) : 0.0;
     final altitude = hpa.height;
-    final (h0, min0, max0) = hpa.hp0;
-    final (h1, min1, max1) = hpa.hp1;
+    final (h: h0, minD: min0, maxD: max0) = hpa.hp0;
+    final (h: h1, minD: min1, maxD: max1) = hpa.hp1;
     final dH = (h0 - altitude) / (h0 - h1);
     final rhoMin = min0 * pow(min1 / min0, dH);
     if (cosPow == 0) {

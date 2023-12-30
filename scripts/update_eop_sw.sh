@@ -10,6 +10,6 @@ curl --limit-rate ${RATE} \
     "https://celestrak.org/SpaceData/EOP-All.csv" \
     > external/EOP-All.csv
 
-# curl --limit-rate ${RATE} \
-#     "https://celestrak.org/SpaceData/SW-All.csv" \
-#     > external/SW-All.csv
+curl --limit-rate ${RATE} \
+    "https://celestrak.org/SpaceData/SW-All.csv" \
+    > external/SW-All.csv

@@ -11,13 +11,13 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 class EarthGravity implements Force {
   /// Create a new [EarthGravity] object with the given [degree] and [order].
   ///
-  /// Degree and order should be a number between `0` and `36`. A degree of `0`
+  /// Degree and order should be a number between `0` and `70`. A degree of `0`
   /// will model a spherical Earth, and an order of `0` will only model zonal
   /// perturbations. Zonal, sectoral, and tesseral perturbations will be modeled
   /// if the degree and order are both non-zero.
   EarthGravity(final int degree, final int order)
-      : degree = degree.clamp(0, 36),
-        order = order.clamp(0, 36),
+      : degree = degree.clamp(0, 70),
+        order = order.clamp(0, 70),
         _asphericalFlag = degree >= 2;
 
   /// Geopotential degree _(zonal)_.

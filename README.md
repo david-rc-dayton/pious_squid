@@ -12,6 +12,7 @@ and satellite mission analysis logic.
 - Coordinates
   - Classical Orbital Elements
   - Equinoctial Elements
+  - Geocentric Celestial Reference Frame _(GCRF)_
   - Geodetic Coordinates
   - Hill Modified Equidistant Cylindrical Frame _(EQCM)_
   - International Terrestrial Reference Frame _(ITRF)_
@@ -20,13 +21,13 @@ and satellite mission analysis logic.
   - True Equator Mean Equinox Inertial Frame _(TEME)_
   - Two-Line Element Set _(TLE)_
 - Covariance
-  - Cartesian Covariance
-  - Classical Element Covariance
-  - Equinoctial Element Covariance
-  - Relative Covariance
+  - Covariance Sigma Sampling _(J2000/ITRF/RIC)_
+- External Data
+  - Earth Orientation Parameters
+  - Space Weather
 - Perturbation Forces
   - Atmospheric Drag _(Harris-Priester)_
-  - Earth Gravity _(up to 36x36 geopotential)_
+  - Earth Gravity _(up to 70x70 geopotential)_
   - Solar Radiation Pressure
   - Spacecraft Thrust
   - Spherical Body Gravity
@@ -44,6 +45,7 @@ and satellite mission analysis logic.
   - Optical Observation
   - Radar Observation
   - Range-Azimuth-Elevation _(RAzEl)_
+  - State Observations _(ITRF)_
   - Topocentric Right-Ascension and Declination _(RaDec)_
 - Math
   - Matrix Operations
@@ -76,6 +78,7 @@ and satellite mission analysis logic.
   - International Atomic Time _(TAI)_
   - Terrestrial Time _(TT)_
   - Universal Coordinated Time _(UTC)_
+  - UT1-UTC Time _(UT1)_
 
 ## Usage
 
