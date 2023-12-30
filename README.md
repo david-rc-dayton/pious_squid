@@ -123,7 +123,7 @@ void main() {
   // Create a observer location.
   final observer = Geodetic.fromDegrees(-15, 80, 0.05);
 
-  // Calculate look-angles from the observer to the satellite .
+  // Calculate look-angles from the observer to the satellite.
   print(finalState.toITRF().toGeodetic());
   final razel = Razel.fromStateVectors(
       finalState, observer.toITRF(finalState.epoch).toJ2000());
