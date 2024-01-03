@@ -38,5 +38,21 @@ void main() {
       final f1 = f.filterOutliers(1.0);
       expect(f1.length, equals(5));
     });
+
+    test('PolynomialRegression', () {
+      final xs = <double>[-1, 0, 1, 2, 3, 5, 7, 9];
+      final ys = <double>[-1, 3, 2, 5, 4, 2, 5, 4];
+      final result = PolynomialRegression.solve(
+          Float64List.fromList(xs), Float64List.fromList(ys), 4);
+      expect(result.coefficients.length, equals(5));
+      expect(result.coefficients[0], closeTo(-0.0108, 1e-3));
+      expect(result.coefficients[1], closeTo(0.1984, 1e-3));
+      expect(result.coefficients[2], closeTo(-1.1341, 1e-3));
+      expect(result.coefficients[3], closeTo(2.193, 1e-3));
+      expect(result.coefficients[4], closeTo(2.5004, 1e-3));
+      expect(result.rss, closeTo(2.6417, 1e-3));
+      expect(result.bic, closeTo(23.8608, 1e-3));
+      expect(result.evaluate(0), closeTo(2.5003, 1e-3));
+    });
   });
 }

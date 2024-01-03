@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
-import 'package:pious_squid/src/optimize/optimize_base.dart';
 
 /// Polynomial regression optimization result.
 class PolynomicalRegressionResult {
@@ -20,6 +19,9 @@ class PolynomicalRegressionResult {
 
   /// Polynomial fit Bays information criterea.
   double bic;
+
+  /// Evaluate value [x] using this result's coefficients.
+  double evaluate(final double x) => evalPoly(x, coefficients);
 }
 
 /// Polynomial regression optimizer.
@@ -33,22 +35,31 @@ class PolynomialRegression {
   /// Optimize polynomial coefficients to fit data series [xs] and [ys] for the
   /// provided polynomial [order].
   static PolynomicalRegressionResult solve(
-      final Float64List xs, final Float64List ys, final int order,
-      {final bool printIter = false}) {
-    final simplex = DownhillSimplex.generateSimplex(
-        Vector.filled(order + 1, 1.0).toArray());
-    double f(final Float64List coeffs) {
-      var sse = 0.0;
-      for (var i = 0; i < xs.length; i++) {
-        final diff = ys[i] - evalPoly(xs[i], coeffs);
-        sse += diff * diff;
+      final Float64List xs, final Float64List ys, final int order) {
+    final n = xs.length;
+    final m = order;
+
+    final xMat = Matrix.zero(n, m + 1);
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < m + 1; j++) {
+        xMat[i][j] = pow(xs[i], j).toDouble();
       }
-      return sse;
     }
 
-    final result = DownhillSimplex.solveSimplex(f, simplex,
-        adaptive: true, printIter: printIter);
-    final sse = f(result);
+    final xMatT = xMat.transpose();
+    final bMat = xMatT
+        .multiply(xMat)
+        .inverse()
+        .multiply(xMatT)
+        .multiplyVector(Vector.fromList(ys));
+
+    final result = Float64List.fromList(bMat.toArray().reversed.toList());
+
+    var sse = 0.0;
+    for (var i = 0; i < xs.length; i++) {
+      sse += pow(evalPoly(xs[i], result) - ys[i], 2).toDouble();
+    }
+
     return PolynomicalRegressionResult(
         result, sqrt(sse), _bayesInformationCriterea(xs.length, order, sse));
   }
@@ -56,12 +67,15 @@ class PolynomialRegression {
   /// Optimize polynomial coefficients to fit data series [xs] and [ys], and
   /// attempt to find an optimal order within the [minOrder] and
   /// [maxOrder] bounds.
-  static PolynomicalRegressionResult solveOrder(final Float64List xs,
-      final Float64List ys, final int minOrder, final int maxOrder,
-      {final bool printIter = false}) {
+  static PolynomicalRegressionResult solveOrder(
+    final Float64List xs,
+    final Float64List ys,
+    final int minOrder,
+    final int maxOrder,
+  ) {
     final cache = <PolynomicalRegressionResult>[];
     for (var order = minOrder; order <= maxOrder; order++) {
-      cache.add(solve(xs, ys, order, printIter: printIter));
+      cache.add(solve(xs, ys, order));
     }
     cache.sort((final a, final b) => a.bic.compareTo(b.bic));
     return cache.first;

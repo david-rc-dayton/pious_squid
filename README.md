@@ -54,8 +54,9 @@ and satellite mission analysis logic.
 - Optimization
   - Chebyshev Ephemeris Compression
   - Downhill Simplex _(Nelder-Mead)_
+  - Gauss-Newton Differential Correction
   - Golden Section
-  - Polynomial Regression _(WIP)_
+  - Polynomial Regression
   - Simple Linear Regression
 - Orbit Determination
   - Batch Least Squares Orbit Determination _(OD)_
