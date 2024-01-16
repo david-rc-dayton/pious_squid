@@ -311,7 +311,7 @@ class Hill extends RelativeState {
         .multiplyVector3D(solnVector)
         .subtract(velocity);
     if (ignoreCrosstrack) {
-      result = Vector3D(result.x * 1000, result.y * 1000, 0.0);
+      result = Vector3D(result.x, result.y, 0.0);
     }
     return Thrust(epoch, result.x * 1000, result.y * 1000, result.z * 1000);
   }
