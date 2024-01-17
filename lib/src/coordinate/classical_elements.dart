@@ -167,15 +167,16 @@ class ClassicalElements {
 
   /// Convert this to [EquinoctialElements].
   EquinoctialElements toEquinoctialElements() {
-    final fr = ((inclination - pi).abs() < 1e-9) ? -1 : 1;
-    final af = eccentricity * cos(argPerigee + fr * rightAscension);
-    final ag = eccentricity * sin(argPerigee + fr * rightAscension);
-    final l = argPerigee +
-        fr * rightAscension +
-        newtonNu(eccentricity, trueAnomaly).m;
     final n = meanMotion();
-    final chi = pow(tan(0.5 * inclination), fr) * sin(rightAscension);
-    final psi = pow(tan(0.5 * inclination), fr) * cos(rightAscension);
+    final m = newtonNu(eccentricity, trueAnomaly).m;
+    final fr = inclination > pi * 0.5 ? -1 : 1;
+    final omega = fr * rightAscension;
+    final tio2pfr = pow(tan(0.5 * inclination), fr);
+    final af = eccentricity * cos(argPerigee + omega);
+    final ag = eccentricity * sin(argPerigee + omega);
+    final l = argPerigee + omega + m;
+    final chi = tio2pfr * sin(rightAscension);
+    final psi = tio2pfr * cos(rightAscension);
     return EquinoctialElements(epoch, af, ag, l, n, chi, psi, mu: mu, fr: fr);
   }
 
