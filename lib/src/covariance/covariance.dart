@@ -13,6 +13,9 @@ enum CovarianceFrame {
 
   /// Radial-Intrack-Crosstrack frame
   ric,
+
+  /// Equinoctial elements
+  equinoctial,
 }
 
 /// State covariance.
@@ -28,6 +31,24 @@ class StateCovariance {
     final output = Matrix.zero(n, n);
     for (var i = 0; i < n; i++) {
       output[i][i] = max(sigmas[i] * sigmas[i], 1e-32);
+    }
+    return StateCovariance(output, frame);
+  }
+
+  /// Create a new [StateCovariance] object from lower-triangular values.
+  factory StateCovariance.fromLowerTriangle(
+      final List<double> values, final CovarianceFrame frame) {
+    final n = (0.5 * (sqrt(8 * values.length + 1) - 1)).toInt();
+    final output = Matrix.zero(n, n);
+    var dex = 0;
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j <= i; j++) {
+        output[i][j] = values[dex];
+        if (i != j) {
+          output[j][i] = values[dex];
+        }
+        dex++;
+      }
     }
     return StateCovariance(output, frame);
   }

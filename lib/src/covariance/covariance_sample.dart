@@ -45,19 +45,39 @@ class CovarianceSample {
     for (var i = 0; i < 12; i++) {
       final sampleR = Vector3D(sigmapts[0][i], sigmapts[1][i], sigmapts[2][i]);
       final sampleV = Vector3D(sigmapts[3][i], sigmapts[4][i], sigmapts[5][i]);
+      // j2000
       if (covariance.frame == CovarianceFrame.j2000) {
         final sample = J2000(state.epoch, state.position.add(sampleR),
             state.velocity.add(sampleV));
         _samples.add(RungeKutta89Propagator(sample, sampleForceModel));
-      } else if (covariance.frame == CovarianceFrame.itrf) {
+      }
+      // itrf
+      else if (covariance.frame == CovarianceFrame.itrf) {
         final itrf = state.toITRF();
         final sample = ITRF(state.epoch, itrf.position.add(sampleR),
                 itrf.velocity.add(sampleV))
             .toJ2000();
         _samples.add(RungeKutta89Propagator(sample, sampleForceModel));
-      } else if (covariance.frame == CovarianceFrame.ric) {
+      }
+      // ric
+      else if (covariance.frame == CovarianceFrame.ric) {
         final sample = RIC(sampleR, sampleV).toJ2000(state);
         _samples.add(RungeKutta89Propagator(sample, sampleForceModel));
+      }
+      // equinoctial
+      else if (covariance.frame == CovarianceFrame.equinoctial) {
+        final eq = state.toClassicalElements().toEquinoctialElements();
+        final sample = EquinoctialElements(
+            state.epoch,
+            eq.af + sampleR[0],
+            eq.ag + sampleR[1],
+            eq.l + sampleR[2],
+            eq.n + sampleV[0],
+            eq.chi + sampleV[1],
+            eq.psi + sampleV[2]);
+        _samples.add(RungeKutta89Propagator(
+            J2000.fromClassicalElements(sample.toClassicalElements()),
+            sampleForceModel));
       }
     }
   }
@@ -157,6 +177,22 @@ class CovarianceSample {
       _pts[3][i] = state.velocity[0];
       _pts[4][i] = state.velocity[1];
       _pts[5][i] = state.velocity[2];
+    }
+    final matrix = _rebuildCovariance(_pts);
+    return StateCovariance(matrix, CovarianceFrame.itrf);
+  }
+
+  /// Desample covariance as equinoctial elements.
+  StateCovariance desampleEquinoctial() {
+    for (var i = 0; i < 12; i++) {
+      final eqEls =
+          _samples[i].state.toClassicalElements().toEquinoctialElements();
+      _pts[0][i] = eqEls.af;
+      _pts[1][i] = eqEls.ag;
+      _pts[2][i] = eqEls.l;
+      _pts[3][i] = eqEls.n;
+      _pts[4][i] = eqEls.chi;
+      _pts[5][i] = eqEls.psi;
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.itrf);

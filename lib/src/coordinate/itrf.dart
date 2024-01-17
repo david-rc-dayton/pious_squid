@@ -57,10 +57,12 @@ class ITRF extends StateVector {
     var c = 0.0;
     for (var i = 0; i < 12; i++) {
       final slat = sin(lat);
-      c = 1 / sqrt(1 - esq * slat * slat);
-      lat = atan((z + sma * c * esq * slat) / r);
+      c = sma / sqrt(1 - esq * slat * slat);
+      lat = atan((z + c * esq * slat) / r);
     }
-    final alt = r / cos(lat) - sma * c;
+    final alt = (pi * 0.5 - lat.abs() > (pi / 180))
+        ? r / cos(lat) - c
+        : z / sin(lat) - (c * (1 - esq));
     return Geodetic(lat, lon, alt);
   }
 }
