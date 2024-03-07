@@ -75,7 +75,7 @@ class ObservationState extends Observation {
 
   @override
   Vector3D ricDiff(final Propagator propagator) =>
-      RIC.fromJ2000(site, propagator.propagate(epoch)).position;
+      RelativeState.fromJ2000(site, propagator.propagate(epoch)).position;
 
   @override
   Observation sample(final RandomGaussianSource random,

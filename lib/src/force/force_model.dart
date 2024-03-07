@@ -6,6 +6,7 @@ import 'package:pious_squid/src/force/force_base.dart';
 import 'package:pious_squid/src/force/gravity.dart';
 import 'package:pious_squid/src/force/solar_radiation_pressure.dart';
 import 'package:pious_squid/src/force/third_body_gravity.dart';
+import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 
 /// Base class for perturbation forces.
@@ -27,13 +28,35 @@ class ForceModel {
   Force? _thirdBodyGravity;
 
   /// Solar radiation pressure model.
-  Force? _solarRadiationPressure;
+  SolarRadiationPressure? _solarRadiationPressure;
 
   /// Atmospheric drag model.
-  Force? _atmosphericDrag;
+  AtmosphericDrag? _atmosphericDrag;
 
   /// Thrust model.
   Force? _maneuverThrust;
+
+  /// Ballistic coefficient _(kg/m²)_.
+  double _bcoeffInv = 0.0;
+
+  /// Solar radiation pressure coefficient _(kg/m²)_.
+  double _srpcoeffInv = 0.0;
+
+  /// Get this force model's ballistic coefficient _(kg/m²)_.
+  double getBCoeff() => invertZero(_bcoeffInv);
+
+  /// Get this force model's solar radiation pressure coefficient _(kg/m²)_.
+  double getSrpCoeff() => invertZero(_srpcoeffInv);
+
+  /// Set this force model's ballistic coefficient _(kg/m²)_.
+  void setBCoeff(final double bcoeff) {
+    _bcoeffInv = invertZero(bcoeff);
+  }
+
+  /// Set this force model's solar radiation pressure coefficient _(kg/m²)_.
+  void setSrpCoeff(final double srpcoeff) {
+    _srpcoeffInv = invertZero(srpcoeff);
+  }
 
   /// Enable simple central-body gravity model.
   ///
@@ -54,24 +77,26 @@ class ForceModel {
     _thirdBodyGravity = ThirdBodyGravity(moon: moon, sun: sun);
   }
 
-  /// Enable solar radiation pressure using the spacecraft mass _(kg)_,
-  /// cross-sectional area _(m²)_, and optional reflectivity coefficient.
-  void setSolarRadiationPressure(final double mass, final double area,
-      {final double coeff = 1.2}) {
-    _solarRadiationPressure = SolarRadiationPressure(mass, area, coeff);
+  /// Enable solar radiation pressure using the spacecraft solar radiation
+  /// pressure coefficient _()_, and optional reflectivity coefficient.
+  void setSolarRadiationPressure(final double srpcoeff,
+      {final double reflectCoeff = 1.2}) {
+    _srpcoeffInv = invertZero(srpcoeff);
+    _solarRadiationPressure = SolarRadiationPressure(reflectCoeff);
   }
 
-  /// Enable atmospheric drag using the spacecraft mass _(kg)_,
-  /// cross-sectional area _(m²)_, optional drag coefficient, and optional
-  /// cosine exponent.
+  /// Enable atmospheric drag using the spacecraft ballistic coefficient
+  /// _(kg/m²)_, optional drag coefficient, and optional cosine exponent.
   ///
   /// The cosine exponent should be a number between `2` for low inclination
   /// orbits and `6` for polar orbits.
   ///
-  /// **Note:** The atmospheric drag model assumes mean solar flux.
-  void setAtmosphericDrag(final double mass, final double area,
-      {final double coeff = 2.2, final int cosine = 4}) {
-    _atmosphericDrag = AtmosphericDrag(mass, area, coeff, cosine);
+  /// **Note:** The atmospheric drag model assumes mean solar flux if space
+  /// weather data is not provided.
+  void setAtmosphericDrag(final double bcoeff,
+      {final double dragCoeff = 2.2, final int cosine = 4}) {
+    _bcoeffInv = invertZero(bcoeff);
+    _atmosphericDrag = AtmosphericDrag(dragCoeff, cosine);
   }
 
   /// Load a [maneuver] into the acceleration model.
@@ -94,11 +119,12 @@ class ForceModel {
     if (_thirdBodyGravity != null) {
       accVec = accVec.add(_thirdBodyGravity!.acceleration(state));
     }
-    if (_solarRadiationPressure != null) {
-      accVec = accVec.add(_solarRadiationPressure!.acceleration(state));
-    }
     if (_atmosphericDrag != null) {
-      accVec = accVec.add(_atmosphericDrag!.acceleration(state));
+      accVec = accVec.add(_atmosphericDrag!.acceleration(state, _bcoeffInv));
+    }
+    if (_solarRadiationPressure != null) {
+      accVec = accVec
+          .add(_solarRadiationPressure!.acceleration(state, _srpcoeffInv));
     }
     if (_maneuverThrust != null) {
       accVec = accVec.add(_maneuverThrust!.acceleration(state));
@@ -109,4 +135,48 @@ class ForceModel {
   /// Calculate inertial [state] derivative using the forces in this model.
   Vector derivative(final J2000 state) =>
       state.velocity.join(acceleration(state));
+
+  /// Clone this force model into a new object.
+  ForceModel clone() {
+    final output = ForceModel();
+
+    // gravity
+    if (_centralGravity != null) {
+      if (_centralGravity is EarthGravity) {
+        final force = _centralGravity as EarthGravity;
+        output.setEarthGravity(force.degree, force.order);
+      } else if (_centralGravity is Gravity) {
+        final force = _centralGravity as Gravity;
+        output.setGravity(force.mu);
+      }
+    }
+    // third body
+    if (_thirdBodyGravity != null) {
+      final force = _thirdBodyGravity as ThirdBodyGravity;
+      output.setThirdBodyGravity(sun: force.sun, moon: force.moon);
+    }
+    // solar radiation pressure
+    if (_solarRadiationPressure != null) {
+      final force = _solarRadiationPressure as SolarRadiationPressure;
+      output.setSolarRadiationPressure(getSrpCoeff(),
+          reflectCoeff: force.reflectCoeff);
+    }
+    // atmospheric drag
+    if (_atmosphericDrag != null) {
+      final force = _atmosphericDrag as AtmosphericDrag;
+      output.setAtmosphericDrag(getBCoeff(),
+          dragCoeff: force.dragCoeff, cosine: force.cosine);
+    }
+    // thrust
+    if (_maneuverThrust != null) {
+      final force = _maneuverThrust as Thrust;
+      output.loadManeuver(force);
+    }
+
+    // coefficients
+    output.setBCoeff(invertZero(_bcoeffInv));
+    output.setSrpCoeff(invertZero(_bcoeffInv));
+
+    return output;
+  }
 }

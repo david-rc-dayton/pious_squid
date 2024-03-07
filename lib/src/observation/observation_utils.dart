@@ -28,6 +28,15 @@ class PropagatorPairs {
   double step(final int index) => index < 3 ? _posStep : _velStep;
 }
 
+/// Calculate the component derivative for the high [xh] and low [xl]
+/// observation values and step size.
+///
+/// Set [isAngle] to true, if the component is an angular value.
+double observationDerivative(
+        final double xh, final double xl, final double step,
+        {final bool isAngle = false}) =>
+    (isAngle ? normalizeAngle(xh, xl) : (xh - xl)) / step;
+
 /// Convert right-ascension [ra] _(rad)_, declination [dec] _(rad)_, and slant
 /// range [r] _(km)_ into a position vector relative to the observer.
 Vector3D radecToPosition(final double ra, final double dec, final double r) {
@@ -59,15 +68,6 @@ double normalizeAngle(final double a, final double b) {
   final x = a - b;
   return atan2(sin(x), cos(x));
 }
-
-/// Calculate the component derivative for the high [xh] and low [xl]
-/// observation values and step size.
-///
-/// Set [isAngle] to true, if the component is an angular value.
-double observationDerivative(
-        final double xh, final double xl, final double step,
-        {final bool isAngle = false}) =>
-    (isAngle ? normalizeAngle(xh, xl) : (xh - xl)) / step;
 
 /// Create a noise matrix from the provided list of standard deviation
 /// values [sigmas].

@@ -26,8 +26,8 @@ void main() {
       expect(ricSig[0], closeTo(0.3943, _tolerance));
       expect(ricSig[1], closeTo(1.7769, _tolerance));
       expect(ricSig[2], closeTo(1.0018, _tolerance));
-      expect(ricSig[3], closeTo(0.0001, _tolerance));
-      expect(ricSig[4], closeTo(0.0000, _tolerance));
+      expect(ricSig[3], closeTo(0.0002, _tolerance));
+      expect(ricSig[4], closeTo(0.0001, _tolerance));
       expect(ricSig[5], closeTo(0.0002, _tolerance));
 
       expect(j2kSig[0], closeTo(1.5083, _tolerance));
@@ -41,18 +41,18 @@ void main() {
       ricSig = sample.desampleRIC().sigmas();
       j2kSig = sample.desampleJ2000().sigmas();
 
-      expect(ricSig[0], closeTo(1.4370, _tolerance));
-      expect(ricSig[1], closeTo(51.7106, _tolerance));
-      expect(ricSig[2], closeTo(1.8796, _tolerance));
-      expect(ricSig[3], closeTo(0.0038, _tolerance));
-      expect(ricSig[4], closeTo(0.0001, _tolerance));
+      expect(ricSig[0], closeTo(2.2787, _tolerance));
+      expect(ricSig[1], closeTo(199.6084, _tolerance));
+      expect(ricSig[2], closeTo(1.8802, _tolerance));
+      expect(ricSig[3], closeTo(0.0003, _tolerance));
+      expect(ricSig[4], closeTo(0.0003, _tolerance));
       expect(ricSig[5], closeTo(0.0002, _tolerance));
 
-      expect(j2kSig[0], closeTo(51.5045, _tolerance));
-      expect(j2kSig[1], closeTo(4.8313, _tolerance));
-      expect(j2kSig[2], closeTo(1.8796, _tolerance));
-      expect(j2kSig[3], closeTo(0.0004, _tolerance));
-      expect(j2kSig[4], closeTo(0.0037, _tolerance));
+      expect(j2kSig[0], closeTo(198.8608, _tolerance));
+      expect(j2kSig[1], closeTo(17.4096, _tolerance));
+      expect(j2kSig[2], closeTo(1.8801, _tolerance));
+      expect(j2kSig[3], closeTo(0.0015, _tolerance));
+      expect(j2kSig[4], closeTo(0.0142, _tolerance));
       expect(j2kSig[5], closeTo(0.0002, _tolerance));
     });
   });

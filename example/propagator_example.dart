@@ -24,15 +24,15 @@ void main() {
   final maneuver = Thrust(EpochUTC.fromDate(2023, 9, 2, 14, 0, 0), 0, 1, 0);
 
   // Define vehicle properties.
-  final mass = 1400.0; // kg
-  final area = 16.0; // m^2
+  final bcoeff = 87.5; // kg/m²
+  final srpcoeff = 87.5; // kg/m²
 
   // Create a force model of satellite perturbation effects.
   final forceModel = ForceModel()
     ..setEarthGravity(36, 36)
     ..setThirdBodyGravity(sun: true, moon: true)
-    ..setAtmosphericDrag(mass, area)
-    ..setSolarRadiationPressure(mass, area);
+    ..setAtmosphericDrag(bcoeff)
+    ..setSolarRadiationPressure(srpcoeff);
 
   // Define a propagation epoch one day in the future.
   final propEpoch = state.epoch.roll(secondsPerDay);

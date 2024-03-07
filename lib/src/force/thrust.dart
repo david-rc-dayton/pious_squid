@@ -47,13 +47,15 @@ class Thrust implements Force {
 
   @override
   Vector3D acceleration(final J2000 state) {
-    final relative = RIC(Vector3D.origin, deltaV.scale(1.0 / duration));
+    final relative = RelativeState(state.epoch, Vector3D.origin,
+        deltaV.scale(1.0 / duration), state.semimajorAxis());
     return relative.toJ2000(state).velocity.subtract(state.velocity);
   }
 
   /// Return a copy of the provided [state] with this maneuver applied.
   J2000 apply(final J2000 state) {
-    final relative = RIC(Vector3D.origin, deltaV);
+    final relative = RelativeState(
+        state.epoch, Vector3D.origin, deltaV, state.semimajorAxis());
     return relative.toJ2000(state);
   }
 

@@ -61,7 +61,8 @@ class ObservationOptical extends Observation {
     final r0 = site;
     final r1 = propagator.propagate(epoch);
     final r2 = observation.position(site, r1.position.distance(r0.position));
-    return RIC.fromJ2000(J2000(epoch, r2, Vector3D.origin), r1).position;
+    return RelativeState.fromJ2000(J2000(epoch, r2, Vector3D.origin), r1)
+        .position;
   }
 
   @override

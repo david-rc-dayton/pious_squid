@@ -1,4 +1,5 @@
-import 'package:pious_squid/pious_squid.dart';
+import 'package:pious_squid/src/data/data_base.dart';
+import 'package:pious_squid/src/time/time_base.dart';
 
 /// Astrodynamic data management singleton.
 class DataHandler {

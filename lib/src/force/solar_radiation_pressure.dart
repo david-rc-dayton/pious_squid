@@ -9,13 +9,7 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 /// Solar radiation pressure model.
 class SolarRadiationPressure extends Force {
   /// Create a new [SolarRadiationPressure] object.
-  SolarRadiationPressure(this.mass, this.area, this.reflectCoeff);
-
-  /// Spacecraft mass _(kg)_.
-  final double mass;
-
-  /// Spacecraft cross-sectional area _(m²)_.
-  final double area;
+  SolarRadiationPressure(this.reflectCoeff);
 
   /// Reflectivity coefficient (unitless).
   final double reflectCoeff;
@@ -24,7 +18,10 @@ class SolarRadiationPressure extends Force {
   static final double _kRef = 4.56e-6 * pow(astronomicalUnit, 2);
 
   @override
-  Vector3D acceleration(final J2000 state) {
+  Vector3D acceleration(final J2000 state, [final double srpcoeffInv = 0.0]) {
+    if (srpcoeffInv == 0.0) {
+      return Vector3D.origin;
+    }
     final rSun = Sun.positionApparent(state.epoch);
     final r = state.position.subtract(rSun);
     final rMag = r.magnitude();
@@ -32,6 +29,6 @@ class SolarRadiationPressure extends Force {
     final ratio = Sun.lightingRatio(state.position, rSun);
     final p = ratio * _kRef / r2;
     final flux = r.scale(p / rMag);
-    return flux.scale((area * reflectCoeff / mass) * 1e-3);
+    return flux.scale((reflectCoeff * srpcoeffInv) * 1e-3);
   }
 }

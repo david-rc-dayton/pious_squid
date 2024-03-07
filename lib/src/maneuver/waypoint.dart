@@ -43,7 +43,7 @@ class Waypoint {
       throw 'Error calculation failed; epoch is outside the target interpolator ephemeris window.';
     }
     final expected = waypoint.relativePosition;
-    final actual = RIC.fromJ2000(interceptor, targetState);
+    final actual = RelativeState.fromJ2000(interceptor, targetState);
     return actual.position.distance(expected);
   }
 
@@ -99,7 +99,8 @@ class Waypoint {
     final pivotState = state;
     var waypointManeuvers = <Thrust>[];
     for (final wp in waypoints) {
-      final targetWp = RIC(wp.relativePosition, Vector3D.origin);
+      final targetWp = RelativeState(wp.epoch, wp.relativePosition,
+          Vector3D.origin, state.semimajorAxis());
       final targetState = target.interpolate(wp.epoch);
       if (targetState == null) {
         throw 'Waypoint outside target interpolator window.';
@@ -116,7 +117,7 @@ class Waypoint {
         throw 'Lambert solve result is null.';
       }
       final componentsRel =
-          RIC.fromJ2000(components, state).velocity.scale(1e3);
+          RelativeState.fromJ2000(components, state).velocity.scale(1e3);
       final maneuver = Thrust(state.epoch, componentsRel.x, componentsRel.y,
           componentsRel.z, durationRate);
       final tempProp = RungeKutta89Propagator(state, forceModel);

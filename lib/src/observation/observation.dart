@@ -26,7 +26,7 @@ abstract class Observation {
   /// Convert this observation to vector form.
   Vector toVector();
 
-  /// Compute the state derivative matrix for this observation.
+  /// Compute the rate derivative matrix for this observation.
   Matrix jacobian(final PropagatorPairs propPairs);
 
   /// Compute the state residual matrix for this observation.

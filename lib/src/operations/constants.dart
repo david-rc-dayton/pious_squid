@@ -50,3 +50,15 @@ const double secondsPerSiderealDay = 86164.0905;
 
 /// Seconds per week.
 const double secondsPerWeek = secondsPerDay * 7.0;
+
+/// Machine floating point precision.
+final machineEpsilon = _machineEpsilon();
+
+/// Calculate machine double floating point precision.
+double _machineEpsilon() {
+  var epsilon = 1.0;
+  while (1.0 + epsilon != 1.0) {
+    epsilon /= 2.0;
+  }
+  return epsilon;
+}

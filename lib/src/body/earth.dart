@@ -8,63 +8,75 @@ import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
 /// Earth precession `zeta` polynomial coefficients.
-final Float64List _zetaPoly = Float64List.fromList(
-    [0.017998 * asec2rad, 0.30188 * asec2rad, 2306.2181 * asec2rad, 0.0]);
+final Float64List _zetaPoly = Float64List.fromList([
+  0.017998 * asec2rad,
+  0.30188 * asec2rad,
+  2306.2181 * asec2rad,
+  0 * asec2rad,
+]);
 
 /// Earth precession `theta` polynomial coefficients.
-final Float64List _thetaPoly = Float64List.fromList(
-    [-0.041833 * asec2rad, -0.42665 * asec2rad, 2004.3109 * asec2rad, 0.0]);
+final Float64List _thetaPoly = Float64List.fromList([
+  -0.041833 * asec2rad,
+  -0.42665 * asec2rad,
+  2004.3109 * asec2rad,
+  0 * asec2rad,
+]);
 
 /// Earth precession `zed` polynomial coefficients.
-final Float64List _zedPoly = Float64List.fromList(
-    [0.018203 * asec2rad, 1.09468 * asec2rad, 2306.2181 * asec2rad, 0]);
+final Float64List _zedPoly = Float64List.fromList([
+  0.018203 * asec2rad,
+  1.09468 * asec2rad,
+  2306.2181 * asec2rad,
+  0 * asec2rad,
+]);
 
 /// Earth nutation Moon anomaly polynomial coefficients.
 final Float64List _moonAnomPoly = Float64List.fromList([
-  1.4343e-5 * deg2rad,
-  0.0088553 * deg2rad,
-  (1325.0 * 360.0 + 198.8675605) * deg2rad,
-  134.96340251 * deg2rad,
+  1.78e-5 * deg2rad,
+  0.0086972 * deg2rad,
+  (1325 * 360 + 198.8673981) * deg2rad,
+  134.96298139 * deg2rad,
 ]);
 
 /// Earth nutation Sun anomaly polynomial coefficients.
 final Float64List _sunAnomPoly = Float64List.fromList([
-  3.8e-8 * deg2rad,
-  -0.0001537 * deg2rad,
-  (99.0 * 360.0 + 359.0502911) * deg2rad,
-  357.52910918 * deg2rad
+  -3.3e-6 * deg2rad,
+  -0.0001603 * deg2rad,
+  (99 * 360 + 359.0503400) * deg2rad,
+  357.52772333 * deg2rad,
 ]);
 
 /// Earth nutation Moon latitude polynomial coefficients.
 final Float64List _moonLatPoly = Float64List.fromList([
-  -2.88e-7 * deg2rad,
-  -0.0035420 * deg2rad,
-  (1342.0 * 360.0 + 82.0174577) * deg2rad,
-  93.27209062 * deg2rad
+  3.1e-6 * deg2rad,
+  -0.0036825 * deg2rad,
+  (1342 * 360 + 82.0175381) * deg2rad,
+  93.27191028 * deg2rad,
 ]);
 
 /// Earth nutation Sun elongation polynomial coefficients.
 final Float64List _sunElongPoly = Float64List.fromList([
-  1.831e-6 * deg2rad,
-  -0.0017696 * deg2rad,
-  (1236.0 * 360.0 + 307.1114469) * deg2rad,
-  297.85019547 * deg2rad
+  5.3e-6 * deg2rad,
+  -0.0019142 * deg2rad,
+  (1236 * 360 + 307.1114800) * deg2rad,
+  297.85036306 * deg2rad,
 ]);
 
-/// Earth nutation Moon right-ascension polynomial coefficients.
+/// Earth nutation Moon right ascension polynomial coefficients.
 final Float64List _moonRaanPoly = Float64List.fromList([
-  2.139e-6 * deg2rad,
-  0.0020756 * deg2rad,
-  -(5.0 * 360.0 + 134.1361851) * deg2rad,
-  125.04455501 * deg2rad
+  2.2e-6 * deg2rad,
+  0.0020708 * deg2rad,
+  -(5 * 360 + 134.1362608) * deg2rad,
+  125.04452222 * deg2rad,
 ]);
 
 /// Earth nutation mean epsilon polynomial coefficients.
 final Float64List _meanEpsilonPoly = Float64List.fromList([
-  0.001813 * asec2rad,
-  -0.00059 * asec2rad,
-  -46.8150 * asec2rad,
-  84381.448 * asec2rad,
+  5.04e-7 * deg2rad,
+  -1.64e-7 * deg2rad,
+  -0.0130042 * deg2rad,
+  23.439291 * deg2rad,
 ]);
 
 /// Earth precession angles _(rad)_.
@@ -88,7 +100,7 @@ class Earth {
   static const double mu = 398600.4415;
 
   /// Earth equatorial radius _(km)_.
-  static const double radiusEquator = 6378.1363;
+  static const double radiusEquator = 6378.137;
 
   /// Earth coefficient of flattening _(unitless)_.
   static const double flattening = 1.0 / 298.25642;
@@ -118,7 +130,7 @@ class Earth {
   static const double j6 = 5.40681239107085e-7;
 
   /// Earth rotation vector _(rad/s)_.
-  static final Vector3D rotation = Vector3D(0, 0, 7.292115e-5);
+  static final Vector3D rotation = Vector3D(0, 0, 7.292115146706979e-5);
 
   /// Earth rotation vector _(rad/s)_, factoring length of day changes if
   /// Earth Orientation Parameters are available.
@@ -130,6 +142,10 @@ class Earth {
   /// Calculate mean motion _(rad/s)_ from a given [semimajorAxis] _(km)_.
   static double smaToMeanMotion(final double semimajorAxis) =>
       sqrt(mu / (semimajorAxis * semimajorAxis * semimajorAxis));
+
+  /// Calculate semimajor-axis _(km)_ from mean motion _(rad/s)_.
+  static double meanMotionToSma(final double n) =>
+      pow(Earth.mu / (n * n), 1.0 / 3.0).toDouble();
 
   /// Calculate semimajor-axis _(km)_ from a given number of revolutions per
   /// day [rpd].
@@ -147,7 +163,7 @@ class Earth {
 
   /// Calculate Earth [NutationAngles] for a given UTC [epoch].
   static NutationAngles nutation(final EpochUTC epoch,
-      {final int coeffs = 4, final bool useEop = false}) {
+      {final int coeffs = 106, final bool useEop = false}) {
     final t = epoch.toTT().toJulianCenturies();
     final moonAnom = evalPoly(t, _moonAnomPoly);
     final sunAnom = evalPoly(t, _sunAnomPoly);

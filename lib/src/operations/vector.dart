@@ -488,4 +488,22 @@ class Vector {
   /// provided [index].
   Vector3D toVector3D(final int index) =>
       Vector3D(_elements[index], _elements[index + 1], _elements[index + 2]);
+
+  /// Convert this [Vector] into a row matrix.
+  Matrix toRowMatrix() {
+    final output = Matrix.zero(1, length);
+    for (var i = 0; i < length; i++) {
+      output[0][i] = _elements[i];
+    }
+    return output;
+  }
+
+  /// Convert this [Vector] into a column matrix.
+  Matrix toColumnMatrix() {
+    final output = Matrix.zero(length, 1);
+    for (var i = 0; i < length; i++) {
+      output[i][0] = _elements[i];
+    }
+    return output;
+  }
 }

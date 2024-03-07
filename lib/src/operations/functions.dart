@@ -86,8 +86,8 @@ double copySign(final double mag, final double sgn) => mag.abs() * sgn.sign;
 
 /// Evaluate polynomial coefficients for the provied value.
 ///
-/// Polynomial coefficients must be ordered from smallest exponent to largest
-/// exponent; the first coefficient must relate to `x⁰ ≡ 1`.
+/// Polynomial coefficients must be ordered from largest exponent to smallest
+/// exponent; the last coefficient must relate to `x⁰ ≡ 1`.
 double evalPoly(final double x, final Float64List coeffs) {
   var result = coeffs[0];
   for (var i = 1; i < coeffs.length; i++) {
@@ -225,6 +225,9 @@ DifferentiableFunction derivative(final DifferentiableFunction f,
 /// Calculate the gamma result of [n].
 double gamma(final int n) => factorial(n - 1);
 
+/// Return the inverted value [x], or zero if the value is zero.
+double invertZero(final double x) => x == 0 ? 0.0 : 1.0 / x;
+
 /// Convert eccentricity [ecc] and mean anomaly [m] _(rad)_ into eccentric
 /// anomaly and true anomaly _(rad)_;
 ({double e0, double nu}) newtonM(final double ecc, final double m) {
@@ -301,6 +304,21 @@ List<List<T>> array2d<T>(final int rows, final int columns, final T value,
   return output;
 }
 
+/// Copy [n] values from a [sourceArray] starting at [sourcePosition] into
+/// the [destinationArray] starting at [destinationPositon].
+void arraycopy<T>(final List<T> sourceArray, final int sourcePosition,
+    final List<T> destinationArray, final int destinationPositon, final int n) {
+  var sourceDex = sourcePosition;
+  var destDex = destinationPositon;
+  var iter = 0;
+  while (iter < n) {
+    destinationArray[destDex] = sourceArray[sourceDex];
+    sourceDex++;
+    destDex++;
+    iter++;
+  }
+}
+
 /// Use central finite differencing to generate a Jacobian matrix for
 /// function [f], output length [m], and input value [x0].
 Matrix jacobian(final JacobianFunction f, final int m, final Float64List x0,
@@ -329,4 +347,13 @@ Matrix jacobian(final JacobianFunction f, final int m, final Float64List x0,
     }
   }
   return Matrix(j);
+}
+
+/// Compute the Mahalanobis distance between an [actual] and [expected] vector
+/// given [covariance].
+double mahalanobisDistance(
+    final Vector actual, final Vector expected, final Matrix covariance) {
+  final z = actual.subtract(expected).toColumnMatrix();
+  final t = z.transpose().multiply(covariance.inverse()).multiply(z);
+  return sqrt(t[0][0]);
 }

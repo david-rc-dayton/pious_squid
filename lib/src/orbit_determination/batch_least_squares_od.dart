@@ -36,7 +36,7 @@ class BatchLeastSquaresOD {
       final double velStep = 1e-5,
       final bool fastDerivatives = false}) {
     _observations
-        .sort((final a, final b) => a.epoch.posix.compareTo(b.epoch.posix));
+        .sort((final a, final b) => b.epoch.posix.compareTo(a.epoch.posix));
     _start = _observations.first.epoch;
     _propPairs = PropagatorPairs(posStep, velStep);
     _forceModel = forceModel ?? (ForceModel()..setGravity());
@@ -92,7 +92,7 @@ class BatchLeastSquaresOD {
   /// Attempt to solve a state estimate with the given root-mean-squared
   /// delta [tolerance].
   BatchLeastSquaresResult solve(
-      {final double tolerance = 1e-3,
+      {final double tolerance = 1e-6,
       final int maxIter = 250,
       final bool printIter = false}) {
     var breakFlag = false;
@@ -126,7 +126,7 @@ class BatchLeastSquaresOD {
         breakFlag = true;
       }
       weightedRms = newWeightedRms;
-      final dX = atwaMat.inverse().multiply(atwbMat);
+      final dX = atwaMat.pseudoinverse().multiply(atwbMat);
       for (var i = 0; i < 6; i++) {
         xNom[i] += dX[i][0];
       }
@@ -134,7 +134,7 @@ class BatchLeastSquaresOD {
         break;
       }
     }
-    final p = atwaMat.inverse();
+    final p = atwaMat.pseudoinverse();
     final covariance = StateCovariance(p, CovarianceFrame.j2000);
     return BatchLeastSquaresResult(
         _buildPropagator(xNom, false).propagate(_start),

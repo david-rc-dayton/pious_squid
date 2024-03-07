@@ -13,21 +13,28 @@ final stopEpoch = EpochUTC.fromDateTimeString('2017-01-10T04:46:49.139Z');
 
 final mass = 1400.0; // kilograms
 final area = 16.0; // meters²
+final coeff = mass / area; // kg/m²
 final forceModel = ForceModel()
   ..setEarthGravity(36, 36)
   ..setThirdBodyGravity(moon: true, sun: true)
-  ..setSolarRadiationPressure(mass, area, coeff: 1.2)
-  ..setAtmosphericDrag(mass, area, coeff: 2.2);
+  ..setSolarRadiationPressure(coeff, reflectCoeff: 1.2)
+  ..setAtmosphericDrag(coeff, dragCoeff: 2.2);
 
 final tle = TLE(
     '1 00005U 58002B   00179.78495062  .00000023  00000-0  28098-4 0  4753',
     '2 00005  34.2682 348.7242 1859667 331.7664  19.3264 10.82419157413667');
 
 void main() {
-  DataHandler().updateEarthOrientationParametersFromCsv(
-      File('external/EOP-All.csv').readAsStringSync());
-
   group('Propagator', () {
+    setUpAll(() {
+      DataHandler().updateEarthOrientationParametersFromCsv(
+          File('external/EOP-All.csv').readAsStringSync());
+    });
+
+    tearDownAll(() {
+      DataHandler().clearEarthOrientationParameters();
+    });
+
     test('Kepler', () {
       final propagator = KeplerPropagator(startState.toClassicalElements());
       final expected = Vector3D(-251.600120, -6643.127745, 1031.665425);
@@ -39,21 +46,21 @@ void main() {
       final propagator = RungeKutta4Propagator(startState, forceModel);
       final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
       final actual = propagator.propagate(stopEpoch).position;
-      expect(actual.distance(expected), lessThanOrEqualTo(0.15));
+      expect(actual.distance(expected), lessThanOrEqualTo(0.16));
     });
 
     test('Dormand-Prince 5(4)', () {
       final propagator = DormandPrince54Propagator(startState, forceModel);
       final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
       final actual = propagator.propagate(stopEpoch).position;
-      expect(actual.distance(expected), lessThanOrEqualTo(0.13));
+      expect(actual.distance(expected), lessThanOrEqualTo(0.14));
     });
 
     test('Runge-Kutta 8(9)', () {
       final propagator = RungeKutta89Propagator(startState, forceModel);
       final expected = Vector3D(5059.691657, -4729.021976, 638.641366);
       final actual = propagator.propagate(stopEpoch).position;
-      expect(actual.distance(expected), lessThanOrEqualTo(0.13));
+      expect(actual.distance(expected), lessThanOrEqualTo(0.14));
     });
 
     test('SGP4', () {

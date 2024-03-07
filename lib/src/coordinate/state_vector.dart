@@ -37,6 +37,9 @@ abstract class StateVector {
         '  Velocity: ${velocity.toString(9)} km/s'
       ].join('\n');
 
+  /// Return the state position and velocity as a single vector _(km,km/s)_.
+  Vector posvel() => position.join(velocity);
+
   /// Return the mechanical energy _(km²/s²)_ of this orbit.
   double mechanicalEnergy() {
     final r = position.magnitude();
@@ -61,6 +64,9 @@ abstract class StateVector {
     final a = semimajorAxis();
     return sqrt(Earth.mu / (a * a * a));
   }
+
+  /// Return the angular rate _(rad/s)_ of this orbit as a vector.
+  Vector3D angularRateVector() => Vector3D(0.0, 0.0, angularRate());
 
   /// Convert this to a [ClassicalElements] object.
   ///

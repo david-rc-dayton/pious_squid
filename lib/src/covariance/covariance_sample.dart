@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/covariance/covariance_base.dart';
 import 'package:pious_squid/src/force/force_base.dart';
+import 'package:pious_squid/src/observation/observation_base.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/propagator/propagator_base.dart';
-import 'package:pious_squid/src/time/epoch.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
 /// Sigma point covariance sample.
@@ -61,7 +61,9 @@ class CovarianceSample {
       }
       // ric
       else if (covariance.frame == CovarianceFrame.ric) {
-        final sample = RIC(sampleR, sampleV).toJ2000(state);
+        final sample =
+            RelativeState(state.epoch, sampleR, sampleV, state.semimajorAxis())
+                .toJ2000(state);
         _samples.add(RungeKutta89Propagator(sample, sampleForceModel));
       }
       // equinoctial
@@ -87,7 +89,7 @@ class CovarianceSample {
   final Matrix _pts = Matrix.zero(6, 12);
 
   /// Current covariance sample epoch.
-  Epoch get epoch => _origin.state.epoch;
+  EpochUTC get epoch => _origin.state.epoch;
 
   /// Current covariance sample origin state.
   J2000 get state => _origin.state;
@@ -152,10 +154,8 @@ class CovarianceSample {
 
   /// Desample covariance in RIC frame.
   StateCovariance desampleRIC() {
-    final rot = RelativeState.createMatrix(
-        _origin.state.position, _origin.state.velocity);
     for (var i = 0; i < 12; i++) {
-      final state = RIC.fromJ2000Matrix(_samples[i].state, _origin.state, rot);
+      final state = RelativeState.fromJ2000(_samples[i].state, _origin.state);
       _pts[0][i] = state.position[0];
       _pts[1][i] = state.position[1];
       _pts[2][i] = state.position[2];
@@ -196,5 +196,33 @@ class CovarianceSample {
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.itrf);
+  }
+
+  /// Desample covariance as right ascension, declination, and range.
+  Matrix desampleRadec(final J2000 site) {
+    for (var i = 0; i < 12; i++) {
+      final radec = RadecTopocentric.fromStateVectors(_samples[i].state, site);
+      _pts[0][i] = radec.rightAscension;
+      _pts[1][i] = radec.declination;
+      _pts[2][i] = radec.range!;
+      _pts[3][i] = radec.rightAscensionRate!;
+      _pts[4][i] = radec.declinationRate!;
+      _pts[5][i] = radec.rangeRate!;
+    }
+    return _rebuildCovariance(_pts);
+  }
+
+  /// Desample covariance as range, azimuth, and elevation.
+  Matrix desampleRazel(final J2000 site) {
+    for (var i = 0; i < 12; i++) {
+      final razel = Razel.fromStateVectors(_samples[i].state, site);
+      _pts[0][i] = razel.range;
+      _pts[1][i] = razel.azimuth;
+      _pts[2][i] = razel.elevation;
+      _pts[3][i] = razel.rangeRate!;
+      _pts[4][i] = razel.azimuthRate!;
+      _pts[5][i] = razel.elevationRate!;
+    }
+    return _rebuildCovariance(_pts);
   }
 }
