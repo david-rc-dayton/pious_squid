@@ -102,6 +102,22 @@ class EpochUTC extends Epoch {
   /// Flight Center _(GSFC)_.
   double toMjdGsfc() => toMjd() - 29999.5;
 
+  /// Get the day of year.
+  double dayOfYear() {
+    final t1 = EpochUTC.fromDate(year(), 1, 1);
+    return (difference(t1) / 86400.0) + 1.0;
+  }
+
+  /// Get the number of seconds elapsed in the day.
+  double secondsOfDay() {
+    final doy = dayOfYear();
+    return (doy - doy.floor()) * 86400.0;
+  }
+
+  /// Convert to local time at the provided [longitude], in radians.
+  double lst(final double longitude) =>
+      secondsOfDay() / 3600.0 + (longitude * rad2deg) / 15.0;
+
   /// Convert to International Atomic Time _(TAI)_.
   EpochTAI toTAI() {
     final ls = DataHandler().getLeapSeconds(toJulianDate());

@@ -1,12 +1,12 @@
 import 'dart:math';
 
+import 'package:pious_squid/src/operations/pointer.dart';
 import 'package:pious_squid/src/sgp4/dpper.dart';
 import 'package:pious_squid/src/sgp4/dscom.dart';
 import 'package:pious_squid/src/sgp4/dsinit.dart';
 import 'package:pious_squid/src/sgp4/elsetrec.dart';
 import 'package:pious_squid/src/sgp4/gravconst.dart';
 import 'package:pious_squid/src/sgp4/initl.dart';
-import 'package:pious_squid/src/sgp4/pointer.dart';
 import 'package:pious_squid/src/sgp4/sgp4.dart';
 
 /// ----------------------------------------------------------------------------

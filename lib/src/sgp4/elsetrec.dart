@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, public_member_api_docs
 
-import 'package:pious_squid/src/sgp4/pointer.dart';
+import 'package:pious_squid/src/operations/pointer.dart';
 
 /// Element set record.
 class ElsetRec {

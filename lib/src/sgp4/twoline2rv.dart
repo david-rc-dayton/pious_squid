@@ -1,10 +1,11 @@
 // ignore_for_file: parameter_assignments
 
 import 'dart:math';
+
 import 'package:pious_squid/src/operations/constants.dart';
+import 'package:pious_squid/src/operations/pointer.dart';
 import 'package:pious_squid/src/sgp4/elsetrec.dart';
 import 'package:pious_squid/src/sgp4/gravconst.dart';
-import 'package:pious_squid/src/sgp4/pointer.dart';
 import 'package:pious_squid/src/sgp4/sgp4init.dart';
 import 'package:pious_squid/src/sgp4/utilities.dart';
 

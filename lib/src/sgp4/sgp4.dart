@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:pious_squid/src/operations/constants.dart';
+import 'package:pious_squid/src/operations/pointer.dart';
 import 'package:pious_squid/src/sgp4/dpper.dart';
 import 'package:pious_squid/src/sgp4/dspace.dart';
 import 'package:pious_squid/src/sgp4/elsetrec.dart';
-import 'package:pious_squid/src/sgp4/pointer.dart';
 
 ///-----------------------------------------------------------------------------
 ///

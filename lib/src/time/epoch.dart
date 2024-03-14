@@ -1,6 +1,9 @@
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/time/time_base.dart';
 
+/// Year, month, day, hour, minute, and second.
+typedef GregorianFields = (int, int, int, int, int, double);
+
 /// Time stamped value container.
 class TimeStamped<T> {
   /// Create a new time stamped [value] container at the provided [epoch].
@@ -44,6 +47,58 @@ class Epoch implements Comparable {
 
   /// Convert to Julian centuries.
   double toJulianCenturies() => (toJulianDate() - 2451545) / 36525;
+
+  /// Convert to Gregorian date fields for year, month, day, hour, minute, and
+  /// second.
+  GregorianFields toGregorianFields() {
+    final jdfull = toJulianDate();
+    final jdfrac = jdfull - jdfull.floor();
+    final jd = jdfull.floor();
+    var temp = jd - 2415019.5;
+    final tu = temp / 365.25;
+    var year = 1900 + tu.floor();
+    var leapyrs = ((year - 1901) * 0.25).floor();
+    var days = (temp - ((year - 1900) * 365 + leapyrs)).floor();
+    if (days + jdfrac < 1) {
+      year = year - 1;
+      leapyrs = ((year - 1901) * 0.25).floor();
+      days = (temp - ((year - 1900) * 365 + leapyrs)).floor();
+    }
+    final lmonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (year % 4 == 0) {
+      lmonth[2] = 29;
+    }
+    var i = 1;
+    var inttemp = 0;
+    while ((days > inttemp + lmonth[i]) && (i < 12)) {
+      inttemp += lmonth[i];
+      i++;
+    }
+    final mon = i;
+    final day = days - inttemp;
+    temp = ((days + jdfrac) - days) * 24.0;
+    final hr = temp.floor();
+    temp = (temp - hr) * 60.0;
+    final minute = temp.floor();
+    final sec = (temp - minute) * 60.0;
+    return (year, mon, day, hr, minute, sec);
+  }
+
+  /// Return the year of this [Epoch] object.
+  int year() {
+    final jdfull = toJulianDate();
+    final jdfrac = jdfull - jdfull.floor();
+    final jd = jdfull.floor();
+    final temp = jd - 2415019.5;
+    final tu = temp / 365.25;
+    var year = 1900 + tu.floor();
+    final leapyrs = ((year - 1901) * 0.25).floor();
+    final days = (temp - ((year - 1900) * 365 + leapyrs)).floor();
+    if (days + jdfrac < 1) {
+      year = year - 1;
+    }
+    return year;
+  }
 
   @override
   int compareTo(covariant final Epoch other) => posix.compareTo(other.posix);
