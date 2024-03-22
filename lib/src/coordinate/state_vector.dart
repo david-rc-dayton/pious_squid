@@ -38,34 +38,64 @@ abstract class StateVector {
       ].join('\n');
 
   /// Return the state position and velocity as a single vector _(km,km/s)_.
+  ///
+  /// An error will be thrown if this coordinate frame is not inertial.
   Vector posvel() => position.join(velocity);
 
   /// Return the mechanical energy _(km²/s²)_ of this orbit.
   double mechanicalEnergy() {
+    if (!inertial) {
+      throw 'Mechanical energy not supported for fixed frames.';
+    }
     final r = position.magnitude();
     final v = velocity.magnitude();
     return ((v * v) * 0.5) - Earth.mu / r;
   }
 
   /// Return the semimajor-axis _(km)_ of this orbit.
+  ///
+  /// An error will be thrown if this coordinate frame is not inertial.
   double semimajorAxis() {
+    if (!inertial) {
+      throw 'Semimajor axis not supported for fixed frames.';
+    }
     final energy = mechanicalEnergy();
     return -Earth.mu / (2.0 * energy);
   }
 
+  /// Compute the mean motion _(rad/s)_ of this orbit.
+  ///
+  /// An error will be thrown if this coordinate frame is not inertial.
+  double meanMotion() {
+    if (!inertial) {
+      throw 'Mean motion not supported for fixed frames.';
+    }
+    return Earth.smaToMeanMotion(semimajorAxis());
+  }
+
   /// Return the period _(seconds)_ of this orbit.
+  ///
+  /// An error will be thrown if this coordinate frame is not inertial.
   double period() {
+    if (!inertial) {
+      throw 'Orbit period not supported for fixed frames.';
+    }
     final a = semimajorAxis();
     return twoPi * sqrt((a * a * a) / Earth.mu);
   }
 
   /// Return the angular rate _(rad/s)_ of this orbit.
   double angularRate() {
+    if (!inertial) {
+      throw 'Angular rate not supported for fixed frames.';
+    }
     final a = semimajorAxis();
     return sqrt(Earth.mu / (a * a * a));
   }
 
   /// Return the angular rate _(rad/s)_ of this orbit as a vector.
+  ///
+  /// An error will be thrown if this coordinate frame is not inertial.
   Vector3D angularRateVector() => Vector3D(0.0, 0.0, angularRate());
 
   /// Convert this to a [ClassicalElements] object.
