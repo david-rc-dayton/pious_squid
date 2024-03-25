@@ -90,6 +90,9 @@ class Matrix {
   @override
   String toString() => _elements.join('\n');
 
+  /// Return `true` if this [Matrix] is square.
+  bool isSquare() => rows == columns;
+
   /// Copy the elements of this [Matrix] into a [List].
   List<List<double>> toList() {
     final output = array2d(rows, columns, 0.0);
@@ -341,15 +344,23 @@ class Matrix {
     return Matrix(invertedMatrix);
   }
 
-  /// Attempt to compute the inverse of this matrix using matrix augmentation
-  /// to "fix" a singular matrix.
-  Matrix inverseSingular() {
+  /// Augment this matrix along th diagonal to "fix" a sigular matrix.
+  ///
+  /// Throws an error if the matrix is not square.
+  Matrix augmented() {
+    if (!isSquare()) {
+      throw 'Only square matrices can be augmented';
+    }
     final m = clone();
     for (var i = 0; i < rows; i++) {
       m[i][i] = m[i][i].abs() < machineEpsilon ? machineEpsilon : m[i][i];
     }
-    return m.inverse();
+    return m;
   }
+
+  /// Attempt to compute the inverse of this matrix using matrix augmentation
+  /// to "fix" a singular matrix.
+  Matrix inverseSingular() => augmented().inverse();
 
   /// Compute the Moore-Penrose pseudoinverse of this matrix.
   Matrix pseudoinverse() {
@@ -441,6 +452,47 @@ class Matrix {
     return x;
   }
 
+  /// Compute the dot product of a [column] of this [Matrix] and vector [a].
+  double dotColumn(final Vector a, final int column) {
+    var dot = 0.0;
+    for (var i = 0; i < a.length; i++) {
+      dot += this[i][column] * a[i];
+    }
+    return dot;
+  }
+
+  /// Compute the QR decomposition of this [Matrix].
+  (Matrix q, Matrix r) qrDecomposition() {
+    final m = rows;
+    final n = columns;
+
+    final q = Matrix(array2d(m, n, 0.0));
+    final r = Matrix(array2d(n, n, 0.0));
+
+    for (var j = 0; j < n; j++) {
+      final a = Vector.zero(m);
+      for (var i = 0; i < m; i++) {
+        a[i] = this[i][j];
+      }
+
+      for (var i = 0; i < j; i++) {
+        final dot = q.dotColumn(a, i);
+        for (var k = 0; k < m; k++) {
+          a[k] -= dot * q[k][i];
+        }
+        r[i][j] = dot;
+      }
+
+      final norm = a.magnitude();
+      for (var i = 0; i < m; i++) {
+        q[i][j] = a[i] / norm;
+      }
+      r[j][j] = norm;
+    }
+
+    return (q, r);
+  }
+
   /// Solve the set of linear equations represented by this [Matrix] for input
   /// vector [b] using LU decomposition.
   Vector solve(final Vector b) {
@@ -448,8 +500,35 @@ class Matrix {
       throw ArgumentError(
           'The matrix rows and vector length must match to solve.');
     }
-    final (l, u) = luDecomposition();
-    final y = l._forwardSubstitution(b);
-    return u._backSubstitution(y);
+    // solve with lu decomposition if square
+    if (isSquare()) {
+      final (l, u) = luDecomposition();
+      final y = l._forwardSubstitution(b);
+      return u._backSubstitution(y);
+    }
+    // solve with qr decomposition if rectangular
+    final (q, r) = qrDecomposition();
+    final m = rows;
+    final n = columns;
+    final y = Vector.zero(n);
+    for (var i = 0; i < n; i++) {
+      y[i] = 0;
+      for (var j = 0; j < m; j++) {
+        final qv = q[j][i].isFinite && q[j][i] != 0 ? q[j][i] : machineEpsilon;
+        y[i] += qv * b[j];
+      }
+    }
+    final x = Vector.zero(n);
+    for (var i = x.length - 1; i >= 0; i--) {
+      x[i] = y[i];
+      for (var j = i + 1; j < x.length; j++) {
+        final rv = r[i][j].isFinite && r[i][j] != 0 ? r[i][j] : machineEpsilon;
+        x[i] -= rv * x[j];
+      }
+      // final rv = r[i][i].isFinite && r[i][i] != 0 ? r[i][i] : machineEpsilon;
+      x[i] /= r[i][i];
+    }
+
+    return x;
   }
 }

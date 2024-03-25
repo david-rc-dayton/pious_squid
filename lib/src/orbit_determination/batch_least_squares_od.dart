@@ -126,9 +126,10 @@ class BatchLeastSquaresOD {
         breakFlag = true;
       }
       weightedRms = newWeightedRms;
-      final dX = atwaMat.pseudoinverse().multiply(atwbMat);
+      final atwbVec = Vector.fromList(atwbMat.transpose()[0]);
+      final dX = atwaMat.solve(atwbVec);
       for (var i = 0; i < 6; i++) {
-        xNom[i] += dX[i][0];
+        xNom[i] += dX[i];
       }
       if (breakFlag) {
         break;

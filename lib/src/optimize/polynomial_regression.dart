@@ -45,7 +45,7 @@ class PolynomialRegression {
       }
     }
 
-    final bMat = xMat.pseudoinverse().multiplyVector(Vector.fromList(ys));
+    final bMat = xMat.solve(Vector.fromList(ys));
     final result = Float64List.fromList(bMat.toArray().reversed.toList());
 
     var sse = 0.0;

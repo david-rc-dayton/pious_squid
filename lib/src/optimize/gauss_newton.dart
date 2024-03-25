@@ -21,6 +21,7 @@ class GaussNewton {
       {final double tolerance = 1e-6,
       final double alpha = 1.0,
       final int maxIter = 1000,
+      final bool safe = true,
       final bool printIter = false}) {
     var xn = x0;
     var rmsLast = double.infinity;
@@ -28,7 +29,12 @@ class GaussNewton {
     for (var i = 0; i < maxIter; i++) {
       final fx = f(xn);
       final jx = fPrime(xn);
-      final dx = jx.pseudoinverse().multiplyVector(fx).scale(h);
+      Vector dx;
+      if (safe) {
+        dx = jx.pseudoinverse().multiplyVector(fx).scale(h);
+      } else {
+        dx = jx.solve(fx).scale(h);
+      }
       final dxm = dx.magnitude();
       final x1 = xn.subtract(dx);
       final rms = _rootMeanSquareError(f(x1));
