@@ -25,26 +25,29 @@ class CovarianceSample {
     final sqrt6 = sqrt(6.0);
     for (var i = 0; i < 6; i++) {
       for (var j = 0; j < 6; j++) {
-        s[i][j] *= sqrt6;
+        final sij = s.get(i, j);
+        s.set(i, j, sij * sqrt6);
       }
     }
 
-    final sigmapts = Matrix.zero(6, 12);
+    final sigmapts = Matrix(6, 12);
     for (var i = 0; i < 6; i++) {
       final jj = (i - 1) * 2 + 2;
       for (var j = 0; j < 3; j++) {
-        sigmapts[j][jj] = s[j][i];
-        sigmapts[j + 3][jj] = s[j + 3][i];
+        sigmapts.set(j, jj, s.get(j, i));
+        sigmapts.set(j + 3, jj, s.get(j + 3, i));
 
-        sigmapts[j][jj + 1] = -s[j][i];
-        sigmapts[j + 3][jj + 1] = -s[j + 3][i];
+        sigmapts.set(j, jj + 1, -s.get(j, i));
+        sigmapts.set(j + 3, jj + 1, -s.get(j + 3, i));
       }
     }
 
     // build propagators from points
     for (var i = 0; i < 12; i++) {
-      final sampleR = Vector3D(sigmapts[0][i], sigmapts[1][i], sigmapts[2][i]);
-      final sampleV = Vector3D(sigmapts[3][i], sigmapts[4][i], sigmapts[5][i]);
+      final sampleR =
+          Vector3D(sigmapts.get(0, i), sigmapts.get(1, i), sigmapts.get(2, i));
+      final sampleV =
+          Vector3D(sigmapts.get(3, i), sigmapts.get(4, i), sigmapts.get(5, i));
       // j2000
       if (covariance.frame == CovarianceFrame.j2000) {
         final sample = J2000(state.epoch, state.position.add(sampleR),
@@ -71,12 +74,12 @@ class CovarianceSample {
         final eq = state.toClassicalElements().toEquinoctialElements();
         final sample = EquinoctialElements(
             state.epoch,
-            eq.af + sampleR[0],
-            eq.ag + sampleR[1],
-            eq.l + sampleR[2],
-            eq.n + sampleV[0],
-            eq.chi + sampleV[1],
-            eq.psi + sampleV[2]);
+            eq.af + sampleR.x,
+            eq.ag + sampleR.y,
+            eq.l + sampleR.z,
+            eq.n + sampleV.x,
+            eq.chi + sampleV.y,
+            eq.psi + sampleV.z);
         _samples.add(RungeKutta89Propagator(
             J2000.fromClassicalElements(sample.toClassicalElements()),
             sampleForceModel));
@@ -86,7 +89,7 @@ class CovarianceSample {
 
   late RungeKutta89Propagator _origin;
   final List<RungeKutta89Propagator> _samples = [];
-  final Matrix _pts = Matrix.zero(6, 12);
+  final Matrix _pts = Matrix(6, 12);
 
   /// Current covariance sample epoch.
   EpochUTC get epoch => _origin.state.epoch;
@@ -98,11 +101,11 @@ class CovarianceSample {
   Matrix _rebuildCovariance(final Matrix pts) {
     const c = 1.0 / 12.0;
     final yu = Vector.zero(6);
-    final y = Matrix.zero(6, 12);
+    final y = Matrix(6, 12);
 
     for (var i = 0; i < 12; i++) {
       for (var j = 0; j < 6; j++) {
-        yu[j] = yu[j] + pts[j][i];
+        yu[j] = yu[j] + pts.get(j, i);
       }
     }
 
@@ -112,7 +115,7 @@ class CovarianceSample {
 
     for (var i = 0; i < 12; i++) {
       for (var j = 0; j < 6; j++) {
-        y[j][i] = pts[j][i] - yu[j];
+        y.set(j, i, pts.get(j, i) - yu[j]);
       }
     }
 
@@ -141,12 +144,12 @@ class CovarianceSample {
   StateCovariance desampleJ2000() {
     for (var i = 0; i < 12; i++) {
       final state = _samples[i].state;
-      _pts[0][i] = state.position[0];
-      _pts[1][i] = state.position[1];
-      _pts[2][i] = state.position[2];
-      _pts[3][i] = state.velocity[0];
-      _pts[4][i] = state.velocity[1];
-      _pts[5][i] = state.velocity[2];
+      _pts.set(0, i, state.position.x);
+      _pts.set(1, i, state.position.y);
+      _pts.set(2, i, state.position.z);
+      _pts.set(3, i, state.velocity.x);
+      _pts.set(4, i, state.velocity.y);
+      _pts.set(5, i, state.velocity.z);
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.j2000);
@@ -156,12 +159,12 @@ class CovarianceSample {
   StateCovariance desampleRIC() {
     for (var i = 0; i < 12; i++) {
       final state = RelativeState.fromJ2000(_samples[i].state, _origin.state);
-      _pts[0][i] = state.position[0];
-      _pts[1][i] = state.position[1];
-      _pts[2][i] = state.position[2];
-      _pts[3][i] = state.velocity[0];
-      _pts[4][i] = state.velocity[1];
-      _pts[5][i] = state.velocity[2];
+      _pts.set(0, i, state.position.x);
+      _pts.set(1, i, state.position.y);
+      _pts.set(2, i, state.position.z);
+      _pts.set(3, i, state.velocity.x);
+      _pts.set(4, i, state.velocity.y);
+      _pts.set(5, i, state.velocity.z);
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.ric);
@@ -171,12 +174,12 @@ class CovarianceSample {
   StateCovariance desampleITRF() {
     for (var i = 0; i < 12; i++) {
       final state = _samples[i].state.toITRF();
-      _pts[0][i] = state.position[0];
-      _pts[1][i] = state.position[1];
-      _pts[2][i] = state.position[2];
-      _pts[3][i] = state.velocity[0];
-      _pts[4][i] = state.velocity[1];
-      _pts[5][i] = state.velocity[2];
+      _pts.set(0, i, state.position.x);
+      _pts.set(1, i, state.position.y);
+      _pts.set(2, i, state.position.z);
+      _pts.set(3, i, state.velocity.x);
+      _pts.set(4, i, state.velocity.y);
+      _pts.set(5, i, state.velocity.z);
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.itrf);
@@ -187,12 +190,12 @@ class CovarianceSample {
     for (var i = 0; i < 12; i++) {
       final eqEls =
           _samples[i].state.toClassicalElements().toEquinoctialElements();
-      _pts[0][i] = eqEls.af;
-      _pts[1][i] = eqEls.ag;
-      _pts[2][i] = eqEls.l;
-      _pts[3][i] = eqEls.n;
-      _pts[4][i] = eqEls.chi;
-      _pts[5][i] = eqEls.psi;
+      _pts.set(0, i, eqEls.af);
+      _pts.set(1, i, eqEls.ag);
+      _pts.set(2, i, eqEls.l);
+      _pts.set(3, i, eqEls.n);
+      _pts.set(4, i, eqEls.chi);
+      _pts.set(5, i, eqEls.psi);
     }
     final matrix = _rebuildCovariance(_pts);
     return StateCovariance(matrix, CovarianceFrame.itrf);
@@ -202,12 +205,12 @@ class CovarianceSample {
   Matrix desampleRadec(final J2000 site) {
     for (var i = 0; i < 12; i++) {
       final radec = RadecTopocentric.fromStateVectors(_samples[i].state, site);
-      _pts[0][i] = radec.rightAscension;
-      _pts[1][i] = radec.declination;
-      _pts[2][i] = radec.range!;
-      _pts[3][i] = radec.rightAscensionRate!;
-      _pts[4][i] = radec.declinationRate!;
-      _pts[5][i] = radec.rangeRate!;
+      _pts.set(0, i, radec.rightAscension);
+      _pts.set(1, i, radec.declination);
+      _pts.set(2, i, radec.range!);
+      _pts.set(3, i, radec.rightAscensionRate!);
+      _pts.set(4, i, radec.declinationRate!);
+      _pts.set(5, i, radec.rangeRate!);
     }
     return _rebuildCovariance(_pts);
   }
@@ -216,12 +219,12 @@ class CovarianceSample {
   Matrix desampleRazel(final J2000 site) {
     for (var i = 0; i < 12; i++) {
       final razel = Razel.fromStateVectors(_samples[i].state, site);
-      _pts[0][i] = razel.range;
-      _pts[1][i] = razel.azimuth;
-      _pts[2][i] = razel.elevation;
-      _pts[3][i] = razel.rangeRate!;
-      _pts[4][i] = razel.azimuthRate!;
-      _pts[5][i] = razel.elevationRate!;
+      _pts.set(0, i, razel.range);
+      _pts.set(1, i, razel.azimuth);
+      _pts.set(2, i, razel.elevation);
+      _pts.set(3, i, razel.rangeRate!);
+      _pts.set(4, i, razel.azimuthRate!);
+      _pts.set(5, i, razel.elevationRate!);
     }
     return _rebuildCovariance(_pts);
   }

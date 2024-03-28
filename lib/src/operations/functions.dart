@@ -324,7 +324,7 @@ void arraycopy<T>(final List<T> sourceArray, final int sourcePosition,
 Matrix jacobian(final JacobianFunction f, final int m, final Float64List x0,
     {final double step = 1e-5}) {
   final n = x0.length;
-  final j = array2d(m, n, 0.0);
+  final j = Matrix(m, n);
   final h = 0.5 * step;
 
   for (var k = 0; k < n; k++) {
@@ -343,17 +343,17 @@ Matrix jacobian(final JacobianFunction f, final int m, final Float64List x0,
 
     // update matrix
     for (var i = 0; i < m; i++) {
-      j[i][k] = cd[i];
+      j.set(i, k, cd[i]);
     }
   }
-  return Matrix(j);
+  return j;
 }
 
 /// Compute the Mahalanobis distance between an [actual] and [expected] vector
 /// given [covariance].
 double mahalanobisDistance(
     final Vector actual, final Vector expected, final Matrix covariance) {
-  final z = actual.subtract(expected).toColumnMatrix();
+  final z = actual.subtract(expected).column();
   final t = z.transpose().multiply(covariance.inverse()).multiply(z);
-  return sqrt(t[0][0]);
+  return sqrt(t.get(0, 0));
 }

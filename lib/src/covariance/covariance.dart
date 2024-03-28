@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
+import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 
 /// Covaraiance coordinate frame.
@@ -29,9 +30,9 @@ class StateCovariance {
   factory StateCovariance.fromSigmas(
       final List<double> sigmas, final CovarianceFrame frame) {
     final n = sigmas.length;
-    final output = Matrix.zero(n, n);
+    final output = Matrix(n, n);
     for (var i = 0; i < n; i++) {
-      output[i][i] = max(sigmas[i] * sigmas[i], 1e-32);
+      output.set(i, i, max(sigmas[i] * sigmas[i], machineEpsilon));
     }
     return StateCovariance(output, frame);
   }
@@ -40,13 +41,13 @@ class StateCovariance {
   factory StateCovariance.fromLowerTriangle(
       final List<double> values, final CovarianceFrame frame) {
     final n = (0.5 * (sqrt(8 * values.length + 1) - 1)).toInt();
-    final output = Matrix.zero(n, n);
+    final output = Matrix(n, n);
     var dex = 0;
     for (var i = 0; i < n; i++) {
       for (var j = 0; j <= i; j++) {
-        output[i][j] = values[dex];
+        output.set(i, j, values[dex]);
         if (i != j) {
-          output[j][i] = values[dex];
+          output.set(j, i, values[dex]);
         }
         dex++;
       }
@@ -66,7 +67,7 @@ class StateCovariance {
     final c = matrix.columns;
     final result = Float64List(c);
     for (var i = 0; i < c; i++) {
-      final variance = matrix[i][i];
+      final variance = matrix.get(i, i);
       result[i] = sqrt(variance) * stddev;
     }
     return Vector(result);
@@ -120,10 +121,14 @@ class StateCovariance {
     final r = sqrt(x * x + y * y + z * z);
     final r3 = r * r * r;
     final rxy = sqrt(x * x + y * y);
-    final h = Matrix([
-      [-y / x2y2, x / x2y2, 0.0],
-      [-(x * z) / r3, -(y * z) / r3, rxy / r3]
-    ]);
+    final hArr = Float64List(6);
+    hArr[0] = -y / x2y2;
+    hArr[1] = x / x2y2;
+    hArr[2] = 0;
+    hArr[3] = -(x * z) / r3;
+    hArr[4] = -(y * z) / r3;
+    hArr[5] = rxy / r3;
+    final h = Matrix(2, 3, hArr);
     return h.multiply(matrix.getBlock(0, 0, 3, 3)).multiply(h.transpose());
   }
 
@@ -142,11 +147,16 @@ class StateCovariance {
     final r3 = r * r * r;
     final rxy = sqrt(x * x + y * y);
     final r3sz = r3 * sqrt(1 - pow(z / r, 2));
-    final h = Matrix([
-      [x / r, y / r, z / r],
-      [-y / x2y2, -x / x2y2, 0.0],
-      [-(x * z) / r3sz, -(y * z) / r3sz, rxy / r3]
-    ]);
+    final hArr = Float64List(9);
+    hArr[0] = x / r;
+    hArr[1] = y / r;
+    hArr[2] = z / r;
+    hArr[3] = -y / x2y2;
+    hArr[4] = -x / x2y2;
+    hArr[6] = -(x * z) / r3sz;
+    hArr[7] = -(y * z) / r3sz;
+    hArr[8] = rxy / r3;
+    final h = Matrix(3, 3, hArr);
     return h.multiply(matrix.getBlock(0, 0, 3, 3)).multiply(h.transpose());
   }
 }

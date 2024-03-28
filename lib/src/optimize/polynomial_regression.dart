@@ -38,10 +38,10 @@ class PolynomialRegression {
     final n = xs.length;
     final m = order;
 
-    final xMat = Matrix.zero(n, m + 1);
+    final xMat = Matrix(n, m + 1);
     for (var i = 0; i < n; i++) {
       for (var j = 0; j < m + 1; j++) {
-        xMat[i][j] = pow(xs[i], j).toDouble();
+        xMat.set(i, j, pow(xs[i], j).toDouble());
       }
     }
 

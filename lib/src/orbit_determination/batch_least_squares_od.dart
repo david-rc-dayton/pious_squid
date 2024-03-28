@@ -98,8 +98,8 @@ class BatchLeastSquaresOD {
     var breakFlag = false;
     final xNom = _stateToX0(_nominal);
     var weightedRms = double.infinity;
-    final atwaMatInit = Matrix.zero(6, 6);
-    final atwbMatInit = Matrix.zero(6, 1);
+    final atwaMatInit = Matrix(6, 6);
+    final atwbMatInit = Matrix(6, 1);
     var atwaMat = atwaMatInit;
     for (var iter = 0; iter < maxIter; iter++) {
       atwaMat = atwaMatInit;
@@ -115,7 +115,7 @@ class BatchLeastSquaresOD {
         final bMat = ob.residual(_propagator);
         atwaMat = atwaMat.add(aMatTN.multiply(aMat));
         atwbMat = atwbMat.add(aMatTN.multiply(bMat));
-        rmsTotal += bMat.transpose().multiply(noise).multiply(bMat)[0][0];
+        rmsTotal += bMat.transpose().multiply(noise).multiply(bMat).get(0, 0);
         measCount += noise.rows;
       }
       final newWeightedRms = sqrt(rmsTotal / measCount);
@@ -126,7 +126,7 @@ class BatchLeastSquaresOD {
         breakFlag = true;
       }
       weightedRms = newWeightedRms;
-      final atwbVec = Vector.fromList(atwbMat.transpose()[0]);
+      final atwbVec = atwbMat.transpose().row(0);
       final dX = atwaMat.solve(atwbVec);
       for (var i = 0; i < 6; i++) {
         xNom[i] += dX[i];

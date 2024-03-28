@@ -6,7 +6,7 @@ void main() {
     test('mahalanobisDistance', () {
       final z = Vector.fromList([5, 3]);
       final zHat = Vector.fromList([4, 4]);
-      final s = Matrix([
+      final s = Matrix.fromList([
         [2, 0.5],
         [0.5, 1]
       ]);

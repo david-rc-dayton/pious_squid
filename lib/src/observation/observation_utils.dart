@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/propagator/propagator_base.dart';
 
@@ -73,10 +72,10 @@ double normalizeAngle(final double a, final double b) {
 /// values [sigmas].
 Matrix observationNoiseFromSigmas(final List<double> sigmas) {
   final n = sigmas.length;
-  final result = array2d(n, n, 0.0);
+  final result = Matrix(n, n);
   for (var i = 0; i < n; i++) {
     final s = sigmas[i];
-    result[i][i] = 1.0 / (s * s);
+    result.set(i, i, 1.0 / (s * s));
   }
-  return Matrix(result);
+  return result;
 }

@@ -22,11 +22,14 @@ class Quaternion {
   /// Create a new [Quaternion] object from the provided direction cosine
   /// matrix [c].
   factory Quaternion.fromDirectionCosineMatrix(final Matrix c) {
+    final c00 = c.get(0, 0);
+    final c11 = c.get(1, 1);
+    final c22 = c.get(2, 2);
     final q2 = Float64List(4);
-    q2[0] = 0.25 * (1 + c[0][0] - c[1][1] - c[2][2]); // qx
-    q2[1] = 0.25 * (1 - c[0][0] + c[1][1] - c[2][2]); // qy
-    q2[2] = 0.25 * (1 - c[0][0] - c[1][1] + c[2][2]); // qz
-    q2[3] = 0.25 * (1 + c[0][0] + c[1][1] + c[2][2]); // qw
+    q2[0] = 0.25 * (1 + c00 - c11 - c22); // qx
+    q2[1] = 0.25 * (1 - c00 + c11 - c22); // qy
+    q2[2] = 0.25 * (1 - c00 - c11 + c22); // qz
+    q2[3] = 0.25 * (1 + c00 + c11 + c22); // qw
     var n = 0;
     var qn2 = q2[0];
     for (var i = 1; i < 4; i++) {
@@ -39,20 +42,20 @@ class Quaternion {
     var output = Quaternion.one;
     switch (n) {
       case 0: // qx
-        output = Quaternion(
-            4.0 * qn2, c[0][1] + c[1][0], c[2][0] + c[0][2], c[1][2] - c[2][1]);
+        output = Quaternion(4.0 * qn2, c.get(0, 1) + c.get(1, 0),
+            c.get(2, 0) + c.get(0, 2), c.get(1, 2) - c.get(2, 1));
         break;
       case 1: // qy
-        output = Quaternion(
-            c[0][1] + c[1][0], 4.0 * qn2, c[1][2] + c[2][1], c[2][0] - c[0][2]);
+        output = Quaternion(c.get(0, 1) + c.get(1, 0), 4.0 * qn2,
+            c.get(1, 2) + c.get(2, 1), c.get(2, 0) - c.get(0, 2));
         break;
       case 2: // qz
-        output = Quaternion(
-            c[2][0] + c[0][2], c[1][2] + c[2][1], 4.0 * qn2, c[0][1] - c[1][0]);
+        output = Quaternion(c.get(2, 0) + c.get(0, 2),
+            c.get(1, 2) + c.get(2, 1), 4.0 * qn2, c.get(0, 1) - c.get(1, 0));
         break;
       case 3: // qw
-        output = Quaternion(
-            c[1][2] - c[2][1], c[2][0] - c[0][2], c[0][1] - c[1][0], 4.0 * qn2);
+        output = Quaternion(c.get(1, 2) - c.get(2, 1),
+            c.get(2, 0) - c.get(0, 2), c.get(0, 1) - c.get(1, 0), 4.0 * qn2);
         break;
     }
     return output.scale(s).positivePolar();
@@ -79,10 +82,30 @@ class Quaternion {
       final Vector3D w1, final Vector3D w2) {
     final rr = v1.cross(v2).normalize();
     final sr = v1.cross(rr);
-    final mr = Matrix([v1.toList(), rr.toList(), sr.toList()]);
+    final mrArr = Float64List(9);
+    mrArr[0] = v1.x;
+    mrArr[1] = v1.y;
+    mrArr[2] = v1.z;
+    mrArr[3] = rr.x;
+    mrArr[4] = rr.y;
+    mrArr[5] = rr.z;
+    mrArr[6] = sr.x;
+    mrArr[7] = sr.y;
+    mrArr[8] = sr.z;
+    final mr = Matrix(3, 3, mrArr);
     final rb = w1.cross(w2).normalize();
     final sb = w1.cross(rb);
-    final mb = Matrix([w1.toList(), rb.toList(), sb.toList()]);
+    final mbArr = Float64List(9);
+    mbArr[0] = w1.x;
+    mbArr[1] = w1.y;
+    mbArr[2] = w1.z;
+    mbArr[3] = rb.x;
+    mbArr[4] = rb.y;
+    mbArr[5] = rb.z;
+    mbArr[6] = sb.x;
+    mbArr[7] = sb.y;
+    mbArr[8] = sb.z;
+    final mb = Matrix(3, 3, mbArr);
     final a = mr.transpose().multiply(mb);
     return Quaternion.fromDirectionCosineMatrix(a);
   }
@@ -258,12 +281,17 @@ class Quaternion {
     final x2 = x * x;
     final y2 = y * y;
     final z2 = z * z;
-    final m = [
-      [w2 + x2 - y2 - z2, 2.0 * (x * y + z * w), 2.0 * (x * z - y * w)],
-      [2.0 * (x * y - z * w), w2 - x2 + y2 - z2, 2.0 * (y * z + x * w)],
-      [2.0 * (x * z + y * w), 2.0 * (y * z - x * w), w2 - x2 - y2 + z2],
-    ];
-    return Matrix(m);
+    final mArr = Float64List(9);
+    mArr[0] = w2 + x2 - y2 - z2;
+    mArr[1] = 2.0 * (x * y + z * w);
+    mArr[2] = 2.0 * (x * z - y * w);
+    mArr[3] = 2.0 * (x * y - z * w);
+    mArr[4] = w2 - x2 + y2 - z2;
+    mArr[5] = 2.0 * (y * z + x * w);
+    mArr[6] = 2.0 * (x * z + y * w);
+    mArr[7] = 2.0 * (y * z - x * w);
+    mArr[8] = w2 - x2 - y2 + z2;
+    return Matrix(3, 3, mArr);
   }
 
   /// Convert this [Quaternion] to a rotation [Matrix].
@@ -282,13 +310,25 @@ class Quaternion {
   /// [angularVelocity] vector _(rad/s)_.
   Quaternion kinematics(final Vector3D angularVelocity) {
     final wPrime = Vector.fromList(
-        [0, angularVelocity[0], angularVelocity[1], angularVelocity[2]]);
-    final qMat = Matrix([
-      [x, w, -z, y],
-      [y, z, w, -x],
-      [z, -y, x, w],
-      [w, -x, -y, -z]
-    ]);
+        [0, angularVelocity.x, angularVelocity.y, angularVelocity.z]);
+    final qArr = Float64List(16);
+    qArr[0] = x;
+    qArr[1] = w;
+    qArr[2] = -z;
+    qArr[3] = y;
+    qArr[4] = y;
+    qArr[5] = z;
+    qArr[6] = w;
+    qArr[7] = -x;
+    qArr[8] = z;
+    qArr[9] = -y;
+    qArr[10] = x;
+    qArr[11] = w;
+    qArr[12] = w;
+    qArr[13] = -x;
+    qArr[14] = -y;
+    qArr[15] = -z;
+    final qMat = Matrix(4, 4, qArr);
     final result = qMat.multiplyVector(wPrime).scale(0.5);
     return Quaternion(result[0], result[1], result[2], result[3]);
   }

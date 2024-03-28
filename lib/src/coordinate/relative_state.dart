@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/pious_squid_base.dart';
@@ -21,16 +22,22 @@ Matrix _createMatrix3(final Vector3D position, final Vector3D velocity) {
   final ru = position.normalize();
   final cu = position.cross(velocity).normalize();
   final iu = cu.cross(ru).normalize();
-  return Matrix([
-    [ru.x, ru.y, ru.z],
-    [iu.x, iu.y, iu.z],
-    [cu.x, cu.y, cu.z]
-  ]);
+  final output = Float64List(9);
+  output[0] = ru.x;
+  output[1] = ru.y;
+  output[2] = ru.z;
+  output[3] = iu.x;
+  output[4] = iu.y;
+  output[5] = iu.z;
+  output[6] = cu.x;
+  output[7] = cu.y;
+  output[8] = cu.z;
+  return Matrix(3, 3, output);
 }
 
 Matrix _createMatrix6(final Vector3D position, final Vector3D velocity) {
   final m = _createMatrix3(position, velocity);
-  final output = Matrix.zero(6, 6);
+  final output = Matrix(6, 6);
   output.setBlock(m, 0, 0);
   output.setBlock(m, 3, 3);
   return output;
@@ -76,11 +83,16 @@ RelativeState _eqcmFromJ2kMatrix(
   final rhill =
       Vector3D(magrint - magrtgt, lambdaint * magrtgt, phiint * magrtgt);
 
-  final rotRswSez = Matrix([
-    [sinphiint * coslambdaint, sinphiint * sinlambdaint, -cosphiint],
-    [-sinlambdaint, coslambdaint, 0.0],
-    [cosphiint * coslambdaint, cosphiint * sinlambdaint, sinphiint]
-  ]);
+  final rotRswSezArr = Float64List(9);
+  rotRswSezArr[0] = sinphiint * coslambdaint;
+  rotRswSezArr[1] = sinphiint * sinlambdaint;
+  rotRswSezArr[2] = -cosphiint;
+  rotRswSezArr[3] = -sinlambdaint;
+  rotRswSezArr[4] = coslambdaint;
+  rotRswSezArr[6] = cosphiint * coslambdaint;
+  rotRswSezArr[7] = cosphiint * sinlambdaint;
+  rotRswSezArr[8] = sinphiint;
+  final rotRswSez = Matrix(3, 3, rotRswSezArr);
 
   final vintsez = rotRswSez.multiplyVector3D(vintrsw);
   final phidotint = -vintsez.x / magrint;
@@ -108,11 +120,16 @@ J2000 _eqcmToJ2kMatrix(
   final sinlambdaint = sin(lambdaint);
   final coslambdaint = cos(lambdaint);
 
-  final rotRswSez = Matrix([
-    [sinphiint * coslambdaint, sinphiint * sinlambdaint, -cosphiint],
-    [-sinlambdaint, coslambdaint, 0],
-    [cosphiint * coslambdaint, cosphiint * sinlambdaint, sinphiint]
-  ]);
+  final rotRswSezArr = Float64List(9);
+  rotRswSezArr[0] = sinphiint * coslambdaint;
+  rotRswSezArr[1] = sinphiint * sinlambdaint;
+  rotRswSezArr[2] = -cosphiint;
+  rotRswSezArr[3] = -sinlambdaint;
+  rotRswSezArr[4] = coslambdaint;
+  rotRswSezArr[6] = cosphiint * coslambdaint;
+  rotRswSezArr[7] = cosphiint * sinlambdaint;
+  rotRswSezArr[8] = sinphiint;
+  final rotRswSez = Matrix(3, 3, rotRswSezArr);
 
   final rdotint = relative.velocity.x + vtgtrsw.x;
   final lambdadotint = relative.velocity.y / magrtgt + lambdadottgt;
@@ -300,14 +317,25 @@ class RelativeState {
     final n = meanMotion;
     final s = sin(n * t);
     final c = cos(n * t);
-    return Matrix([
-      [4 - 3 * c, 0, 0, s / n, 2 * (1 - c) / n, 0],
-      [6 * (s - n * t), 1, 0, 2 * (c - 1) / n, (4 * s - 3 * n * t) / n, 0],
-      [0, 0, c, 0, 0, s / n],
-      [3 * n * s, 0, 0, c, 2 * s, 0],
-      [6 * n * (c - 1), 0, 0, -2 * s, 4 * c - 3, 0],
-      [0, 0, -n * s, 0, 0, c]
-    ]);
+    final output = Float64List(36);
+    output[0] = 4 - 3 * c;
+    output[3] = s / n;
+    output[4] = 2 * (1 - c) / n;
+    output[6] = 6 * (s - n * t);
+    output[7] = 1;
+    output[9] = 2 * (c - 1) / n;
+    output[10] = (4 * s - 3 * n * t) / n;
+    output[14] = c;
+    output[17] = s / n;
+    output[18] = 3 * n * s;
+    output[21] = c;
+    output[22] = 2 * s;
+    output[24] = 6 * n * (c - 1);
+    output[27] = -2 * s;
+    output[28] = 4 * c - 3;
+    output[32] = -n * s;
+    output[35] = c;
+    return Matrix(6, 6, output);
   }
 
   /// Return the Clohessy-Wiltshire relative motion state transition matrix for

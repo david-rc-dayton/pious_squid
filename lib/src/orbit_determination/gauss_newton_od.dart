@@ -140,7 +140,7 @@ class GaussNewtonOD {
         xh[i] += delta;
         high.add(_vecToProp(Vector(xh), epoch, forceModel));
       }
-      final matrix = Matrix.zero(n * m, 8);
+      final matrix = Matrix(n * m, 8);
       for (var i = 0; i < n; i++) {
         final ob = obs[i];
         final t = ob.epoch;
@@ -150,12 +150,12 @@ class GaussNewtonOD {
         for (var j = 0; j < 8; j++) {
           final highItrf = high[j].propagate(t).toITRF().posvel();
           final dh = check.subtract(highItrf);
-          matrix[m * i + 0][j] = (dh[0] - dl[0]) / delta;
-          matrix[m * i + 1][j] = (dh[1] - dl[1]) / delta;
-          matrix[m * i + 2][j] = (dh[2] - dl[2]) / delta;
-          matrix[m * i + 3][j] = (dh[3] - dl[3]) / delta;
-          matrix[m * i + 4][j] = (dh[4] - dl[4]) / delta;
-          matrix[m * i + 5][j] = (dh[5] - dl[5]) / delta;
+          matrix.set(m * i + 0, j, (dh[0] - dl[0]) / delta);
+          matrix.set(m * i + 1, j, (dh[1] - dl[1]) / delta);
+          matrix.set(m * i + 2, j, (dh[2] - dl[2]) / delta);
+          matrix.set(m * i + 3, j, (dh[3] - dl[3]) / delta);
+          matrix.set(m * i + 4, j, (dh[4] - dl[4]) / delta);
+          matrix.set(m * i + 5, j, (dh[5] - dl[5]) / delta);
         }
       }
       return matrix;
@@ -200,7 +200,7 @@ class GaussNewtonOD {
         xh[i] += delta;
         high.add(_vecToProp(Vector(xh), epoch, forceModel));
       }
-      final matrix = Matrix.zero(n * m, 8);
+      final matrix = Matrix(n * m, 8);
       for (var i = 0; i < n; i++) {
         final ob = obs[i];
         final expected = ob.observation;
@@ -218,8 +218,8 @@ class GaussNewtonOD {
               expected.rightAscension, actualHigh.rightAscension);
           final dhDec =
               normalizeAngle(expected.declination, actualHigh.declination);
-          matrix[m * i + 0][j] = (dhRa - dlRa) / delta;
-          matrix[m * i + 1][j] = (dhDec - dlDec) / delta;
+          matrix.set(m * i + 0, j, (dhRa - dlRa) / delta);
+          matrix.set(m * i + 1, j, (dhDec - dlDec) / delta);
         }
       }
       return matrix;
@@ -264,7 +264,7 @@ class GaussNewtonOD {
         xh[i] += delta;
         high.add(_vecToProp(Vector(xh), epoch, forceModel));
       }
-      final matrix = Matrix.zero(n * m, 8);
+      final matrix = Matrix(n * m, 8);
       for (var i = 0; i < n; i++) {
         final ob = obs[i];
         final expected = ob.observation;
@@ -279,9 +279,9 @@ class GaussNewtonOD {
           final dhR = expected.range - actualHigh.range;
           final dhAz = normalizeAngle(expected.azimuth, actualHigh.azimuth);
           final dhEl = normalizeAngle(expected.elevation, actualHigh.elevation);
-          matrix[m * i + 0][j] = (dhR - dlR) / delta;
-          matrix[m * i + 1][j] = (dhAz - dlAz) / delta;
-          matrix[m * i + 2][j] = (dhEl - dlEl) / delta;
+          matrix.set(m * i + 0, j, (dhR - dlR) / delta);
+          matrix.set(m * i + 1, j, (dhAz - dlAz) / delta);
+          matrix.set(m * i + 2, j, (dhEl - dlEl) / delta);
         }
       }
       return matrix;

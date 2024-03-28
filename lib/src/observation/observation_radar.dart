@@ -1,7 +1,6 @@
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/observation/observation_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
-import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/propagator/propagator_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
@@ -63,7 +62,7 @@ class ObservationRadar extends Observation {
 
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
-    final result = array2d(3, 6, 0.0);
+    final result = Matrix(3, 6);
     for (var i = 0; i < 6; i++) {
       final step = propPairs.step(i);
       final (high, low) = propPairs.get(i);
@@ -71,24 +70,27 @@ class ObservationRadar extends Observation {
       final sh = high.propagate(epoch);
       final ol = Razel.fromStateVectors(sl, site);
       final oh = Razel.fromStateVectors(sh, site);
-      result[0][i] = observationDerivative(oh.range, ol.range, step);
-      result[1][i] =
-          observationDerivative(oh.azimuth, ol.azimuth, step, isAngle: true);
-      result[2][i] = observationDerivative(oh.elevation, ol.elevation, step,
-          isAngle: true);
+      result.set(0, i, observationDerivative(oh.range, ol.range, step));
+      result.set(1, i,
+          observationDerivative(oh.azimuth, ol.azimuth, step, isAngle: true));
+      result.set(
+          2,
+          i,
+          observationDerivative(oh.elevation, ol.elevation, step,
+              isAngle: true));
     }
-    return Matrix(result);
+    return result;
   }
 
   @override
   Matrix residual(final Propagator propagator) {
-    final result = array2d(3, 1, 0.0);
+    final result = Matrix(3, 1);
     final state = propagator.propagate(epoch);
     final razel = Razel.fromStateVectors(state, site);
-    result[0][0] = observation.range - razel.range;
-    result[1][0] = normalizeAngle(observation.azimuth, razel.azimuth);
-    result[2][0] = normalizeAngle(observation.elevation, razel.elevation);
-    return Matrix(result);
+    result.set(0, 0, observation.range - razel.range);
+    result.set(1, 0, normalizeAngle(observation.azimuth, razel.azimuth));
+    result.set(2, 0, normalizeAngle(observation.elevation, razel.elevation));
+    return result;
   }
 
   /// Create a noise matrix from the range, azimuth, and elevation standard
