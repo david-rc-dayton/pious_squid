@@ -163,7 +163,7 @@ class Earth {
 
   /// Calculate Earth [NutationAngles] for a given UTC [epoch].
   static NutationAngles nutation(final EpochUTC epoch,
-      {final int coeffs = 106, final bool useEop = false}) {
+      {final int coeffs = 4, final bool useEop = false}) {
     final t = epoch.toTT().toJulianCenturies();
     final moonAnom = evalPoly(t, _moonAnomPoly);
     final sunAnom = evalPoly(t, _sunAnomPoly);
