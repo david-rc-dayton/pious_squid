@@ -6,52 +6,60 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Container for cubic spline data.
 class CubicSpline {
   /// Create a new [CubicSpline] object.
-  CubicSpline(this.t0, this.p0, this.m0, this.t1, this.p1, this.m1);
+  CubicSpline(this.t0, this.t1, this.a, this.b, this.c, this.d) : dt = t1 - t0;
+
+  /// Create a new spline from a pair of states.
+  factory CubicSpline.fromStates(final J2000 first, final J2000 last) {
+    final t0 = first.epoch.posix;
+    final p0 = first.position;
+    final v0 = first.velocity;
+    final t1 = last.epoch.posix;
+    final p1 = last.position;
+    final v1 = last.velocity;
+    final dt = t1 - t0;
+
+    final d = p0;
+    final c = v0.scale(dt);
+    final scaledV1 = v1.scale(dt);
+    final a = scaledV1.subtract(p1.scale(2)).add(p0.scale(2)).add(v0.scale(dt));
+    final b = p1.subtract(p0).subtract(v0.scale(dt)).subtract(a);
+    return CubicSpline(t0, t1, a, b, c, d);
+  }
 
   /// Sample start time _(POSIX seconds)_.
   final double t0;
 
-  /// Sample start position vector _(km)_.
-  final Vector3D p0;
-
-  /// Sample start velocity vector _(km)_.
-  final Vector3D m0;
-
   /// Sample end time _(POSIX seconds)_.
   final double t1;
 
-  /// Sample end position vector _(km)_.
-  final Vector3D p1;
+  /// Spline duration _(seconds)_.
+  final double dt;
 
-  /// Sample end velocity vector _(km)_.
-  final Vector3D m1;
+  /// Spline coefficient A.
+  final Vector3D a;
 
-  /// Interpolate position at the provided time [t] _(POSIX seconds)_.
-  Vector3D _position(final double t) {
-    final t2 = t * t;
-    final t3 = t2 * t;
-    final r0 = p0.scale(2 * t3 - 3 * t2 + 1);
-    final v0 = m0.scale((t3 - 2 * t2 + t) * (t1 - t0));
-    final r1 = p1.scale(-2 * t3 + 3 * t2);
-    final v1 = m1.scale((t3 - t2) * (t1 - t0));
-    return r0.add(v0).add(r1).add(v1);
-  }
+  /// Spline coefficient B.
+  final Vector3D b;
 
-  /// Interpolate velocity at the provided time [t] _(POSIX seconds)_.
-  Vector3D _velocity(final double t) {
-    final t2 = t * t;
-    final r0 = p0.scale(6 * t2 - 6 * t);
-    final v0 = m0.scale((3 * t2 - 4 * t + 1) * (t1 - t0));
-    final r1 = p1.scale(-6 * t2 + 6 * t);
-    final v1 = m1.scale((3 * t2 - 2 * t) * (t1 - t0));
-    return r0.add(v0).add(r1).add(v1).scale(1 / (t1 - t0));
-  }
+  /// Spline coefficient C.
+  final Vector3D c;
+
+  /// Spline coefficient D.
+  final Vector3D d;
+
+  /// Interpolate position at the provided normalized time [tn].
+  Vector3D _position(final double tn) =>
+      d.add(c.scale(tn)).add(b.scale(tn * tn)).add(a.scale(tn * tn * tn));
+
+  /// Interpolate velocity at the provided normalized time [tn].
+  Vector3D _velocity(final double tn) =>
+      c.scale(1 / dt).add(b.scale(2 * tn / dt)).add(a.scale(3 * tn * tn / dt));
 
   /// Interpolate position _(km)_ and velocity _(km/s)_ vectors at the
   /// provided time [t] _(POSIX seconds)_.
   PositionVelocity interpolate(final double t) {
-    final n = (t - t0) / (t1 - t0);
-    return (position: _position(n), velocity: _velocity(n));
+    final tn = (t - t0) / (t1 - t0);
+    return (position: _position(tn), velocity: _velocity(tn));
   }
 }
 
@@ -70,14 +78,8 @@ class CubicSplineInterpolator extends StateInterpolator {
     final splines = <CubicSpline>[];
     for (var i = 0; i < ephemeris.length - 1; i++) {
       final e0 = ephemeris[i];
-      final t0 = e0.epoch.posix;
-      final p0 = e0.position;
-      final m0 = e0.velocity;
       final e1 = ephemeris[i + 1];
-      final t1 = e1.epoch.posix;
-      final p1 = e1.position;
-      final m1 = e1.velocity;
-      splines.add(CubicSpline(t0, p0, m0, t1, p1, m1));
+      splines.add(CubicSpline.fromStates(e0, e1));
     }
     return CubicSplineInterpolator(splines);
   }
@@ -89,21 +91,23 @@ class CubicSplineInterpolator extends StateInterpolator {
   int get sizeBytes => (64 * 14 * _splines.length) ~/ 8;
 
   CubicSpline _matchSpline(final double posix) {
-    var left = 0;
-    var right = _splines.length - 1;
+    var low = 0;
+    var high = _splines.length - 1;
 
-    while (left <= right) {
-      final mid = (left + right) >> 1;
-      if (_splines[mid].t0 <= posix && posix <= _splines[mid].t1) {
-        return _splines[mid];
-      } else if (posix < _splines[mid].t1) {
-        right = mid - 1;
+    while (low <= high) {
+      final mid = low + ((high - low) >> 1);
+      final midSpline = _splines[mid];
+
+      if (posix < midSpline.t0) {
+        high = mid - 1;
+      } else if (posix > midSpline.t1) {
+        low = mid + 1;
       } else {
-        left = mid + 1;
+        return _splines[mid];
       }
     }
 
-    return _splines[left];
+    throw 'Corresponding spline not found for timestamp: $posix';
   }
 
   @override
