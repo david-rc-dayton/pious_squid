@@ -6,52 +6,96 @@ import 'package:pious_squid/src/time/time_base.dart';
 /// Container for cubic spline data.
 class CubicSpline {
   /// Create a new [CubicSpline] object.
-  CubicSpline(this.t0, this.p0, this.m0, this.t1, this.p1, this.m1);
+  CubicSpline(this.t0, final Vector3D p0, final Vector3D m0, this.t1,
+      final Vector3D p1, final Vector3D m1) {
+    final dx = p1.x - p0.x;
+    final dy = p1.y - p0.y;
+    final dz = p1.z - p0.z;
+    final dvx = m1.x - m0.x;
+    final dvy = m1.y - m0.y;
+    final dvz = m1.z - m0.z;
+    final dx2 = dx * dx;
+    final dy2 = dy * dy;
+    final dz2 = dz * dz;
+    final dx3 = dx2 * dx;
+    final dy3 = dy2 * dy;
+    final dz3 = dz2 * dz;
+
+    aPos = p0.x;
+    bPos = m0.x;
+    cPos = (3 * dx - 2 * m0.x - m1.x) / dx;
+    dPos = (-2 * dx + m0.x + m1.x) / dx2;
+    aVel = m0.x;
+    bVel = (2 * dvx - 2 * m0.x - m1.x) / dx;
+    cVel = (3 * dx * m0.x - 2 * dx * m1.x - dvx * dx - dvx * dx) / dx2;
+    dVel = (-2 * dx * m0.x + dx * m1.x + dvx * dx) / dx3;
+    ePos = p0.y;
+    fPos = m0.y;
+    gPos = (3 * dy - 2 * m0.y - m1.y) / dy;
+    hPos = (-2 * dy + m0.y + m1.y) / dy2;
+    eVel = m0.y;
+    fVel = (2 * dvy - 2 * m0.y - m1.y) / dy;
+    gVel = (3 * dy * m0.y - 2 * dy * m1.y - dvy * dy - dvy * dy) / dy2;
+    hVel = (-2 * dy * m0.y + dy * m1.y + dvy * dy) / dy3;
+    iPos = p0.z;
+    jPos = m0.z;
+    kPos = (3 * dz - 2 * m0.z - m1.z) / dz;
+    lPos = (-2 * dz + m0.z + m1.z) / dz2;
+    iVel = m0.z;
+    jVel = (2 * dvz - 2 * m0.z - m1.z) / dz;
+    kVel = (3 * dz * m0.z - 2 * dz * m1.z - dvz * dz - dvz * dz) / dz2;
+    lVel = (-2 * dz * m0.z + dz * m1.z + dvz * dz) / dz3;
+  }
 
   /// Sample start time _(POSIX seconds)_.
   final double t0;
 
-  /// Sample start position vector _(km)_.
-  final Vector3D p0;
-
-  /// Sample start velocity vector _(km)_.
-  final Vector3D m0;
-
   /// Sample end time _(POSIX seconds)_.
   final double t1;
 
-  /// Sample end position vector _(km)_.
-  final Vector3D p1;
-
-  /// Sample end velocity vector _(km)_.
-  final Vector3D m1;
-
-  /// Interpolate position at the provided time [t] _(POSIX seconds)_.
-  Vector3D _position(final double t) {
-    final t2 = t * t;
-    final t3 = t2 * t;
-    final r0 = p0.scale(2 * t3 - 3 * t2 + 1);
-    final v0 = m0.scale((t3 - 2 * t2 + t) * (t1 - t0));
-    final r1 = p1.scale(-2 * t3 + 3 * t2);
-    final v1 = m1.scale((t3 - t2) * (t1 - t0));
-    return r0.add(v0).add(r1).add(v1);
-  }
-
-  /// Interpolate velocity at the provided time [t] _(POSIX seconds)_.
-  Vector3D _velocity(final double t) {
-    final t2 = t * t;
-    final r0 = p0.scale(6 * t2 - 6 * t);
-    final v0 = m0.scale((3 * t2 - 4 * t + 1) * (t1 - t0));
-    final r1 = p1.scale(-6 * t2 + 6 * t);
-    final v1 = m1.scale((3 * t2 - 2 * t) * (t1 - t0));
-    return r0.add(v0).add(r1).add(v1).scale(1 / (t1 - t0));
-  }
+  late final double aPos;
+  late final double bPos;
+  late final double cPos;
+  late final double dPos;
+  late final double aVel;
+  late final double bVel;
+  late final double cVel;
+  late final double dVel;
+  late final double ePos;
+  late final double fPos;
+  late final double gPos;
+  late final double hPos;
+  late final double eVel;
+  late final double fVel;
+  late final double gVel;
+  late final double hVel;
+  late final double iPos;
+  late final double jPos;
+  late final double kPos;
+  late final double lPos;
+  late final double iVel;
+  late final double jVel;
+  late final double kVel;
+  late final double lVel;
 
   /// Interpolate position _(km)_ and velocity _(km/s)_ vectors at the
   /// provided time [t] _(POSIX seconds)_.
-  List<Vector3D> interpolate(final double t) {
+  PositionVelocity interpolate(final double t) {
     final n = (t - t0) / (t1 - t0);
-    return [_position(n), _velocity(n)];
+    final n2 = n * n;
+    final n3 = n2 * n;
+
+    final xPos = aPos + bPos * n + cPos * n2 + dPos * n3;
+    final yPos = ePos + fPos * n + gPos * n2 + hPos * n3;
+    final zPos = iPos + jPos * n + kPos * n2 + lPos * n3;
+    final xVel = aVel + bVel * n + cVel * n2 + dVel * n3;
+    final yVel = eVel + fVel * n + gVel * n2 + hVel * n3;
+    final zVel = iVel + jVel * n + kVel * n2 + lVel * n3;
+
+    return (
+      position: Vector3D(xPos, yPos, zPos),
+      velocity: Vector3D(xVel, yVel, zVel)
+    );
   }
 }
 
@@ -86,20 +130,35 @@ class CubicSplineInterpolator extends StateInterpolator {
   final List<CubicSpline> _splines;
 
   @override
-  int get sizeBytes => (64 * 14 * _splines.length) ~/ 8;
+  int get sizeBytes => (64 * 25 * _splines.length) ~/ 8;
 
   CubicSpline _matchSpline(final double posix) {
     var left = 0;
-    var right = _splines.length;
-    while (left < right) {
-      final middle = (left + right) >> 1;
-      if (_splines[middle].t1 < posix) {
-        left = middle + 1;
+    var right = _splines.length - 1;
+
+    while (left <= right) {
+      final mid = (left + right) ~/ 2;
+      if (_splines[mid].t0 <= posix && posix <= _splines[mid].t1) {
+        return _splines[mid];
+      } else if (posix < _splines[mid].t0) {
+        right = mid - 1;
       } else {
-        right = middle;
+        left = mid + 1;
       }
     }
-    return _splines[left];
+
+    if (right < 0) {
+      return _splines.first;
+    } else if (left >= _splines.length) {
+      return _splines[-1];
+    } else {
+      if ((posix - _splines[right].t1).abs() <
+          (posix - _splines[left].t1).abs()) {
+        return _splines[right];
+      } else {
+        return _splines[left];
+      }
+    }
   }
 
   @override
@@ -109,7 +168,7 @@ class CubicSplineInterpolator extends StateInterpolator {
     }
     final posix = epoch.posix;
     final splineVecs = _matchSpline(posix).interpolate(posix);
-    return J2000(epoch, splineVecs[0], splineVecs[1]);
+    return J2000(epoch, splineVecs.position, splineVecs.velocity);
   }
 
   @override
