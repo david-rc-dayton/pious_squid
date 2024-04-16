@@ -103,18 +103,7 @@ class CubicSplineInterpolator extends StateInterpolator {
       }
     }
 
-    if (right < 0) {
-      return _splines[0];
-    } else if (left >= _splines.length) {
-      return _splines.last;
-    } else {
-      if ((posix - _splines[right].t1).abs() <
-          (posix - _splines[left].t0).abs()) {
-        return _splines[right];
-      } else {
-        return _splines[left];
-      }
-    }
+    return _splines[left];
   }
 
   @override

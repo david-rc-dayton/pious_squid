@@ -38,6 +38,7 @@ class KeplerPropagator extends Propagator {
     final output = [_cacheState];
     _cacheState = maneuver.apply(propagate(maneuver.center));
     _elements = _cacheState.toClassicalElements();
+    propagate(_cacheState.epoch.roll(1e-3));
     output.add(_cacheState);
     return output;
   }

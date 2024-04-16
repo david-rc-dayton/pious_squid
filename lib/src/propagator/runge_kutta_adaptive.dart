@@ -152,6 +152,7 @@ abstract class RungeKuttaAdaptive extends Propagator {
     if (maneuver.isImpulsive) {
       final output = [_cacheState];
       _cacheState = maneuver.apply(propagate(maneuver.center));
+      propagate(_cacheState.epoch.roll(1e-3));
       output.add(_cacheState);
       return output;
     }
