@@ -20,8 +20,8 @@ class CubicSpline {
 
     final d = p0;
     final c = v0.scale(dt);
-    final scaledV1 = v1.scale(dt);
-    final a = scaledV1.subtract(p1.scale(2)).add(p0.scale(2)).add(v0.scale(dt));
+    final a =
+        v1.scale(dt).subtract(p1.scale(2)).add(p0.scale(2)).add(v0.scale(dt));
     final b = p1.subtract(p0).subtract(v0.scale(dt)).subtract(a);
     return CubicSpline(t0, t1, a, b, c, d);
   }
