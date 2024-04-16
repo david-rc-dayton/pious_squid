@@ -35,9 +35,11 @@ class KeplerPropagator extends Propagator {
 
   @override
   List<J2000> maneuver(final Thrust maneuver, [final double interval = 60]) {
+    final output = [_cacheState];
     _cacheState = maneuver.apply(propagate(maneuver.center));
     _elements = _cacheState.toClassicalElements();
-    return [_cacheState];
+    output.add(_cacheState);
+    return output;
   }
 
   @override

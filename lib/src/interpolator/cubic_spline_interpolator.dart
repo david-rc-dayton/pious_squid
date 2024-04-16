@@ -21,30 +21,30 @@ class CubicSpline {
     final dy3 = dy2 * dy;
     final dz3 = dz2 * dz;
 
-    aPos = p0.x;
-    bPos = m0.x;
-    cPos = (3 * dx - 2 * m0.x - m1.x) / dx;
-    dPos = (-2 * dx + m0.x + m1.x) / dx2;
-    aVel = m0.x;
-    bVel = (2 * dvx - 2 * m0.x - m1.x) / dx;
-    cVel = (3 * dx * m0.x - 2 * dx * m1.x - dvx * dx - dvx * dx) / dx2;
-    dVel = (-2 * dx * m0.x + dx * m1.x + dvx * dx) / dx3;
-    ePos = p0.y;
-    fPos = m0.y;
-    gPos = (3 * dy - 2 * m0.y - m1.y) / dy;
-    hPos = (-2 * dy + m0.y + m1.y) / dy2;
-    eVel = m0.y;
-    fVel = (2 * dvy - 2 * m0.y - m1.y) / dy;
-    gVel = (3 * dy * m0.y - 2 * dy * m1.y - dvy * dy - dvy * dy) / dy2;
-    hVel = (-2 * dy * m0.y + dy * m1.y + dvy * dy) / dy3;
-    iPos = p0.z;
-    jPos = m0.z;
-    kPos = (3 * dz - 2 * m0.z - m1.z) / dz;
-    lPos = (-2 * dz + m0.z + m1.z) / dz2;
-    iVel = m0.z;
-    jVel = (2 * dvz - 2 * m0.z - m1.z) / dz;
-    kVel = (3 * dz * m0.z - 2 * dz * m1.z - dvz * dz - dvz * dz) / dz2;
-    lVel = (-2 * dz * m0.z + dz * m1.z + dvz * dz) / dz3;
+    _aPos = p0.x;
+    _bPos = m0.x;
+    _cPos = (3 * dx - 2 * m0.x - m1.x) / dx;
+    _dPos = (-2 * dx + m0.x + m1.x) / dx2;
+    _aVel = m0.x;
+    _bVel = (2 * dvx - 2 * m0.x - m1.x) / dx;
+    _cVel = (3 * dx * m0.x - 2 * dx * m1.x - dvx * dx - dvx * dx) / dx2;
+    _dVel = (-2 * dx * m0.x + dx * m1.x + dvx * dx) / dx3;
+    _ePos = p0.y;
+    _fPos = m0.y;
+    _gPos = (3 * dy - 2 * m0.y - m1.y) / dy;
+    _hPos = (-2 * dy + m0.y + m1.y) / dy2;
+    _eVel = m0.y;
+    _fVel = (2 * dvy - 2 * m0.y - m1.y) / dy;
+    _gVel = (3 * dy * m0.y - 2 * dy * m1.y - dvy * dy - dvy * dy) / dy2;
+    _hVel = (-2 * dy * m0.y + dy * m1.y + dvy * dy) / dy3;
+    _iPos = p0.z;
+    _jPos = m0.z;
+    _kPos = (3 * dz - 2 * m0.z - m1.z) / dz;
+    _lPos = (-2 * dz + m0.z + m1.z) / dz2;
+    _iVel = m0.z;
+    _jVel = (2 * dvz - 2 * m0.z - m1.z) / dz;
+    _kVel = (3 * dz * m0.z - 2 * dz * m1.z - dvz * dz - dvz * dz) / dz2;
+    _lVel = (-2 * dz * m0.z + dz * m1.z + dvz * dz) / dz3;
   }
 
   /// Sample start time _(POSIX seconds)_.
@@ -53,30 +53,30 @@ class CubicSpline {
   /// Sample end time _(POSIX seconds)_.
   final double t1;
 
-  late final double aPos;
-  late final double bPos;
-  late final double cPos;
-  late final double dPos;
-  late final double aVel;
-  late final double bVel;
-  late final double cVel;
-  late final double dVel;
-  late final double ePos;
-  late final double fPos;
-  late final double gPos;
-  late final double hPos;
-  late final double eVel;
-  late final double fVel;
-  late final double gVel;
-  late final double hVel;
-  late final double iPos;
-  late final double jPos;
-  late final double kPos;
-  late final double lPos;
-  late final double iVel;
-  late final double jVel;
-  late final double kVel;
-  late final double lVel;
+  late final double _aPos;
+  late final double _bPos;
+  late final double _cPos;
+  late final double _dPos;
+  late final double _aVel;
+  late final double _bVel;
+  late final double _cVel;
+  late final double _dVel;
+  late final double _ePos;
+  late final double _fPos;
+  late final double _gPos;
+  late final double _hPos;
+  late final double _eVel;
+  late final double _fVel;
+  late final double _gVel;
+  late final double _hVel;
+  late final double _iPos;
+  late final double _jPos;
+  late final double _kPos;
+  late final double _lPos;
+  late final double _iVel;
+  late final double _jVel;
+  late final double _kVel;
+  late final double _lVel;
 
   /// Interpolate position _(km)_ and velocity _(km/s)_ vectors at the
   /// provided time [t] _(POSIX seconds)_.
@@ -85,12 +85,12 @@ class CubicSpline {
     final n2 = n * n;
     final n3 = n2 * n;
 
-    final xPos = aPos + bPos * n + cPos * n2 + dPos * n3;
-    final yPos = ePos + fPos * n + gPos * n2 + hPos * n3;
-    final zPos = iPos + jPos * n + kPos * n2 + lPos * n3;
-    final xVel = aVel + bVel * n + cVel * n2 + dVel * n3;
-    final yVel = eVel + fVel * n + gVel * n2 + hVel * n3;
-    final zVel = iVel + jVel * n + kVel * n2 + lVel * n3;
+    final xPos = _aPos + _bPos * n + _cPos * n2 + _dPos * n3;
+    final yPos = _ePos + _fPos * n + _gPos * n2 + _hPos * n3;
+    final zPos = _iPos + _jPos * n + _kPos * n2 + _lPos * n3;
+    final xVel = _aVel + _bVel * n + _cVel * n2 + _dVel * n3;
+    final yVel = _eVel + _fVel * n + _gVel * n2 + _hVel * n3;
+    final zVel = _iVel + _jVel * n + _kVel * n2 + _lVel * n3;
 
     return (
       position: Vector3D(xPos, yPos, zPos),
@@ -137,7 +137,7 @@ class CubicSplineInterpolator extends StateInterpolator {
     var right = _splines.length - 1;
 
     while (left <= right) {
-      final mid = (left + right) ~/ 2;
+      final mid = (left + right) >> 1;
       if (_splines[mid].t0 <= posix && posix <= _splines[mid].t1) {
         return _splines[mid];
       } else if (posix < _splines[mid].t0) {
