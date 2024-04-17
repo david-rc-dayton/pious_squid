@@ -164,7 +164,7 @@ double angularDiameter(final double diameter, final double distance,
 /// Linearly interpolate the output value for [x] given two xy pairs.
 double linearInterpolate(final double x, final double x0, final double y0,
         final double x1, final double y1) =>
-    (y0 * (x1 - x) + y1 * (x - x0)) / (x1 - x0);
+    y0 + ((x - x0) / (x1 - x0)) * (y1 - y0);
 
 /// Calculate the mean from a list of [values].
 double mean(final List<double> values) {
