@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/matrix.dart';
@@ -19,7 +20,9 @@ class EulerAngles {
   /// Create a new [EulerAngles] object from 3-2-1 ordered direction cosine
   /// matrix [c].
   factory EulerAngles.fromDcm321(final Matrix c) => EulerAngles(
-      atan(c[1][2] / c[2][2]), -asin(c[0][2]), atan(c[0][1] / c[0][0]));
+      atan(c.get(1, 2) / c.get(2, 2)),
+      -asin(c.get(0, 2)),
+      atan(c.get(0, 1) / c.get(0, 0)));
 
   /// Roll component _(rad)_.
   final double roll;
@@ -73,19 +76,17 @@ class EulerAngles {
     final cTheta = cos(theta);
     final sPsi = sin(psi);
     final cPsi = cos(psi);
-    return Matrix([
-      [cTheta * cPsi, cTheta * sPsi, -sTheta],
-      [
-        sPhi * sTheta * cPsi - cPhi * sPsi,
-        sPhi * sTheta * sPsi + cPhi * cPsi,
-        sPhi * cTheta
-      ],
-      [
-        cPhi * sTheta * cPsi + sPhi * sPsi,
-        cPhi * sTheta * sPsi - sPhi * cPsi,
-        cPhi * cTheta
-      ]
-    ]);
+    final output = Float64List(9);
+    output[0] = cTheta * cPsi;
+    output[1] = cTheta * sPsi;
+    output[2] = -sTheta;
+    output[3] = sPhi * sTheta * cPsi - cPhi * sPsi;
+    output[4] = sPhi * sTheta * sPsi + cPhi * cPsi;
+    output[5] = sPhi * cTheta;
+    output[6] = cPhi * sTheta * cPsi + sPhi * sPsi;
+    output[7] = cPhi * sTheta * sPsi - sPhi * cPsi;
+    output[8] = cPhi * cTheta;
+    return Matrix(3, 3, output);
   }
 
   /// Perform a 3-2-1 ordered rotation on provided vector [v].

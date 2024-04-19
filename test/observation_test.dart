@@ -28,7 +28,7 @@ void main() {
       final radec = RadecTopocentric.fromStateVectors(_state, _site);
       expect(radec.rightAscensionDegrees, closeTo(276.9337329, 1e-3));
       expect(radec.declinationDegrees, closeTo(-46.7583402, 1e-3));
-      expect(radec.range, closeTo(11710.812, 1e-3));
+      expect(radec.range, closeTo(11710.8120, 1e-3));
       expect(radec.rightAscensionRateDegrees, closeTo(0.01233970405, 1e-6));
       expect(radec.declinationRateDegrees, closeTo(0.01439246203, 1e-6));
       expect(radec.rangeRate, closeTo(6.0842826, 1e-6));
@@ -41,7 +41,7 @@ void main() {
       final state = razel.toStateVector(_site);
       expect(razel.azimuthDegrees, closeTo(210.8777747, 1e-3));
       expect(razel.elevationDegrees, closeTo(-5.9409535, 1e-3));
-      expect(razel.range, closeTo(11710.812, 1e-3));
+      expect(razel.range, closeTo(11710.8120, 1e-3));
       expect(razel.azimuthRateDegrees, closeTo(0.00384011466, 1e-6));
       expect(razel.elevationRateDegrees, closeTo(0.01495847759, 1e-6));
       expect(razel.rangeRate, closeTo(6.0842826, 1e-6));

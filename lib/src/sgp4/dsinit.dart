@@ -3,7 +3,7 @@
 import 'dart:math';
 
 import 'package:pious_squid/src/operations/constants.dart';
-import 'package:pious_squid/src/sgp4/pointer.dart';
+import 'package:pious_squid/src/operations/pointer.dart';
 
 /// ----------------------------------------------------------------------------
 ///

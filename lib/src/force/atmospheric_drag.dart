@@ -15,13 +15,7 @@ class AtmosphericDrag implements Force {
   ///
   /// The cosine exponent should be a number between `2` for low inclination
   /// orbits and `6` for polar orbits.
-  AtmosphericDrag(this.mass, this.area, this.dragCoeff, this.cosine);
-
-  /// Spacecraft mass _(kg)_.
-  final double mass;
-
-  /// Spacecraft cross-sectional area _(m²)_.
-  final double area;
+  AtmosphericDrag(this.dragCoeff, this.cosine);
 
   /// Drag coefficient (unitless).
   final double dragCoeff;
@@ -29,8 +23,8 @@ class AtmosphericDrag implements Force {
   /// Cosine exponent.
   final int cosine;
 
-  /// Return Harris-Priester atmospheric density for a given [state] and
-  /// cosine exponent [n].
+  /// Return Harris-Priester atmospheric density _(kg/m³)_ for a given [state]
+  /// and cosine exponent [n].
   static double _getHPDensity(final ITRF state, final int n) {
     final hpa = DataHandler().getHpAtmosphere(state.epoch, state.getHeight());
     if (hpa == null) {
@@ -59,7 +53,10 @@ class AtmosphericDrag implements Force {
   }
 
   @override
-  Vector3D acceleration(final J2000 state) {
+  Vector3D acceleration(final J2000 state, [final double bcoeffInv = 0.0]) {
+    if (bcoeffInv == 0.0) {
+      return Vector3D.origin;
+    }
     final itrfState = state.toITRF();
     final density = _getHPDensity(itrfState, cosine);
     if (density == 0) {
@@ -70,7 +67,7 @@ class AtmosphericDrag implements Force {
     final vRel =
         state.velocity.subtract(rotation.cross(state.position)).scale(1000.0);
     final vm = vRel.magnitude();
-    final fScale = -0.5 * density * ((dragCoeff * area) / mass) * vm;
+    final fScale = -0.5 * density * (dragCoeff * bcoeffInv) * vm;
     return vRel.scale(fScale / 1000.0);
   }
 }

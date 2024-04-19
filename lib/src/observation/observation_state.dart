@@ -44,38 +44,44 @@ class ObservationState extends Observation {
 
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
-    final result = Matrix.zero(6, 6);
+    final result = Matrix(6, 6);
     for (var i = 0; i < 6; i++) {
       final step = propPairs.step(i);
       final (high, low) = propPairs.get(i);
       final sl = low.propagate(epoch).toITRF();
       final sh = high.propagate(epoch).toITRF();
-      result[0][i] = observationDerivative(sh.position.x, sl.position.x, step);
-      result[1][i] = observationDerivative(sh.position.y, sl.position.y, step);
-      result[2][i] = observationDerivative(sh.position.z, sl.position.z, step);
-      result[3][i] = observationDerivative(sh.velocity.x, sl.velocity.x, step);
-      result[4][i] = observationDerivative(sh.velocity.y, sl.velocity.y, step);
-      result[5][i] = observationDerivative(sh.velocity.z, sl.velocity.z, step);
+      result.set(
+          0, i, observationDerivative(sh.position.x, sl.position.x, step));
+      result.set(
+          1, i, observationDerivative(sh.position.y, sl.position.y, step));
+      result.set(
+          2, i, observationDerivative(sh.position.z, sl.position.z, step));
+      result.set(
+          3, i, observationDerivative(sh.velocity.x, sl.velocity.x, step));
+      result.set(
+          4, i, observationDerivative(sh.velocity.y, sl.velocity.y, step));
+      result.set(
+          5, i, observationDerivative(sh.velocity.z, sl.velocity.z, step));
     }
     return result;
   }
 
   @override
   Matrix residual(final Propagator propagator) {
-    final result = Matrix.zero(6, 1);
+    final result = Matrix(6, 1);
     final state = propagator.propagate(epoch).toITRF();
-    result[0][0] = observation.position.x - state.position.x;
-    result[1][0] = observation.position.y - state.position.y;
-    result[2][0] = observation.position.z - state.position.z;
-    result[3][0] = observation.velocity.x - state.velocity.x;
-    result[4][0] = observation.velocity.y - state.velocity.y;
-    result[5][0] = observation.velocity.z - state.velocity.z;
+    result.set(0, 0, observation.position.x - state.position.x);
+    result.set(1, 0, observation.position.y - state.position.y);
+    result.set(2, 0, observation.position.z - state.position.z);
+    result.set(3, 0, observation.velocity.x - state.velocity.x);
+    result.set(4, 0, observation.velocity.y - state.velocity.y);
+    result.set(5, 0, observation.velocity.z - state.velocity.z);
     return result;
   }
 
   @override
   Vector3D ricDiff(final Propagator propagator) =>
-      RIC.fromJ2000(site, propagator.propagate(epoch)).position;
+      RelativeState.fromJ2000(site, propagator.propagate(epoch)).position;
 
   @override
   Observation sample(final RandomGaussianSource random,

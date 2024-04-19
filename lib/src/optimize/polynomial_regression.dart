@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 
 /// Polynomial regression optimization result.
@@ -39,20 +38,14 @@ class PolynomialRegression {
     final n = xs.length;
     final m = order;
 
-    final xMat = Matrix.zero(n, m + 1);
+    final xMat = Matrix(n, m + 1);
     for (var i = 0; i < n; i++) {
       for (var j = 0; j < m + 1; j++) {
-        xMat[i][j] = pow(xs[i], j).toDouble();
+        xMat.set(i, j, pow(xs[i], j).toDouble());
       }
     }
 
-    final xMatT = xMat.transpose();
-    final bMat = xMatT
-        .multiply(xMat)
-        .inverse()
-        .multiply(xMatT)
-        .multiplyVector(Vector.fromList(ys));
-
+    final bMat = xMat.solve(Vector.fromList(ys));
     final result = Float64List.fromList(bMat.toArray().reversed.toList());
 
     var sse = 0.0;

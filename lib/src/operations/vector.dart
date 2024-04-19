@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pious_squid/src/operations/constants.dart';
-import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/matrix.dart';
 
 /// 3-dimensional vector.
@@ -56,20 +55,6 @@ class Vector3D {
     return output;
   }
 
-  /// Return the [Vector3D] element at the provided [index].
-  double operator [](final int index) {
-    switch (index) {
-      case 0:
-        return x;
-      case 1:
-        return y;
-      case 2:
-        return z;
-      default:
-        throw 'Index $index outside 3D vector bounds.';
-    }
-  }
-
   /// Convert this to a [Vector] object.
   Vector toVector() => Vector(toArray());
 
@@ -118,7 +103,7 @@ class Vector3D {
   double dot(final Vector3D v) => x * v.x + y * v.y + z * v.z;
 
   /// Calculate the outer product between this and another [Vector3D].
-  Matrix outer(final Vector3D v) => Matrix([
+  Matrix outer(final Vector3D v) => Matrix.fromList([
         [x * v.x, x * v.y, x * v.z],
         [y * v.x, y * v.y, y * v.z],
         [z * v.x, z * v.y, z * v.z],
@@ -129,7 +114,7 @@ class Vector3D {
       Vector3D(y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x);
 
   /// Calculate the skew-symmetric matrix for this [Vector3D].
-  Matrix skewSymmetric() => Matrix([
+  Matrix skewSymmetric() => Matrix.fromList([
         [0, -z, y],
         [z, 0, -x],
         [-y, x, 0]
@@ -192,16 +177,10 @@ class Vector3D {
       scale(v.magnitude()).add(v.scale(magnitude())).normalize();
 
   /// Convert this [Vector3D] into a row [Matrix].
-  Matrix row() => Matrix([
-        [x, y, z]
-      ]);
+  Matrix row() => Matrix(1, 3, toArray());
 
   /// Convert this [Vector3D] into a column [Matrix].
-  Matrix column() => Matrix([
-        [x],
-        [y],
-        [z]
-      ]);
+  Matrix column() => Matrix(3, 1, toArray());
 
   /// Join this and another [Vector3D] into a new [Vector] object.
   Vector join(final Vector3D v) {
@@ -363,13 +342,13 @@ class Vector {
 
   /// Calculate the outer product between this and another [Vector].
   Matrix outer(final Vector v) {
-    final result = array2d(length, v.length, 0.0);
+    final result = Matrix(length, v.length);
     for (var i = 0; i < length; i++) {
       for (var j = 0; j < v.length; j++) {
-        result[i][j] = _elements[i] * v._elements[j];
+        result.set(i, j, _elements[i] * v._elements[j]);
       }
     }
-    return Matrix(result);
+    return result;
   }
 
   /// Calculate the cross product of this and another [Vector];
@@ -389,7 +368,7 @@ class Vector {
     if (length != 3) {
       throw 'Skew-symmetric matrix requires a vector of length 3.';
     }
-    return Matrix([
+    return Matrix.fromList([
       [0, -_elements[2], _elements[1]],
       [_elements[2], 0, -_elements[0]],
       [-_elements[1], _elements[0], 0]
@@ -479,10 +458,10 @@ class Vector {
       Vector(_elements.sublist(start, end));
 
   /// Convert this [Vector] into a row [Matrix].
-  Matrix row() => Matrix([_elements.toList()]);
+  Matrix row() => Matrix(1, length, toArray());
 
   /// Convert this [Vector] into a column [Matrix].
-  Matrix column() => Matrix(_elements.map((final e) => [e]).toList());
+  Matrix column() => Matrix(length, 1, toArray());
 
   /// Convert elements from this to a [Vector3D], starting at the
   /// provided [index].

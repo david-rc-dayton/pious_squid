@@ -2,14 +2,15 @@ import 'package:pious_squid/pious_squid.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Hill', () {
+  group('EQCM', () {
     test('solveManeuver', () {
       final target = J2000(
           EpochUTC.fromDateTimeString('2017-01-07T05:31:00.243Z'),
           Vector3D(-5737.369776, -3423.651756, 364.099770),
           Vector3D(4.378112704, -6.646623519, 1.170571889));
 
-      final satellite = Hill.fromPerch(target, -10, 0.005, 0);
+      final satellite = RelativeState.fromPerch(target, -10, 0.005, 0,
+          type: RelativeStateType.eqcm);
 
       final waypoint = Waypoint(target.epoch.roll(1200), Vector3D(0, 0, 0));
       final maneuver = satellite.solveManeuver(waypoint);

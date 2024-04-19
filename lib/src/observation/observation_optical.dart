@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:pious_squid/src/coordinate/coordinate_base.dart';
 import 'package:pious_squid/src/observation/observation_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
-import 'package:pious_squid/src/operations/functions.dart';
 import 'package:pious_squid/src/operations/operations_base.dart';
 import 'package:pious_squid/src/propagator/propagator_base.dart';
 import 'package:pious_squid/src/time/time_base.dart';
@@ -61,7 +60,8 @@ class ObservationOptical extends Observation {
     final r0 = site;
     final r1 = propagator.propagate(epoch);
     final r2 = observation.position(site, r1.position.distance(r0.position));
-    return RIC.fromJ2000(J2000(epoch, r2, Vector3D.origin), r1).position;
+    return RelativeState.fromJ2000(J2000(epoch, r2, Vector3D.origin), r1)
+        .position;
   }
 
   @override
@@ -74,7 +74,7 @@ class ObservationOptical extends Observation {
 
   @override
   Matrix jacobian(final PropagatorPairs propPairs) {
-    final result = array2d(2, 6, 0.0);
+    final result = Matrix(2, 6);
     for (var i = 0; i < 6; i++) {
       final step = propPairs.step(i);
       final (high, low) = propPairs.get(i);
@@ -82,24 +82,30 @@ class ObservationOptical extends Observation {
       final sh = high.propagate(epoch);
       final ol = RadecTopocentric.fromStateVectors(sl, site);
       final oh = RadecTopocentric.fromStateVectors(sh, site);
-      result[0][i] = observationDerivative(
-          oh.rightAscension, ol.rightAscension, step,
-          isAngle: true);
-      result[1][i] = observationDerivative(oh.declination, ol.declination, step,
-          isAngle: true);
+      result.set(
+          0,
+          i,
+          observationDerivative(oh.rightAscension, ol.rightAscension, step,
+              isAngle: true));
+      result.set(
+          1,
+          i,
+          observationDerivative(oh.declination, ol.declination, step,
+              isAngle: true));
     }
-    return Matrix(result);
+    return result;
   }
 
   @override
   Matrix residual(final Propagator propagator) {
-    final result = array2d(2, 1, 0.0);
+    final result = Matrix(2, 1);
     final state = propagator.propagate(epoch);
     final radec = RadecTopocentric.fromStateVectors(state, site);
-    result[0][0] =
-        normalizeAngle(observation.rightAscension, radec.rightAscension);
-    result[1][0] = normalizeAngle(observation.declination, radec.declination);
-    return Matrix(result);
+    result.set(
+        0, 0, normalizeAngle(observation.rightAscension, radec.rightAscension));
+    result.set(
+        1, 0, normalizeAngle(observation.declination, radec.declination));
+    return result;
   }
 
   /// Create a noise matrix from right ascension and declination standard

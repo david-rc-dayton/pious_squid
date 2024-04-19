@@ -1,15 +1,25 @@
+import 'dart:io';
+
 import 'package:pious_squid/pious_squid.dart';
 
 void main() {
+  // Optionally, load Earth Orientation Parameter (EOP) data.
+  DataHandler().updateEarthOrientationParametersFromCsv(
+      File('external/EOP-All.csv').readAsStringSync());
+
+  // Optionally, load Space Weather (SW) data.
+  DataHandler().updateSpaceWeatherFromCsv(
+      File('external/SW-All.csv').readAsStringSync());
+
   // Create a new J2000 inertial satellite state.
   final startState = J2000(
-      EpochUTC.fromDateTimeString('2017-02-03T06:26:37.976Z'),
-      Vector3D(-3134.15877, 7478.695162, 1568.694229),
-      Vector3D(-5.227261462, -3.7717234, 2.643938099));
+    EpochUTC.fromDateTimeString('2017-02-03T06:26:37.976Z'), // utc
+    Vector3D(-3134.15877, 7478.695162, 1568.694229), // km
+    Vector3D(-5.227261462, -3.7717234, 2.643938099), // km/s
+  );
 
   // Define some spacecraft properties.
-  final mass = 1400.0; // kilograms
-  final area = 16.0; // meters²
+  final massArea = 87.5; // kg/m²
 
   // Create a perturbation force model.
   final forceModel = ForceModel()
@@ -18,9 +28,9 @@ void main() {
     // Model Moon and Sun gravity.
     ..setThirdBodyGravity(moon: true, sun: true)
     // Model solar radiation pressure, with reflectivity coefficient 1.2.
-    ..setSolarRadiationPressure(mass, area, coeff: 1.2)
+    ..setSolarRadiationPressure(massArea, reflectCoeff: 1.2)
     // Model atmospheric drag, with drag coefficient 2.2.
-    ..setAtmosphericDrag(mass, area, coeff: 2.2);
+    ..setAtmosphericDrag(massArea, dragCoeff: 2.2);
 
   // Create a Runge-Kutta 8(9) propagator.
   final rk89Prop = RungeKutta89Propagator(startState, forceModel);

@@ -100,39 +100,40 @@ void main() {
   // Position: [-1228.083275, -4853.337849, 3941.391545] km
   // Velocity: [0.000000000, 0.000000000, 0.000000000] km/s
 
-  // ---- Hill ----------------------------------------------------------------
+  // ---- EQCM ----------------------------------------------------------------
 
-  // Create Hill state as a linear drift relative to an inertial state.
+  // Create EQCM relative state as a linear drift relative to an inertial state.
   final origin = j2000;
-  final hill = Hill.fromLinearDrift(
+  final eqcm = RelativeState.fromLinearDrift(
     origin, // relative state origin
     -5, // radial (km)
     -15, // intrack (km)
     0, // node velocity (km/s)
     0, // node offset (seconds)
+    type: RelativeStateType.eqcm, // relative state type
   );
-  print(hill);
-  // => [Hill]
+  print(eqcm);
+  // => [EQCM]
   // Epoch: 2023-09-02T12:19:52.085Z
   // Position: [-5.000000, -15.000000, -0.000000] km
   // Velocity: [0.000000000, 0.008452923, 0.000000000] km/s
 
   // Propagate state using Clohessy-Wiltshire equations.
-  final hillPropEpoch = origin.epoch.roll(
+  final eqcmPropEpoch = origin.epoch.roll(
     300, // seconds
   );
-  final hillPropState = hill.propagate(hillPropEpoch);
-  print(hillPropState);
-  // => [Hill]
+  final eqcmPropState = eqcm.propagate(eqcmPropEpoch);
+  print(eqcmPropState);
+  // => [EQCM]
   // Epoch: 2023-09-02T12:24:52.085Z
   // Position: [-5.000000, -12.464123, 0.000000] km
   // Velocity: [0.000000000, 0.008452923, 0.000000000] km/s
 
   // Convert back to a J2000 state, by using the origin state propagated
-  // to the Hill state epoch.
+  // to the EQCM state epoch.
   final originProp = RungeKutta4Propagator(origin);
-  final originPropState = originProp.propagate(hillPropEpoch);
-  final j2000FromHill = hillPropState.toJ2000(originPropState);
+  final originPropState = originProp.propagate(eqcmPropEpoch);
+  final j2000FromHill = eqcmPropState.toJ2000(originPropState);
   print(j2000FromHill);
   // => [J2000]
   // Epoch: 2023-09-02T12:24:52.085Z
@@ -172,7 +173,7 @@ void main() {
   // ---- RIC -----------------------------------------------------------------
 
   // Create a RIC relative state from two inertial states.
-  final ric = RIC.fromJ2000(j2000FromHill, originPropState);
+  final ric = RelativeState.fromJ2000(j2000FromHill, originPropState);
   print(ric);
   // => [RIC]
   // Position: [-5.011423, -12.454945, -0.000000] km
