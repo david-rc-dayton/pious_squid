@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:pious_squid/pious_squid.dart';
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/functions.dart';
@@ -28,6 +29,15 @@ class Sun {
   /// Sun radius _(km)_.
   static const double radius = 695500.0;
 
+  /// Compute the Sun's distance from Earth, in kilometers, at the
+  /// provided [epoch].
+  static double distance(final EpochUTC epoch) {
+    final mSun = 357.5291092 + 35999.05034 * epoch.toJulianCenturies();
+    return 1.000140612 -
+        0.016708617 * cos(mSun * deg2rad) -
+        0.000139589 * cos(2.0 * mSun * deg2rad);
+  }
+
   /// Calculate the Sun's ECI position _(km)_ for a given UTC [epoch].
   static Vector3D position(final EpochUTC epoch) {
     final jc = epoch.toTDB().toJulianCenturies();
@@ -53,8 +63,7 @@ class Sun {
   /// Calculate the Sun's apparent ECI position _(km)_ from Earth for a given
   /// UTC [epoch].
   static Vector3D positionApparent(final EpochUTC epoch) {
-    final distance = position(epoch).magnitude();
-    final dSec = distance / speedOfLight;
+    final dSec = Sun.distance(epoch) / speedOfLight;
     return position(epoch.roll(-dSec));
   }
 
