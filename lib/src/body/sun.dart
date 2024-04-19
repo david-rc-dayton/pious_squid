@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:pious_squid/pious_squid.dart';
 import 'package:pious_squid/src/body/body_base.dart';
 import 'package:pious_squid/src/operations/constants.dart';
 import 'package:pious_squid/src/operations/functions.dart';
