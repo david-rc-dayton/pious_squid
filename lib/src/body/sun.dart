@@ -30,7 +30,7 @@ class Sun {
 
   /// Calculate the Sun's ECI position _(km)_ for a given UTC [epoch].
   static Vector3D position(final EpochUTC epoch) {
-    final jc = epoch.toTDB().toJulianCenturies();
+    final jc = epoch.toTT().toJulianCenturies();
     final dtr = deg2rad;
     final lamSun = 280.460 + 36000.771 * jc;
     final mSun = 357.5291092 + 35999.05034 * jc;

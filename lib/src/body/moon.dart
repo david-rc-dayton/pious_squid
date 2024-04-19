@@ -18,7 +18,7 @@ class Moon {
 
   /// Calculate the Moon's ECI position _(km)_ for a given UTC [epoch].
   static Vector3D position(final EpochUTC epoch) {
-    final jc = epoch.toTDB().toJulianCenturies();
+    final jc = epoch.toTT().toJulianCenturies();
     final dtr = deg2rad;
     final lamEcl = 218.32 +
         481267.8813 * jc +
