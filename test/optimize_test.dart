@@ -39,7 +39,6 @@ void main() {
       final result =
           ParticleSwarm.optimize(_rosenbrock, bounds, particles, iterations);
 
-      print(result);
       expect(result[0], closeTo(1, 1e-5));
       expect(result[1], closeTo(1, 1e-5));
     });

@@ -71,8 +71,9 @@ class RungeKutta4Propagator extends Propagator {
   @override
   List<J2000> maneuver(final Thrust maneuver, [final double interval = 60.0]) {
     if (maneuver.isImpulsive) {
+      propagate(maneuver.center);
       final output = [_cacheState];
-      _cacheState = maneuver.apply(propagate(maneuver.center));
+      _cacheState = maneuver.apply(_cacheState);
       propagate(_cacheState.epoch.roll(1e-3));
       output.add(_cacheState);
       return output;
