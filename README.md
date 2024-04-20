@@ -14,14 +14,13 @@ and satellite mission analysis logic.
   - Equinoctial Elements
   - Geocentric Celestial Reference Frame _(GCRF)_
   - Geodetic Coordinates
-  - Hill Modified Equidistant Cylindrical Frame _(EQCM)_
   - International Terrestrial Reference Frame _(ITRF)_
   - J2000 Inertial Frame _(J2000)_
-  - Radial-Intrack-Crosstrack Relative Frame _(RIC)_
+  - Relative Frame _(RIC/EQCM)_
   - True Equator Mean Equinox Inertial Frame _(TEME)_
   - Two-Line Element Set _(TLE)_
 - Covariance
-  - Covariance Sigma Sampling _(J2000/ITRF/RIC/Equinoctial)_
+  - Covariance Sigma Sampling/Desmpling
 - External Data
   - Earth Orientation Parameters
   - Space Weather
@@ -45,7 +44,7 @@ and satellite mission analysis logic.
   - Optical Observation
   - Radar Observation
   - Range-Azimuth-Elevation _(RAzEl)_
-  - State Observations _(ITRF)_
+  - State Observation _(ITRF)_
   - Topocentric Right-Ascension and Declination _(RaDec)_
 - Math
   - Matrix Operations
@@ -56,6 +55,7 @@ and satellite mission analysis logic.
   - Downhill Simplex _(Nelder-Mead)_
   - Gauss-Newton Differential Correction
   - Golden Section
+  - Particle Swarm Optimization
   - Polynomial Regression
   - Simple Linear Regression
 - Orbit Determination

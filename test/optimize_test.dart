@@ -29,6 +29,21 @@ void main() {
       expect(himmelblauSolve[1], closeTo(3.131312, 1e-5));
     });
 
+    test('ParticleSwarm', () {
+      final bounds = <List<double>>[
+        [-5, 5],
+        [-5, 5]
+      ];
+      final particles = 50;
+      final iterations = 500;
+      final result =
+          ParticleSwarm.optimize(_rosenbrock, bounds, particles, iterations);
+
+      print(result);
+      expect(result[0], closeTo(1, 1e-5));
+      expect(result[1], closeTo(1, 1e-5));
+    });
+
     test('SimpleLinearRegression', () {
       final xs = <double>[17, 13, 12, 15, 16, 14, 16, 16, 18, 19];
       final ys = <double>[94, 73, 59, 80, 93, 85, 66, 79, 77, 91];
